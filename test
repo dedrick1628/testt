@@ -55,6 +55,35 @@
       </search>
     </input>
   </fieldset>
+  <row depends="$hidden$">
+    <panel>
+      <table>
+        <search>
+          <done>
+            <set token="tkn_display_earliest">$result.earliest$</set>
+            <set token="tkn_display_latest">$result.latest$</set>
+          </done>
+          <query>| stats count 
+| addinfo
+| eval earliest = strftime(info_min_time,"%b %d %Y %H:%M:%S")
+| eval info_max_time = if(info_max_time="+Infinity",now(),info_max_time)
+| eval latest = strftime(info_max_time,"%b %d %Y %H:%M:%S")</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <html>
+        <h4>TimeRange="$tkn_display_earliest$" to "$tkn_display_latest$" for Customer="$customer$" and Sitecode="$sitecode$"</h4>
+      </html>
+    </panel>
+  </row>
   <row>
     <panel>
       <title>Selected TimeRange Total</title>
@@ -63,14 +92,10 @@
           <query>index=sat_leo_starlink_np"billingCycles.dailyDataUsage.date"="*" 
 | spath output=UsageDate path=billingCycles.dailyDataUsage.date 
 | spath output=EndDate path=billingCycles.endDate
-| eval UsageDate=strptime(UsageDate,"%Y-%m-%d")
-| eval UsageDate=strftime(UsageDate,"%Y-%m-%d")
-| eval startDate="2025-01-01"
-| eval stopDate=strptime(startDate,"%F")
-| eval stopDate=relative_time(stopDate,"+1Mon@mon")
-| eval stopDate=strftime(stopDate,"%F")
-| where UsageDate&gt;=startDate
-| eval Month=strftime(UsageDate, "@mon")
+| eval UsageDate=strptime(UsageDate,"%Y-%m-%dT%H:%M:%SZ")
+| addinfo
+| eval info_max_time = if(info_max_time="+Infinity",now(),info_max_time)
+| where UsageDate &gt;= info_min_time AND UsageDate &lt;= info_max_time 
 | stats max(billingCycles.totalPriorityGB) as "Total Priority GBytes" by serviceLineNumber EndDate
 | dedup serviceLineNumber EndDate
 | join type=left serviceLineNumber 
@@ -94,47 +119,8 @@
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
-      </single>
-    </panel>
-    <panel>
-      <title>Monthly Total- ??</title>
-      <single>
-        <search>
-          <query>index=sat_leo_starlink_np"billingCycles.dailyDataUsage.date"="*"
-| spath output=UsageDate path=billingCycles.dailyDataUsage.date ```Get the Billing Cycle date from the json path```
-| eval UsageDate=strptime(UsageDate,"%Y-%m-%d")
-| eval UsageDate=strftime(UsageDate,"%Y-%m-%d")
-| eval startDate="2025-01-01"
-| eval stopDate=strptime(startDate,"%F")
-| eval stopDate=relative_time(stopDate,"+1Mon@mon")
-| eval stopDate=strftime(stopDate,"%F")
-| where UsageDate&gt;=startDate and UsageDate&lt;stopDate
-| stats max(billingCycles.totalPriorityGB) as "Total Priority GBytes" by serviceLineNumber
-| join type=left serviceLineNumber 
-    [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
-    | spath output="serviceLineNumber" path=data.serviceLineNumber 
-    | spath output="CircuitID" path=data.nickname 
-    | spath output=StartDate path=data.startDate 
-    | spath output=PublicIP path=data.publicIp 
-    | eval StartDate=strftime(strptime(StartDate,"%F"),"%F")] 
-| join type=left left=starlink right=circuit where starlink.CircuitID=circuit.circuitalias 
-    [ search index=sat_leo_ref sourcetype=sat_prov_circuit earliest=@year] 
-| join type=left left=LL right=location where LL.circuit.location=location.@id 
-    [ search index=sat_leo_ref sourcetype=sat_prov_location earliest=@year] 
-| join type=left left=LLL right=customer where LLL.location.customer=customer.@id 
-    [ search index=sat_leo_ref sourcetype=sat_prov_customer earliest=@year] 
-| search customer.customername="$customer$" LLL.location.sitename="$sitecode$" 
-| stats sum("LLL.LL.starlink.Total Priority GBytes") as TotalPriorityGBytes
-| eval Jan2025AnnualPool = 1500000
-| eval PoolRemaining=Jan2025AnnualPool-TotalPriorityGBytes
-| eval PercentUsed=TotalPriorityGBytes/Jan2025AnnualPool, PercentLeft=PoolRemaining/Jan2025AnnualPool
-| eval PercentUsed=round(PercentUsed*100,2)." %", PercentLeft=round(PercentLeft*100,2)." %"
-| eval PoolRemaining=tostring(PoolRemaining,"commas")." GBytes", TotalPriorityGBytes=tostring(TotalPriorityGBytes,"commas")." GBytes"
-| table Jan2025AnnualPool TotalPriorityGBytes PoolRemaining PercentUsed PercentLeft</query>
-          <earliest>$field1.earliest$</earliest>
-          <latest>$field1.latest$</latest>
-        </search>
-        <option name="drilldown">none</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="unit">GB</option>
       </single>
     </panel>
     <panel>
@@ -143,9 +129,10 @@
         <search>
           <query>index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*" earliest=@year
 | spath output=UsageDate path=billingCycles.dailyDataUsage.date
-| eval UsageDate=strptime(UsageDate, "%F")
-| eval _time=UsageDate
-| eval UsageDate=strftime(UsageDate,"%F")
+| eval UsageDate=strptime(UsageDate,"%Y-%m-%dT%H:%M:%SZ")
+| addinfo
+| eval info_max_time = if(info_max_time="+Infinity",now(),info_max_time)
+| where UsageDate &gt;= info_min_time AND UsageDate &lt;= info_max_time 
 | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber _time
 | join type=left serviceLineNumber 
     [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true earliest=@year
@@ -184,9 +171,10 @@
         <search>
           <query>index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*" earliest=@year
 | spath output=UsageDate path=billingCycles.dailyDataUsage.date
-| eval UsageDate=strptime(UsageDate, "%F")
-| eval _time=UsageDate
-| eval UsageDate=strftime(UsageDate,"%F")
+| eval UsageDate=strptime(UsageDate,"%Y-%m-%dT%H:%M:%SZ")
+| addinfo
+| eval info_max_time = if(info_max_time="+Infinity",now(),info_max_time)
+| where UsageDate &gt;= info_min_time AND UsageDate &lt;= info_max_time 
 | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber _time
 | join type=left serviceLineNumber 
     [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true earliest=@year
@@ -225,35 +213,23 @@
       <title>Terminal Count</title>
       <single>
         <search>
-          <query>index=sat_leo_starlink_np sourcetype="device_terminals" 
-      | spath path=data{}.userTerminalId output=userterminal
-      | spath path=data{}.nickname output=nickname
-      | spath path=data{}.kitSerialNumber output=kitserialnumber
-      | spath path=data{}.dishSerialNumber output=dishserialnumber
-      | spath path=data{}.serviceLineNumber output=servicelinenumber
-      | spath path=data{}.active output=terminal_active
-| where servicelinenumber!="null"
-| where terminal_active="true"
-| join type=left serviceLineNumber 
-    [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
-    | spath output="serviceLineNumber" path=data.serviceLineNumber 
-    | spath output="CircuitID" path=data.nickname 
-    | spath output=StartDate path=data.startDate 
-    | spath output=PublicIP path=data.publicIp 
-    | eval StartDate=strftime(strptime(StartDate,"%F"),"%F")] 
-| join type=left left=starlink right=circuit where starlink.CircuitID=circuit.circuitalias 
-    [ search index=sat_leo_ref sourcetype=sat_prov_circuit earliest=@year] 
-| join type=left left=LL right=location where LL.circuit.location=location.@id 
-    [ search index=sat_leo_ref sourcetype=sat_prov_location earliest=@year] 
-| join type=left left=LLL right=customer where LLL.location.customer=customer.@id 
-    [ search index=sat_leo_ref sourcetype=sat_prov_customer earliest=@year] 
-| search customer.customername="$customer$" LLL.location.sitename="$sitecode$" 
-| dedup LLL.LL.starlink.userterminal
-| stats count("LLL.LL.starlink.userterminal"), distinct_count("LLL.LL.starlink.servicelinenumber")</query>
+          <query>index=sat_leo_ref sourcetype=sat_prov_circuit earliest=@year
+| join type=left left=circuit right=location where circuit.location=location.@id
+    [search index=sat_leo_ref sourcetype=sat_prov_location earliest=@year
+    ]
+    | join type=left left=L right=customer where L.location.customer=customer.@id
+    [search index=sat_leo_ref sourcetype=sat_prov_customer earliest=@year
+     ]
+| rename L.* as *
+|  search customer.customername="$customer$"
+| table circuit.circuitalias location.sitename location.division customer.customername location.sitetype
+| stats count by location.sitename
+| stats count</query>
           <earliest>$field1.earliest$</earliest>
           <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </single>
     </panel>
     <panel>
@@ -341,16 +317,9 @@
       <title>Usage by Day</title>
       <chart>
         <search>
-          <query>index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*" earliest=@year
+          <query>index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
 | spath output=UsageDate path=billingCycles.dailyDataUsage.date ```Get the Billing Cycle date from the json path```
 | eval UsageDate=strptime(UsageDate,"%Y-%m-%d")
-| eval UsageDate=strftime(UsageDate,"%Y-%m-%d")
-| eval startDate="2025-01-01"
-| eval stopDate=strptime(startDate,"%F")
-| eval stopDate=relative_time(stopDate,"+1Mon@mon")
-| eval stopDate=strftime(stopDate,"%F")
-| eval stopDate=if(startDate="2024-12-31",stopDate="2025-12-31",stopDate)
-| where UsageDate&gt;=startDate and UsageDate&lt;stopDate
 | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber UsageDate
 | join type=left serviceLineNumber 
     [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
@@ -368,11 +337,12 @@
 | search customer.customername="$customer$" LLL.location.sitename="$sitecode$" 
 | rename LLL.LL.starlink.* as *
 | stats sum(priorityGB) as "Priority GBytes" by UsageDate</query>
-          <earliest>@y</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
         <option name="charting.chart">column</option>
         <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
@@ -455,8 +425,8 @@
 | sort -"Priority GBytes" 
 | head 10 
 | table "Circuit ID" "Priority GBytes"</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
         <option name="charting.chart">bar</option>
         <option name="charting.drilldown">none</option>
@@ -469,16 +439,9 @@
       <title>Terminal Count Per Day</title>
       <chart>
         <search>
-          <query>index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*" billingCycles.dailyDataUsage.priorityGB &gt; 0 earliest=@year
+          <query>index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*" billingCycles.dailyDataUsage.priorityGB &gt; 0
 | spath output=UsageDate path=billingCycles.dailyDataUsage.date 
 | eval UsageDate=strptime(UsageDate,"%Y-%m-%d")
-| eval UsageDate=strftime(UsageDate,"%Y-%m-%d")
-| eval startDate="2025-01-01"
-| eval stopDate=strptime(startDate,"%F")
-| eval stopDate=relative_time(stopDate,"+1Mon@mon")
-| eval stopDate=strftime(stopDate,"%F")
-| eval stopDate=if(startDate="2024-12-31",stopDate="2025-12-31",stopDate)
-| where UsageDate&gt;=startDate and UsageDate&lt;stopDate
 | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by UsageDate serviceLineNumber 
 | join type=left serviceLineNumber 
     [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
@@ -496,11 +459,12 @@
 | search customer.customername="$customer$" LLL.location.sitename="$sitecode$" 
 | rename LLL.LL.starlink.* as *
 | stats count(serviceLineNumber) as Count by UsageDate</query>
-          <earliest>-24h@h</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
         <option name="charting.chart">column</option>
         <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
       </chart>
     </panel>
   </row>
