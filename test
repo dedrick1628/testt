@@ -1,1 +1,345 @@
-:)
+<?xml version="1.0"?>
+<dataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <circuits>
+    <circuit name="circuitX">
+      <identifier circuit_id="" vsat_circuit_id="" satmanage_id="" etms_customer_name="" esp_short_name="" etms_customer_short_name="" esp_customer_number="" satmanage_name="" vrf_name="" dns_entity_name="" gchid="" />
+      <data>
+        <period epoch_start="1632315600" epoch_end="1632315900">
+          <point value="2221.04" series_name="Downstream OTA Traffic" />
+          <point value="238.05" series_name="Upstream OTA Traffic" />
+          <point value="11.59" series_name="Downstream C/N" />
+          <point value="9.86" series_name="Upstream C/N" />
+          <point value="548.52" series_name="Latency" />
+          <point value="10" series_name="Active Mode" />
+          <point value="40.87" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632315900" epoch_end="1632316200">
+          <point value="909.34" series_name="Downstream OTA Traffic" />
+          <point value="204.69" series_name="Upstream OTA Traffic" />
+          <point value="11.7" series_name="Downstream C/N" />
+          <point value="9.84" series_name="Upstream C/N" />
+          <point value="563.63" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632316200" epoch_end="1632316500">
+          <point value="410.91" series_name="Downstream OTA Traffic" />
+          <point value="214.63" series_name="Upstream OTA Traffic" />
+          <point value="11.75" series_name="Downstream C/N" />
+          <point value="9.9" series_name="Upstream C/N" />
+          <point value="558.53" series_name="Latency" />
+          <point value="40.46" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632316500" epoch_end="1632316800">
+          <point value="1008.84" series_name="Downstream OTA Traffic" />
+          <point value="205.36" series_name="Upstream OTA Traffic" />
+          <point value="11.59" series_name="Downstream C/N" />
+          <point value="9.88" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="566.39" series_name="Latency" />
+          <point value="40.49" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632316800" epoch_end="1632317100">
+          <point value="122.69" series_name="Downstream OTA Traffic" />
+          <point value="324.01" series_name="Upstream OTA Traffic" />
+          <point value="11.54" series_name="Downstream C/N" />
+          <point value="9.89" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="549.63" series_name="Latency" />
+          <point value="40.37" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317100" epoch_end="1632317400">
+          <point value="179.82" series_name="Downstream OTA Traffic" />
+          <point value="337.53" series_name="Upstream OTA Traffic" />
+          <point value="11.69" series_name="Downstream C/N" />
+          <point value="9.85" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="558.4" series_name="Latency" />
+          <point value="40.33" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317400" epoch_end="1632317700">
+          <point value="96.86" series_name="Downstream OTA Traffic" />
+          <point value="315.23" series_name="Upstream OTA Traffic" />
+          <point value="11.57" series_name="Downstream C/N" />
+          <point value="9.9" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="550.24" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317700" epoch_end="1632318000">
+          <point value="66.23" series_name="Downstream OTA Traffic" />
+          <point value="316.86" series_name="Upstream OTA Traffic" />
+          <point value="11.74" series_name="Downstream C/N" />
+          <point value="9.93" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="560.56" series_name="Latency" />
+          <point value="41" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632318000" epoch_end="1632318300">
+          <point value="88.37" series_name="Downstream OTA Traffic" />
+          <point value="294.14" series_name="Upstream OTA Traffic" />
+          <point value="11.58" series_name="Downstream C/N" />
+          <point value="9.87" series_name="Upstream C/N" />
+          <point value="549.53" series_name="Latency" />
+          <point value="40.53" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318300" epoch_end="1632318600">
+          <point value="147.18" series_name="Downstream OTA Traffic" />
+          <point value="338.08" series_name="Upstream OTA Traffic" />
+          <point value="11.41" series_name="Downstream C/N" />
+          <point value="9.86" series_name="Upstream C/N" />
+          <point value="555.45" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318600" epoch_end="1632318900">
+          <point value="154.18" series_name="Downstream OTA Traffic" />
+          <point value="353.79" series_name="Upstream OTA Traffic" />
+          <point value="11.28" series_name="Downstream C/N" />
+          <point value="9.89" series_name="Upstream C/N" />
+          <point value="551.86" series_name="Latency" />
+          <point value="40.66" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318900" epoch_end="1632319200">
+          <point value="118.84" series_name="Downstream OTA Traffic" />
+          <point value="338.13" series_name="Upstream OTA Traffic" />
+          <point value="11.45" series_name="Downstream C/N" />
+          <point value="9.85" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="556.5" series_name="Latency" />
+          <point value="40.87" series_name="Temperature" />
+        </period>
+      </data>
+    </circuit>
+        <circuit name="circuitY">
+      <identifier circuit_id="" vsat_circuit_id="" satmanage_id="" etms_customer_name="" esp_short_name="" etms_customer_short_name="" esp_customer_number="" satmanage_name="" vrf_name="" dns_entity_name="" gchid="" />
+      <data>
+        <period epoch_start="1632315600" epoch_end="1632315900">
+          <point value="2221.04" series_name="Downstream OTA Traffic" />
+          <point value="238.05" series_name="Upstream OTA Traffic" />
+          <point value="11.59" series_name="Downstream C/N" />
+          <point value="9.86" series_name="Upstream C/N" />
+          <point value="548.52" series_name="Latency" />
+          <point value="10" series_name="Active Mode" />
+          <point value="40.87" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632315900" epoch_end="1632316200">
+          <point value="909.34" series_name="Downstream OTA Traffic" />
+          <point value="204.69" series_name="Upstream OTA Traffic" />
+          <point value="11.7" series_name="Downstream C/N" />
+          <point value="9.84" series_name="Upstream C/N" />
+          <point value="563.63" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632316200" epoch_end="1632316500">
+          <point value="410.91" series_name="Downstream OTA Traffic" />
+          <point value="214.63" series_name="Upstream OTA Traffic" />
+          <point value="11.75" series_name="Downstream C/N" />
+          <point value="9.9" series_name="Upstream C/N" />
+          <point value="558.53" series_name="Latency" />
+          <point value="40.46" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632316500" epoch_end="1632316800">
+          <point value="1008.84" series_name="Downstream OTA Traffic" />
+          <point value="205.36" series_name="Upstream OTA Traffic" />
+          <point value="11.59" series_name="Downstream C/N" />
+          <point value="9.88" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="566.39" series_name="Latency" />
+          <point value="40.49" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632316800" epoch_end="1632317100">
+          <point value="122.69" series_name="Downstream OTA Traffic" />
+          <point value="324.01" series_name="Upstream OTA Traffic" />
+          <point value="11.54" series_name="Downstream C/N" />
+          <point value="9.89" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="549.63" series_name="Latency" />
+          <point value="40.37" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317100" epoch_end="1632317400">
+          <point value="179.82" series_name="Downstream OTA Traffic" />
+          <point value="337.53" series_name="Upstream OTA Traffic" />
+          <point value="11.69" series_name="Downstream C/N" />
+          <point value="9.85" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="558.4" series_name="Latency" />
+          <point value="40.33" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317400" epoch_end="1632317700">
+          <point value="96.86" series_name="Downstream OTA Traffic" />
+          <point value="315.23" series_name="Upstream OTA Traffic" />
+          <point value="11.57" series_name="Downstream C/N" />
+          <point value="9.9" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="550.24" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317700" epoch_end="1632318000">
+          <point value="66.23" series_name="Downstream OTA Traffic" />
+          <point value="316.86" series_name="Upstream OTA Traffic" />
+          <point value="11.74" series_name="Downstream C/N" />
+          <point value="9.93" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="560.56" series_name="Latency" />
+          <point value="41" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632318000" epoch_end="1632318300">
+          <point value="88.37" series_name="Downstream OTA Traffic" />
+          <point value="294.14" series_name="Upstream OTA Traffic" />
+          <point value="11.58" series_name="Downstream C/N" />
+          <point value="9.87" series_name="Upstream C/N" />
+          <point value="549.53" series_name="Latency" />
+          <point value="40.53" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318300" epoch_end="1632318600">
+          <point value="147.18" series_name="Downstream OTA Traffic" />
+          <point value="338.08" series_name="Upstream OTA Traffic" />
+          <point value="11.41" series_name="Downstream C/N" />
+          <point value="9.86" series_name="Upstream C/N" />
+          <point value="555.45" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318600" epoch_end="1632318900">
+          <point value="154.18" series_name="Downstream OTA Traffic" />
+          <point value="353.79" series_name="Upstream OTA Traffic" />
+          <point value="11.28" series_name="Downstream C/N" />
+          <point value="9.89" series_name="Upstream C/N" />
+          <point value="551.86" series_name="Latency" />
+          <point value="40.66" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318900" epoch_end="1632319200">
+          <point value="118.84" series_name="Downstream OTA Traffic" />
+          <point value="338.13" series_name="Upstream OTA Traffic" />
+          <point value="11.45" series_name="Downstream C/N" />
+          <point value="9.85" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="556.5" series_name="Latency" />
+          <point value="40.87" series_name="Temperature" />
+        </period>
+      </data>
+    </circuit>
+        <circuit name="circuitZ">
+      <identifier circuit_id="" vsat_circuit_id="" satmanage_id="" etms_customer_name="" esp_short_name="" etms_customer_short_name="" esp_customer_number="" satmanage_name="" vrf_name="" dns_entity_name="" gchid="" />
+      <data>
+        <period epoch_start="1632315600" epoch_end="1632315900">
+          <point value="2221.04" series_name="Downstream OTA Traffic" />
+          <point value="238.05" series_name="Upstream OTA Traffic" />
+          <point value="11.59" series_name="Downstream C/N" />
+          <point value="9.86" series_name="Upstream C/N" />
+          <point value="548.52" series_name="Latency" />
+          <point value="10" series_name="Active Mode" />
+          <point value="40.87" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632315900" epoch_end="1632316200">
+          <point value="909.34" series_name="Downstream OTA Traffic" />
+          <point value="204.69" series_name="Upstream OTA Traffic" />
+          <point value="11.7" series_name="Downstream C/N" />
+          <point value="9.84" series_name="Upstream C/N" />
+          <point value="563.63" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632316200" epoch_end="1632316500">
+          <point value="410.91" series_name="Downstream OTA Traffic" />
+          <point value="214.63" series_name="Upstream OTA Traffic" />
+          <point value="11.75" series_name="Downstream C/N" />
+          <point value="9.9" series_name="Upstream C/N" />
+          <point value="558.53" series_name="Latency" />
+          <point value="40.46" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632316500" epoch_end="1632316800">
+          <point value="1008.84" series_name="Downstream OTA Traffic" />
+          <point value="205.36" series_name="Upstream OTA Traffic" />
+          <point value="11.59" series_name="Downstream C/N" />
+          <point value="9.88" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="566.39" series_name="Latency" />
+          <point value="40.49" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632316800" epoch_end="1632317100">
+          <point value="122.69" series_name="Downstream OTA Traffic" />
+          <point value="324.01" series_name="Upstream OTA Traffic" />
+          <point value="11.54" series_name="Downstream C/N" />
+          <point value="9.89" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="549.63" series_name="Latency" />
+          <point value="40.37" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317100" epoch_end="1632317400">
+          <point value="179.82" series_name="Downstream OTA Traffic" />
+          <point value="337.53" series_name="Upstream OTA Traffic" />
+          <point value="11.69" series_name="Downstream C/N" />
+          <point value="9.85" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="558.4" series_name="Latency" />
+          <point value="40.33" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317400" epoch_end="1632317700">
+          <point value="96.86" series_name="Downstream OTA Traffic" />
+          <point value="315.23" series_name="Upstream OTA Traffic" />
+          <point value="11.57" series_name="Downstream C/N" />
+          <point value="9.9" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="550.24" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632317700" epoch_end="1632318000">
+          <point value="66.23" series_name="Downstream OTA Traffic" />
+          <point value="316.86" series_name="Upstream OTA Traffic" />
+          <point value="11.74" series_name="Downstream C/N" />
+          <point value="9.93" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="560.56" series_name="Latency" />
+          <point value="41" series_name="Temperature" />
+        </period>
+        <period epoch_start="1632318000" epoch_end="1632318300">
+          <point value="88.37" series_name="Downstream OTA Traffic" />
+          <point value="294.14" series_name="Upstream OTA Traffic" />
+          <point value="11.58" series_name="Downstream C/N" />
+          <point value="9.87" series_name="Upstream C/N" />
+          <point value="549.53" series_name="Latency" />
+          <point value="40.53" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318300" epoch_end="1632318600">
+          <point value="147.18" series_name="Downstream OTA Traffic" />
+          <point value="338.08" series_name="Upstream OTA Traffic" />
+          <point value="11.41" series_name="Downstream C/N" />
+          <point value="9.86" series_name="Upstream C/N" />
+          <point value="555.45" series_name="Latency" />
+          <point value="40.93" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318600" epoch_end="1632318900">
+          <point value="154.18" series_name="Downstream OTA Traffic" />
+          <point value="353.79" series_name="Upstream OTA Traffic" />
+          <point value="11.28" series_name="Downstream C/N" />
+          <point value="9.89" series_name="Upstream C/N" />
+          <point value="551.86" series_name="Latency" />
+          <point value="40.66" series_name="Temperature" />
+          <point value="10" series_name="Active Mode" />
+        </period>
+        <period epoch_start="1632318900" epoch_end="1632319200">
+          <point value="118.84" series_name="Downstream OTA Traffic" />
+          <point value="338.13" series_name="Upstream OTA Traffic" />
+          <point value="11.45" series_name="Downstream C/N" />
+          <point value="9.85" series_name="Upstream C/N" />
+          <point value="10" series_name="Active Mode" />
+          <point value="556.5" series_name="Latency" />
+          <point value="40.87" series_name="Temperature" />
+        </period>
+      </data>
+    </circuit>
+  </circuits>
+  <header output_version="1.1" created_epoch="1632319200" />
+</dataset>
