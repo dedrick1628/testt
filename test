@@ -1,1 +1,20 @@
+index=sat_leo_starlink_prod 
+| spath "data{}" 
+| search "data{}"=u 
+| rex field=_raw "\"data\":\[.+?,(?<datatime>-?\d+(?:\.+\d*)?),\"ut(?<userterminal>.+?)\",(?<downlinkthroughput>-?\d+(?:\.+\d*)?),(?<uplinkthroughput>-?\d+(?:\.+\d*)?),(?<pingdroprateavg>-?\d+(?:\.+\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\d+(?:\.+\d*)?),(?<uptime>-?\d+(?:\.+\d*)?),(?<signalquality>-?\d+(?:\.+\d*)?),(?<h3cellid>-?\d+(?:\.+\d*)?),(?<secondsuntilreboot>-?\d+(?:\.+\d*)?),\"(?<runningsoftwareversion>.+?)\"," 
+| rex field=_raw "\[(?<activealerts>(?:\d+,)*\d*)\]"
+| where isnotnull(userterminal) 
+| eval uptime=tostring(uptime,"duration")
+| eval pingdroprateavg=pingdroprateavg*100
+| eval signalquality=signalquality*100
+| eval datetime = datatime/1000000000 
+| eval _time=datetime 
+| eval status = if(datetime >= relative_time(now(),"-30m"), if(isnull(alert_description),"healthy","online/alert"), "offline") 
+| eval datetime=strftime(datetime,"%y-%m-%d %h:%m:%s.%q")
+| eval "Downlink Throughput"= downlinkthroughput, "Uplink Throughput"=uplinkthroughput,"Signal Quality"=signalquality,"Ping Drop Rate"=pingdroprateavg, "Obstruction Percent Time"=obstructionpercenttime,"Ping Latency"=pinglatencymsavg, Time=_time
+| eval Time=strftime(Time,"%Y-%m-%d %H:%M:%S")
+| timechart span=5m avg("Downlink Throughput"),avg("Uplink Throughput"), avg("Signal Quality"),avg("Ping Drop Rate"),avg("Obstruction Percent Time"),avg("Ping Latency")
+
+
+
 
