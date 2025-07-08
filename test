@@ -1,10 +1,9 @@
-
 {
     "dataSources": {
         "ds_qGlYO0tD_ds_WAk6qZyN": {
             "type": "ds.search",
             "options": {
-                "query": "index=sat_leo_starlink_prod | spath \"data{}\" | search \"data{}\"=u \n| spath input=_raw path=\"data{}.datatime\" output=datatime | spath input=_raw path=\"data{}.userterminal\" output=userterminal(?<downlinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<uplinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<pingdroprateavg>-?\\d+(?:\\.+\\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\\d+(?:\\.+\\d*)?),(?<uptime>-?\\d+(?:\\.+\\d*)?),(?<signalquality>-?\\d+(?:\\.+\\d*)?),(?<h3cellid>-?\\d+(?:\\.+\\d*)?),(?<secondsuntilreboot>-?\\d+(?:\\.+\\d*)?),\\\"(?<runningsoftwareversion>.+?)\\\",\" \n| rex field=_raw \"\\[(?<activealerts>(?:\\d+,)*\\d*)\\]\"\n| where isnotnull(userterminal)\n| eval uptime=tostring(uptime,\"duration\")\n| eval signalquality=signalquality*100\n| spath data{}{}\n| rename data{}{} as alert_codes\n| eval alert_codes=if(isnull(alert_codes) OR alert_codes=\"\", \"None\", mvindex(alert_codes, 0)) \n| eval alert_description=case(alert_codes == 66, \"high_time_obstruction\", alert_codes == 82, \"software_update_reboot_pending\", alert_codes == 50, \"ethernet_slow_10mbps\", alert_codes == 51, \"ethernet_slow_100mbps\", alert_codes == 52, \"power_supply_thermal_throttling\", alert_codes == 53, \"actuator_motor_stuck\", alert_codes == 54, \"mast_not_vertical\", alert_codes == 55, \"disabled_no_active_service_line\", alert_codes == 56, \"disabled_too_far_from_service_address\", alert_codes == 57, \"disabled_no_service_in_ocean\", alert_codes == 58, \"disabled_invalid_country\", alert_codes == 83, \"disabled_blocked_country\", alert_codes == 84, \"disabled_data_usage_exceeded_quota\", alert_codes == 89, \"disabled_cell_is_disabled\", alert_codes == 59, \"disabled_moving_while_not_mobile\", alert_codes == 60, \"disabled_moving_too_fast\", alert_codes == 61, \"power_disconnect_detected\", alert_codes == 62, \"pop_change\", alert_codes == 63, \"unable_to_align\", alert_codes == 80, \"thermal_shutdown\", alert_codes == 81, \"thermal_throttling\")\n| eval datetime = datatime/1000000000\n| eval _time=datetime\n| sort -datetime \n| eval Status = if(datetime >= relative_time(now(),\"-30m\"), if(isnull(alert_description),\"healthy\",\"online/alert\"), \"offline\")\n| eval datetime=strftime(datetime,\"%Y-%m-%d %H:%M:%S.%Q\") \n| dedup userterminal\n| eval alert_description=if(isnull(alert_description),\"No Alerts\",alert_description)\n| where userterminal = \"$input_terminal$\"\n| table alert_description\n"
+                "query": "index=sat_leo_starlink_prod | spath \"data{}\" | search \"data{}\"=u \n| rex field=_raw \"\\\"data\\\":\\[.+?,(?<datatime>-?\\d+(?:\\.+\\d*)?),\\\"ut(?<userterminal>.+?)\\\",(?<downlinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<uplinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<pingdroprateavg>-?\\d+(?:\\.+\\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\\d+(?:\\.+\\d*)?),(?<uptime>-?\\d+(?:\\.+\\d*)?),(?<signalquality>-?\\d+(?:\\.+\\d*)?),(?<h3cellid>-?\\d+(?:\\.+\\d*)?),(?<secondsuntilreboot>-?\\d+(?:\\.+\\d*)?),\\\"(?<runningsoftwareversion>.+?)\\\",\" \n    | rex field=_raw \"\\[(?<activealerts>(?:\\d+,)*\\d*)\\]\" \n| where isnotnull(userterminal)\n| eval uptime=tostring(uptime,\"duration\")\n| eval signalquality=signalquality*100\n| spath data{}{}\n| rename data{}{} as alert_codes\n| eval alert_codes=if(isnull(alert_codes) OR alert_codes=\"\", \"None\", mvindex(alert_codes, 0)) \n| eval alert_description=case(alert_codes == 66, \"high_time_obstruction\", alert_codes == 82, \"software_update_reboot_pending\", alert_codes == 50, \"ethernet_slow_10mbps\", alert_codes == 51, \"ethernet_slow_100mbps\", alert_codes == 52, \"power_supply_thermal_throttling\", alert_codes == 53, \"actuator_motor_stuck\", alert_codes == 54, \"mast_not_vertical\", alert_codes == 55, \"disabled_no_active_service_line\", alert_codes == 56, \"disabled_too_far_from_service_address\", alert_codes == 57, \"disabled_no_service_in_ocean\", alert_codes == 58, \"disabled_invalid_country\", alert_codes == 83, \"disabled_blocked_country\", alert_codes == 84, \"disabled_data_usage_exceeded_quota\", alert_codes == 89, \"disabled_cell_is_disabled\", alert_codes == 59, \"disabled_moving_while_not_mobile\", alert_codes == 60, \"disabled_moving_too_fast\", alert_codes == 61, \"power_disconnect_detected\", alert_codes == 62, \"pop_change\", alert_codes == 63, \"unable_to_align\", alert_codes == 80, \"thermal_shutdown\", alert_codes == 81, \"thermal_throttling\")\n| eval datetime = datatime/1000000000\n| eval _time=datetime\n| sort -datetime \n| eval Status = if(datetime >= relative_time(now(),\"-30m\"), if(isnull(alert_description),\"healthy\",\"online/alert\"), \"offline\")\n| eval datetime=strftime(datetime,\"%Y-%m-%d %H:%M:%S.%Q\") \n| dedup userterminal\n| eval alert_description=if(isnull(alert_description),\"No Alerts\",alert_description)\n| where userterminal = \"$input_terminal$\"\n| table alert_description\n"
             },
             "name": "Alert_description"
         },
@@ -741,10 +740,10 @@
         }
     },
     "layout": {
-        "type": "grid",
+        "type": "absolute",
         "options": {
             "width": 1440,
-            "height": 960
+            "height": 1500
         },
         "structure": [
             {
@@ -774,7 +773,7 @@
                     "x": 0,
                     "y": 168,
                     "w": 206,
-                    "h": 95
+                    "h": 172
                 }
             },
             {
@@ -788,13 +787,23 @@
                 }
             },
             {
+                "item": "viz_rebootid",
+                "type": "block",
+                "position": {
+                    "x": 0,
+                    "y": 336,
+                    "w": 410,
+                    "h": 85
+                }
+            },
+            {
                 "item": "input_datatimeid",
                 "type": "input",
                 "position": {
                     "x": 0,
-                    "y": 336,
-                    "w": 206,
-                    "h": 85
+                    "y": 421,
+                    "w": 520,
+                    "h": 95
                 }
             },
             {
@@ -802,9 +811,9 @@
                 "type": "block",
                 "position": {
                     "x": 0,
-                    "y": 421,
+                    "y": 514,
                     "w": 700,
-                    "h": 353
+                    "h": 260
                 }
             },
             {
@@ -834,7 +843,7 @@
                     "x": 0,
                     "y": 1509,
                     "w": 1440,
-                    "h": 710
+                    "h": 392
                 }
             },
             {
@@ -842,9 +851,9 @@
                 "type": "block",
                 "position": {
                     "x": 0,
-                    "y": 2219,
+                    "y": 1901,
                     "w": 1440,
-                    "h": 786
+                    "h": 400
                 }
             },
             {
@@ -878,16 +887,6 @@
                 }
             },
             {
-                "item": "viz_rebootid",
-                "type": "block",
-                "position": {
-                    "x": 206,
-                    "y": 336,
-                    "w": 204,
-                    "h": 85
-                }
-            },
-            {
                 "item": "input_kitserialid",
                 "type": "input",
                 "position": {
@@ -912,7 +911,7 @@
                 "type": "block",
                 "position": {
                     "x": 410,
-                    "y": 168,
+                    "y": 170,
                     "w": 290,
                     "h": 95
                 }
@@ -932,7 +931,7 @@
                 "type": "block",
                 "position": {
                     "x": 410,
-                    "y": 336,
+                    "y": 340,
                     "w": 290,
                     "h": 85
                 }
@@ -972,9 +971,9 @@
                 "type": "block",
                 "position": {
                     "x": 700,
-                    "y": 421,
+                    "y": 517,
                     "w": 740,
-                    "h": 353
+                    "h": 257
                 }
             },
             {
@@ -1031,8 +1030,8 @@
                 "item": "viz_vfkokvSd",
                 "type": "block",
                 "position": {
-                    "x": 1064,
-                    "y": 168,
+                    "x": 1060,
+                    "y": 170,
                     "w": 173,
                     "h": 126
                 }
