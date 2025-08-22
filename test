@@ -1,1 +1,209 @@
-...
+{
+    "visualizations": {
+        "viz_jUgnKxQG": {
+            "type": "splunk.singlevalue",
+            "dataSources": {
+                "primary": "ds_apyL3b0a"
+            },
+            "title": "Active Terminal Count"
+        },
+        "viz_OC2ECyjP": {
+            "type": "splunk.column",
+            "dataSources": {
+                "primary": "ds_kknGYCEt"
+            },
+            "title": "All Circuits by Usage",
+            "description": "More Detailed View",
+            "eventHandlers": [
+                {
+                    "type": "drilldown.customUrl",
+                    "options": {
+                        "url": "/app/sat_access/yl__l4_circuit_level?form.customer_choice=$customer_choice|u$&amp;form.division_choice=$division_choice|u$&amp;form.circuit_choice=$row.%20|u$&amp;form.field1.earliest=$global_time.earliest$&amp;form.field1.latest=$global_time.latest$&amp;form.input_circuitid=$click.value$",
+                        "newTab": true
+                    }
+                }
+            ]
+        },
+        "viz_eB8Y55v5": {
+            "type": "splunk.column",
+            "dataSources": {
+                "primary": "ds_EQYwqY73"
+            },
+            "title": "Division Daily Usage"
+        }
+    },
+    "dataSources": {
+        "ds_mLCNVaqk": {
+            "type": "ds.search",
+            "options": {
+                "query": "| inputlookup satellite_circuit_lookup | dedup customer_name | table customer_name",
+                "queryParameters": {
+                    "earliest": "@y",
+                    "latest": "now"
+                }
+            },
+            "name": "customer_name"
+        },
+        "ds_UfOxYw8V": {
+            "type": "ds.search",
+            "options": {
+                "query": "| inputlookup satellite_circuit_lookup | search $customer_filter$ | dedup division | table division",
+                "queryParameters": {
+                    "earliest": "@y",
+                    "latest": "now"
+                }
+            },
+            "name": "search_division"
+        },
+        "ds_apyL3b0a": {
+            "type": "ds.search",
+            "options": {
+                "query": "index=sat_leo_starlink_prod sourcetype=\"device_terminals\"\n            | spath path=data{}.userTerminalId output=userterminal\n            | spath path=data{}.serviceLineNumber output=servicelinenumber\n            | spath path=data{}.active output=terminal_active\n            | where servicelinenumber!=\"null\" AND terminal_active=\"true\"\n            | dedup userterminal\n            | rename servicelinenumber as serviceLineNumber\n            | join serviceLineNumber type=left\n              [| search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines \"data.active\"=true\n              | spath output=\"serviceLineNumber\" path=data.serviceLineNumber\n              | spath output=\"nickname\" path=data.nickname\n              | fields serviceLineNumber nickname]\n            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division\n            | search $customer_filter$ $division_filter$\n            | stats count"
+            },
+            "name": "Search_1"
+        },
+        "ds_kknGYCEt": {
+            "type": "ds.search",
+            "options": {
+                "query": "index=sat_leo_starlink_prod \"billingCycles.dailyDataUsage.date\"=\"*\"\n        | spath output=totalPriorityGBytes path=billingCycles.totalPriorityGB\n        | stats max(totalPriorityGBytes) as priorityGB by serviceLineNumber\n        | join type=left serviceLineNumber\n          [| search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines \"data.active\"=true\n          | spath output=\"serviceLineNumber\" path=data.serviceLineNumber\n          | spath output=\"nickname\" path=data.nickname\n          | fields serviceLineNumber nickname]\n        | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division, circuit_alias\n        | search $customer_filter$ $division_filter$\n        | where isnotnull(nickname) AND isnotnull(circuit_alias)\n        | rename circuit_alias as \"Circuit Alias\", priorityGB as \"Usage (GB)\", nickname as \" \"\n        | table \"Circuit Alias\", \"Usage (GB)\", \" \"\n        | sort - \"Usage (GB)\""
+            },
+            "name": "Search_2"
+        },
+        "ds_EQYwqY73": {
+            "type": "ds.search",
+            "options": {
+                "query": "index=sat_leo_starlink_prod \"billingCycles.dailyDataUsage.date\"=\"*\"\n            | spath output=UsageDate path=billingCycles.dailyDataUsage.date\n            | eval _time=strptime(UsageDate, \"%F\")\n            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber, _time\n            | join type=left serviceLineNumber \n              [| search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines \"data.active\"=true \n              | spath output=\"serviceLineNumber\" path=data.serviceLineNumber \n              | spath output=\"nickname\" path=data.nickname\n              | fields serviceLineNumber nickname]\n            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division\n            | search $customer_filter$ $division_filter$\n            | timechart span=1d sum(priorityGB) as \"Total Usage (GB)\""
+            },
+            "name": "Search_3"
+        }
+    },
+    "defaults": {
+        "dataSources": {
+            "ds.search": {
+                "options": {
+                    "queryParameters": {
+                        "latest": "$global_time.latest$",
+                        "earliest": "$global_time.earliest$"
+                    }
+                }
+            }
+        }
+    },
+    "inputs": {
+        "input_global_trp": {
+            "type": "input.timerange",
+            "options": {
+                "token": "global_time",
+                "defaultValue": "-24h@h,now"
+            },
+            "title": "Global Time Range"
+        },
+        "input_YFZ87IHx": {
+            "options": {
+                "items": ">frame(label, value) | prepend(formattedStatics) | objects()",
+                "token": "customer_choice",
+                "defaultValue": "*"
+            },
+            "title": "Select Customer",
+            "type": "input.dropdown",
+            "dataSources": {
+                "primary": "ds_mLCNVaqk"
+            },
+            "context": {
+                "formattedConfig": {
+                    "number": {
+                        "prefix": ""
+                    }
+                },
+                "formattedStatics": ">statics | formatByType(formattedConfig)",
+                "statics": [
+                    [
+                        "All"
+                    ],
+                    [
+                        "*"
+                    ]
+                ],
+                "label": ">primary | seriesByName(\"customer_name\") | renameSeries(\"label\") | formatByType(formattedConfig)",
+                "value": ">primary | seriesByName(\"customer_name\") | renameSeries(\"value\") | formatByType(formattedConfig)"
+            }
+        },
+        "input_eYiV07Oz": {
+            "options": {
+                "items": ">frame(label, value) | prepend(formattedStatics) | objects()",
+                "defaultValue": "*",
+                "token": "division_choice"
+            },
+            "title": "Select Division",
+            "type": "input.dropdown",
+            "dataSources": {
+                "primary": "ds_UfOxYw8V"
+            },
+            "context": {
+                "formattedConfig": {
+                    "number": {
+                        "prefix": ""
+                    }
+                },
+                "formattedStatics": ">statics | formatByType(formattedConfig)",
+                "statics": [
+                    [
+                        "All"
+                    ],
+                    [
+                        "*"
+                    ]
+                ],
+                "label": ">primary | seriesByName(\"division\") | renameSeries(\"label\") | formatByType(formattedConfig)",
+                "value": ">primary | seriesByName(\"division\") | renameSeries(\"value\") | formatByType(formattedConfig)"
+            }
+        }
+    },
+    "layout": {
+        "type": "absolute",
+        "options": {
+            "width": 1440,
+            "height": 960,
+            "display": "fit-to-width"
+        },
+        "structure": [
+            {
+                "item": "viz_jUgnKxQG",
+                "type": "block",
+                "position": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 710,
+                    "h": 310
+                }
+            },
+            {
+                "item": "viz_OC2ECyjP",
+                "type": "block",
+                "position": {
+                    "x": 720,
+                    "y": 0,
+                    "w": 720,
+                    "h": 310
+                }
+            },
+            {
+                "item": "viz_eB8Y55v5",
+                "type": "block",
+                "position": {
+                    "x": 0,
+                    "y": 320,
+                    "w": 1440,
+                    "h": 360
+                }
+            }
+        ],
+        "globalInputs": [
+            "input_global_trp",
+            "input_YFZ87IHx",
+            "input_eYiV07Oz"
+        ]
+    },
+    "description": "",
+    "title": "YL - L3 Division Deep-Dive"
+}
