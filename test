@@ -1,11 +1,23 @@
 <form version="1.1" theme="light">
-  <label>YL - L2 Customer Hub Dashboard</label>
+  <label>YL - L3 Division Deep-Dive</label>
   <init>
-    <condition match="isnotnull($form.set_customer$)">
-      <set token="form.customer_choice">$form.set_customer$</set>
+    <set token="loading">true</set>
+    <condition match="isnotnull($form.customer_choice$)">
+      <set token="form.customer_choice">$form.customer_choice$</set>
     </condition>
+    <condition match="isnotnull($form.division_choice$)">
+      <set token="form.division_choice">$form.division_choice$</set>
+    </condition>
+    <unset token="loading"></unset>
   </init>
   <fieldset>
+    <input type="time" token="field1" searchWhenChanged="true">
+      <label>Global Time Range</label>
+      <default>
+        <earliest>@y</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
     <input type="dropdown" token="customer_choice" searchWhenChanged="true">
       <label>Select Customer</label>
       <choice value="*">All</choice>
@@ -18,8 +30,12 @@
       </search>
       <default>*</default>
       <change>
-        <eval token="customer_filter">if($value$ == "*", "customer_name=*", "customer_name=\"" . $value$ . "\"")</eval>
-        <set token="form.division_choice">*</set>
+        <condition>
+          <eval token="customer_filter">if($value$ == "*", "customer_name=*", "customer_name=\"" . $value$ . "\"")</eval>
+        </condition>
+        <condition match="isnull($loading$)">
+          <set token="form.division_choice">*</set>
+        </condition>
       </change>
     </input>
     <input type="dropdown" token="division_choice" searchWhenChanged="true">
@@ -40,93 +56,6 @@
   </fieldset>
   <row>
     <panel>
-      <chart>
-        <title>Customer Usage by Day</title>
-        <search>
-          <query>
-            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
-            | spath output=UsageDate path=billingCycles.dailyDataUsage.date
-            | eval _time=strptime(UsageDate, "%F")
-            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber, _time
-            | join type=left serviceLineNumber 
-              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
-              | spath output="serviceLineNumber" path=data.serviceLineNumber 
-              | spath output="nickname" path=data.nickname
-              | fields serviceLineNumber nickname]
-            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division
-            | search $customer_filter$ $division_filter$
-            | timechart span=1d sum(priorityGB) as "Total Usage (GB)"
-          </query>
-          <earliest>@y</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="charting.chart">column</option>
-        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
-      </chart>
-    </panel>
-    <panel>
-      <title>Usage by Division</title>
-      <chart>
-        <title>More Detailed View</title>
-        <search>
-          <query>
-            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
-            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber
-            | join type=left serviceLineNumber 
-              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
-              | spath output="serviceLineNumber" path=data.serviceLineNumber 
-              | spath output="nickname" path=data.nickname
-              | fields serviceLineNumber nickname]
-            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division
-            | search $customer_filter$
-            | stats sum(priorityGB) as "Total Usage (GB)" by division
-            | rename division as "Division"
-          </query>
-          <earliest>@y</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
-        <option name="charting.chart">column</option>
-        <drilldown>
-          <link target="_blank">/app/sat_access/yl_-_l3_division_usage_deep-dive?form.customer_choice=$customer_choice|u$&amp;form.division_choice=$row.Division|u$&amp;form.field1.earliest=@y&amp;form.field1.latest=now</link>
-        </drilldown>
-      </chart>
-    </panel>
-  </row>
-  <row>
-    <panel>
-      <chart>
-        <title>Usage Prediction</title>
-        <search>
-          <query>
-            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
-            | spath output=UsageDate path=billingCycles.dailyDataUsage.date
-            | eval _time=strptime(UsageDate, "%F")
-            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber, _time
-            | join type=left serviceLineNumber 
-              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
-              | spath output="serviceLineNumber" path=data.serviceLineNumber 
-              | spath output="nickname" path=data.nickname
-              | fields serviceLineNumber nickname]
-            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name
-            | search $customer_filter$
-            | timechart span=1d sum(priorityGB) as "Actual Usage"
-            | predict "Actual Usage" as prediction algorithm=LLP5 holdback=16 future_timespan=60 period=7 
-            | eval prediction=if(prediction &lt; 0, 0, prediction)
-            | rename prediction as "Predicted Usage"
-            | eval "Actual Usage" = round('Actual Usage', 2), "Predicted Usage" = round('Predicted Usage', 2)
-            | timechart span=1d first("Actual Usage") as "Actual Usage" first("Predicted Usage") as "Predicted Usage"
-          </query>
-          <earliest>@y</earliest>
-          <latest>now</latest>
-        </search>
-        <option name="charting.chart">line</option>
-        <option name="charting.legend.placement">right</option>
-      </chart>
-    </panel>
-  </row>
-  <row>
-    <panel>
       <single>
         <title>Active Terminal Count</title>
         <search>
@@ -143,12 +72,12 @@
               | spath output="serviceLineNumber" path=data.serviceLineNumber
               | spath output="nickname" path=data.nickname
               | fields serviceLineNumber nickname]
-            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name
-            | search $customer_filter$
+            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division
+            | search $customer_filter$ $division_filter$
             | stats count
           </query>
-          <earliest>@y</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
         <option name="drilldown">none</option>
         <option name="colorMode">block</option>
@@ -156,8 +85,9 @@
       </single>
     </panel>
     <panel>
+      <title>All Circuits by Usage</title>
       <chart>
-        <title>Top 10 Circuits by Usage</title>
+        <title>More Detailed View</title>
         <search>
           <query>
         index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
@@ -168,22 +98,49 @@
           | spath output="serviceLineNumber" path=data.serviceLineNumber
           | spath output="nickname" path=data.nickname
           | fields serviceLineNumber nickname]
-        | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, circuit_alias
-        | search $customer_filter$
+        | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division, circuit_alias
+        | search $customer_filter$ $division_filter$
         | where isnotnull(nickname) AND isnotnull(circuit_alias)
-        | sort 10 - priorityGB
         | rename circuit_alias as "Circuit Alias", priorityGB as "Usage (GB)", nickname as " "
         | table "Circuit Alias", "Usage (GB)", " "
+        | sort - "Usage (GB)"
       </query>
-          <earliest>@y</earliest>
-          <latest>now</latest>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
         </search>
-        <option name="charting.chart">column</option>
         <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.chart">column</option>
         <option name="refresh.display">progressbar</option>
         <drilldown>
-          <link target="_blank">/app/sat_access/yl_-_l4_the_circuit_usage_forensics_view?form.customer_choice=$customer_choice|u$&amp;form.division_choice=*&amp;form.circuit_choice=$row. |u$&amp;form.field1.earliest=@y&amp;form.field1.latest=now</link>
+          <link target="_blank">/app/sat_access/yl__l4_circuit_level?form.customer_choice=$customer_choice%7Cu$&amp;form.division_choice=$division_choice%7Cu$&amp;form.circuit_choice=$row.%20%7Cu$&amp;form.field1.earliest=$field1.earliest%7Cu$&amp;form.field1.latest=$field1.latest%7Cu$&amp;form.input_circuitid=$click.value$</link>
         </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Division Daily Usage</title>
+        <search>
+          <query>
+            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
+            | spath output=UsageDate path=billingCycles.dailyDataUsage.date
+            | eval _time=strptime(UsageDate, "%F")
+            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber, _time
+            | join type=left serviceLineNumber 
+              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
+              | spath output="serviceLineNumber" path=data.serviceLineNumber 
+              | spath output="nickname" path=data.nickname
+              | fields serviceLineNumber nickname]
+            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division
+            | search $customer_filter$ $division_filter$
+            | timechart span=1d sum(priorityGB) as "Total Usage (GB)"
+          </query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.chart">column</option>
       </chart>
     </panel>
   </row>
