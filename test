@@ -1,362 +1,190 @@
-{
-    "visualizations": {
-        "viz_hx2cRgZ1": {
-            "type": "splunk.table",
-            "dataSources": {
-                "primary": "ds_nhgz2NrW"
-            },
-            "options": {
-                "count": 25
-            },
-            "eventHandlers": [
-                {
-                    "type": "drilldown.linkToDashboard",
-                    "options": {
-                        "app": "sat_access",
-                        "dashboard": "terminal_telemetry",
-                        "tokens": [
-                            {
-                                "token": "input_circuitid",
-                                "value": "row.Circuit ID.value"
-                            }
-                        ],
-                        "newTab": true
-                    }
-                }
-            ],
-            "title": "Circuit List",
-            "description": "All Starlink Circuits"
-        }
-    },
-    "dataSources": {
-        "ds_nhgz2NrW": {
-            "type": "ds.search",
-            "options": {
-                "query": "index=sat_leo_starlink_prod sourcetype=\"device_terminals\" \n      | spath path=data{}.userTerminalId output=userterminal\n      | spath path=data{}.nickname output=nickname\n      | spath path=data{}.kitSerialNumber output=kitserialnumber\n      | spath path=data{}.dishSerialNumber output=dishserialnumber\n      | spath path=data{}.serviceLineNumber output=servicelinenumber\n      | spath path=data{}.active output=terminal_active \n| join type=left userterminal \n    [ search index=sat_leo_starlink_prod sourcetype=\"device_telemetry\" \n| spath \"data{}\" \n| search \"data{}\"=u\n| rex field=_raw \"\\\"data\\\":\\[.+?,(?<datatime>-?\\d+(?:\\.+\\d*)?),\\\"ut(?<userterminal>.+?)\\\",(?<downlinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<uplinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<pingdroprateavg>-?\\d+(?:\\.+\\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\\d+(?:\\.+\\d*)?),(?<uptime>-?\\d+(?:\\.+\\d*)?),(?<signalquality>-?\\d+(?:\\.+\\d*)?),(?<h3cellid>-?\\d+(?:\\.+\\d*)?),(?<secondsuntilreboot>-?\\d+(?:\\.+\\d*)?),\\\"(?<runningsoftwareversion>.+?)\\\",\" \n| rex field=_raw \"\\[(?<activealerts>(?:\\d+,)*\\d*)\\]\"\n| where isnotnull(userterminal)\n| eval days=floor(uptime/86400)\n| eval hours=floor((uptime - days*86400)/3600)\n| eval minutes=floor((uptime - days*86400 - hours*3600)/60)\n| eval seconds=floor(uptime - days*86400 - hours*3600 - minutes*60)\n| eval milliseconds=round((uptime - floor(uptime))*1000) \n| eval uptime_formatted = days . \" days \" . hours . \":\" . minutes . \":\" . seconds . \".\" . milliseconds\n| eval signalquality=signalquality*100\n| eval days=floor(uptime/86400)\n| eval hours=floor((uptime - days*86400)/3600)\n| eval minutes=floor((uptime - days*86400 - hours*3600)/60)\n| eval seconds=floor(uptime - days*86400 - hours*3600 - minutes*60)\n| eval milliseconds=round((uptime - floor(uptime))*1000) \n| eval uptime_formatted = days . \" days \" . hours . \":\" . minutes . \":\" . seconds . \".\" . milliseconds\n\n| spath data{}{}\n| rename data{}{} as alert_codes\n| eval alert_codes=if(isnull(alert_codes) or alert_codes=\"\", \"none\", mvindex(alert_codes, 0)) \n| eval alert_description=case(alert_codes == 66, \"high_time_obstruction\", alert_codes == 82, \"software_update_reboot_pending\", alert_codes == 50, \"ethernet_slow_10mbps\", alert_codes == 51, \"ethernet_slow_100mbps\", alert_codes == 52, \"power_supply_thermal_throttling\", alert_codes == 53, \"actuator_motor_stuck\", alert_codes == 54, \"mast_not_vertical\", alert_codes == 55, \"disabled_no_active_service_line\", alert_codes == 56, \"disabled_too_far_from_service_address\", alert_codes == 57, \"disabled_no_service_in_ocean\", alert_codes == 58, \"disabled_invalid_country\", alert_codes == 83, \"disabled_blocked_country\", alert_codes == 84, \"disabled_data_usage_exceeded_quota\", alert_codes == 89, \"disabled_cell_is_disabled\", alert_codes == 59, \"disabled_moving_while_not_mobile\", alert_codes == 60, \"disabled_moving_too_fast\", alert_codes == 61, \"power_disconnect_detected\", alert_codes == 62, \"pop_change\", alert_codes == 63, \"unable_to_align\", alert_codes == 80, \"thermal_shutdown\", alert_codes == 81, \"thermal_throttling\")\n| eval datetime = datatime/1000000000\n| eval _time=datetime\n| eval status = if(_time >= relative_time(now(),\"-30m\"), if(isnull(alert_description),\"Healthy\",\"online/alert\"), \"offline\")\n| sort -datetime  \n| eval datetime=strftime(datetime,\"%Y-%m-%d %H:%M:%S\")\n]\n\n| where terminal_active=\"true\"\n| where servicelinenumber!=\"null\"\n| eval status=if(isnull(status),\"Telemetry Data does not exist\",status)\n| sort status\n| eval \"User Terminal\"=userterminal\n| stats latest(servicelinenumber) As \"Service Line\" ,latest(status) As Status,latest(datetime) As \"Date Time\" , latest(uptime_formatted) as Uptime by \"User Terminal\"\n| sort -Uptime\n\n| join type=left \n     [search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines  \"data.active\"=true \n| spath output=\"Service Line\" path=data.serviceLineNumber\n| spath output=\"CircuitID\" path=data.nickname\n| spath output=StartDate path=data.startDate\n| spath output=PublicIP path=data.publicIp\n| eval StartDate=strftime(strptime(StartDate,\"%F\"),\"%F\")\n| stats latest(CircuitID) as \"Circuit ID\" latest(StartDate) as \"Start Date\" latest(PublicIP) as \"Public IP\" by \"Service Line\"\n]\n| fields \"Circuit ID\" \"Service Line\",\"User Terminal\",\"Start Date\",\"Public IP\", Status, Uptime",
-                "queryParameters": {
-                    "earliest": "$tr_GhCDuEdW.earliest$",
-                    "latest": "$tr_GhCDuEdW.latest$"
-                }
-            },
-            "name": "starlinkTerminalsSummary"
-        }
-    },
-    "defaults": {
-        "dataSources": {
-            "ds.search": {
-                "options": {
-                    "queryParameters": {
-                        "latest": "$global_time.latest$",
-                        "earliest": "$global_time.earliest$"
-                    }
-                }
-            }
-        }
-    },
-    "inputs": {
-        "input_59UqOFFj": {
-            "options": {
-                "defaultValue": "-24h@h,now",
-                "token": "tr_GhCDuEdW"
-            },
-            "title": "Time Range Input Title",
-            "type": "input.timerange"
-        }
-    },
-    "layout": {
-        "type": "grid",
-        "options": {
-            "width": 1440,
-            "height": 960
-        },
-        "structure": [
-            {
-                "item": "viz_hx2cRgZ1",
-                "type": "block",
-                "position": {
-                    "x": 0,
-                    "y": 0,
-                    "w": 1440,
-                    "h": 897
-                }
-            }
-        ],
-        "globalInputs": [
-            "input_59UqOFFj"
-        ]
-    },
-    "description": "List of Starlink Terminals that have not reported Telemetry data in 30 minutes",
-    "title": "DS - Starlink Terminals Summary"
-}
-
-
-
-
-
-
-
-
-
-
-{
-    "dataSources": {
-        "ds_NAdjoC8U": {
-            "type": "ds.search",
-            "options": {
-                "query": "index=sat_leo_starlink_np sourcetype=\"device_terminals\" \n      | spath path=data{}.userTerminalId output=userterminal\n      | spath path=data{}.nickname output=nickname\n      | spath path=data{}.kitSerialNumber output=kitserialnumber\n      | spath path=data{}.dishSerialNumber output=dishserialnumber\n      | spath path=data{}.serviceLineNumber output=servicelinenumber\n      | spath path=data{}.active output=terminal_active\n| where servicelinenumber!=\"null\"\n| where terminal_active=\"true\"\n| dedup userterminal\n| stats count(userterminal), distinct_count(servicelinenumber)"
-            },
-            "name": "TotalTerminals"
-        },
-        "ds_oAdhP9b4": {
-            "type": "ds.search",
-            "options": {
-                "query": "index=sat_leo_starlink_prod sourcetype=\"device_telemetry\" \n| spath \"data{}\" \n| search \"data{}\"=u\n| rex field=_raw \"\\\"data\\\":\\[.+?,(?<datatime>-?\\d+(?:\\.+\\d*)?),\\\"ut(?<userterminal>.+?)\\\",(?<downlinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<uplinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<pingdroprateavg>-?\\d+(?:\\.+\\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\\d+(?:\\.+\\d*)?),(?<uptime>-?\\d+(?:\\.+\\d*)?),(?<signalquality>-?\\d+(?:\\.+\\d*)?),(?<h3cellid>-?\\d+(?:\\.+\\d*)?),(?<secondsuntilreboot>-?\\d+(?:\\.+\\d*)?),\\\"(?<runningsoftwareversion>.+?)\\\",\" \n| rex field=_raw \"\\[(?<activealerts>(?:\\d+,)*\\d*)\\]\"\n| where isnotnull(userterminal)\n| eval days=floor(uptime/86400)\n| eval hours=floor((uptime - days*86400)/3600)\n| eval minutes=floor((uptime - days*86400 - hours*3600)/60)\n| eval seconds=floor(uptime - days*86400 - hours*3600 - minutes*60)\n| eval milliseconds=round((uptime - floor(uptime))*1000) \n| eval uptime_formatted = days . \" days \" . hours . \":\" . minutes . \":\" . seconds . \".\" . milliseconds\n| eval signalquality=signalquality*100\n| spath data{}{}\n| rename data{}{} as alert_codes\n\n| eval alert_codes=if(isnull(alert_codes) or alert_codes=\"\", \"none\", mvindex(alert_codes, 0)) \n| eval alert_description=case(alert_codes == 66, \"high_time_obstruction\", alert_codes == 82, \"software_update_reboot_pending\", alert_codes == 50, \"ethernet_slow_10mbps\", alert_codes == 51, \"ethernet_slow_100mbps\", alert_codes == 52, \"power_supply_thermal_throttling\", alert_codes == 53, \"actuator_motor_stuck\", alert_codes == 54, \"mast_not_vertical\", alert_codes == 55, \"disabled_no_active_service_line\", alert_codes == 56, \"disabled_too_far_from_service_address\", alert_codes == 57, \"disabled_no_service_in_ocean\", alert_codes == 58, \"disabled_invalid_country\", alert_codes == 83, \"disabled_blocked_country\", alert_codes == 84, \"disabled_data_usage_exceeded_quota\", alert_codes == 89, \"disabled_cell_is_disabled\", alert_codes == 59, \"disabled_moving_while_not_mobile\", alert_codes == 60, \"disabled_moving_too_fast\", alert_codes == 61, \"power_disconnect_detected\", alert_codes == 62, \"pop_change\", alert_codes == 63, \"unable_to_align\", alert_codes == 80, \"thermal_shutdown\", alert_codes == 81, \"thermal_throttling\")\n| eval datetime = datatime/1000000000\n\n| eval status = if(_time >= relative_time(now(),\"-30m\"), if(isnull(alert_description),\"Healthy\",\"online/alert\"), \"offline\")\n| sort -_time \n| eval datetime=strftime(datetime,\"%Y-%m-%d %H:%M:%S\") \n\n| eval downlinkthroughput=round(downlinkthroughput,3).\" Mbps\",\n       uplinkthroughput=round(uplinkthroughput,3).\" Mbps\",\n       pingdroprateavg=round(pingdroprateavg,5).\" %\",\n       pinglatencymsavg=pinglatencymsavg.\" ms\",\n       obstructionpercenttime=round(obstructionpercenttime,5).\" %\",\n       signalquality=signalquality.\" %\"\n| stats latest(_time) as Time, latest(datetime) as DateTime, latest(status) as Status, latest(activealerts) as \"Active Alerts\",latest(alert_description) as \"Alert Description\", latest(alert_codes)  as \"Alert Codes\", latest(downlinkthroughput) as \"Downlink Throughput\",latest(uplinkthroughput) as \"Uplink Throughput\",latest(pingdroprateavg) as \"Average Ping Drop Rate\", latest(pinglatencymsavg) as \"Average Latency\", latest(obstructionpercenttime) as \"Obstruction Time %\", latest(uptime_formatted) as Uptime, latest(signalquality) as \"Signal Quality\", latest(secondsuntilreboot) as \"Seconds to Reboot\", latest(runningsoftwareversion) as \"Running Software\", latest(h3cellid) as h3cellid by userterminal\n| search \"Alert Codes\"=\"none\"\n| eval Time=strftime(Time,\"%Y-%m-%d %H:%M:%S\")\n\n| join userterminal\n\n    [ search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines  \"data.active\"=true \n| spath output=\"Service Line\" path=data.serviceLineNumber\n| spath output=\"CircuitID\" path=data.nickname\n| spath output=StartDate path=data.startDate\n| spath output=PublicIP path=data.publicIp\n| eval StartDate=strftime(strptime(StartDate,\"%F\"),\"%F\")\n| stats latest(CircuitID) as \"Circuit ID\" latest(StartDate) as \"Start Date\" latest(PublicIP) as \"Public IP\" by \"Service Line\"\n| join type=left\n    [ search index=sat_leo_starlink_prod sourcetype=\"device_terminals\"     \n      | spath path=data{}.userTerminalId output=userterminal\n      | spath path=data{}.nickname output=nickname\n      | spath path=data{}.kitSerialNumber output=\"Kit S/N\"\n      | spath path=data{}.dishSerialNumber output=\"Dish S/N\"\n      | spath path=data{}.serviceLineNumber output=\"Service Line\"\n      | spath path=data{}.active output=terminal_active\n      | search \"Service Line\"!=\"null\"\n      | transaction userterminal maxspan=10m maxpause=1m\n      | dedup userterminal]\n     ]\n| sort -downlinkthroughput,-uplinkthroughput\n| eval \"Terminal S/N\"=userterminal\n\n| table Time,\"Circuit ID\", \"Service Line\",\"Kit S/N\",\"Dish S/N\",Status,\"Terminal S/N\",\"Downlink Throughput\",\"Uplink Throughput\",\"Average Ping Drop Rate\",\"Average Latency\",\"Obstruction Time %\",Uptime,\"Signal Quality\",h3cellid,\"Seconds to Reboot\",\"Running Software\",\"Active Alerts\",\"Alert Description\""
-            },
-            "name": "TelemetryDataSearch"
-        },
-        "ds_sp9yekJg_ds_oAdhP9b4": {
-            "type": "ds.search",
-            "options": {
-                "query": "index=sat_leo_starlink_prod sourcetype=\"device_telemetry\" \n| spath \"data{}\" \n| search \"data{}\"=u\n| rex field=_raw \"\\\"data\\\":\\[.+?,(?<datatime>-?\\d+(?:\\.+\\d*)?),\\\"ut(?<userterminal>.+?)\\\",(?<downlinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<uplinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<pingdroprateavg>-?\\d+(?:\\.+\\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\\d+(?:\\.+\\d*)?),(?<uptime>-?\\d+(?:\\.+\\d*)?),(?<signalquality>-?\\d+(?:\\.+\\d*)?),(?<h3cellid>-?\\d+(?:\\.+\\d*)?),(?<secondsuntilreboot>-?\\d+(?:\\.+\\d*)?),\\\"(?<runningsoftwareversion>.+?)\\\",\" \n| rex field=_raw \"\\[(?<activealerts>(?:\\d+,)*\\d*)\\]\"\n| where isnotnull(userterminal)\n| eval days=floor(uptime/86400)\n| eval hours=floor((uptime - days*86400)/3600)\n| eval minutes=floor((uptime - days*86400 - hours*3600)/60)\n| eval seconds=floor(uptime - days*86400 - hours*3600 - minutes*60)\n| eval milliseconds=round((uptime - floor(uptime))*1000) \n| eval uptime_formatted = days . \" days \" . hours . \":\" . minutes . \":\" . seconds . \".\" . milliseconds\n| eval signalquality=signalquality*100\n| spath data{}{}\n| rename data{}{} as alert_codes\n\n| eval alert_codes=if(isnull(alert_codes) or alert_codes=\"\", \"none\", mvindex(alert_codes, 0)) \n| eval alert_description=case(alert_codes == 66, \"high_time_obstruction\", alert_codes == 82, \"software_update_reboot_pending\", alert_codes == 50, \"ethernet_slow_10mbps\", alert_codes == 51, \"ethernet_slow_100mbps\", alert_codes == 52, \"power_supply_thermal_throttling\", alert_codes == 53, \"actuator_motor_stuck\", alert_codes == 54, \"mast_not_vertical\", alert_codes == 55, \"disabled_no_active_service_line\", alert_codes == 56, \"disabled_too_far_from_service_address\", alert_codes == 57, \"disabled_no_service_in_ocean\", alert_codes == 58, \"disabled_invalid_country\", alert_codes == 83, \"disabled_blocked_country\", alert_codes == 84, \"disabled_data_usage_exceeded_quota\", alert_codes == 89, \"disabled_cell_is_disabled\", alert_codes == 59, \"disabled_moving_while_not_mobile\", alert_codes == 60, \"disabled_moving_too_fast\", alert_codes == 61, \"power_disconnect_detected\", alert_codes == 62, \"pop_change\", alert_codes == 63, \"unable_to_align\", alert_codes == 80, \"thermal_shutdown\", alert_codes == 81, \"thermal_throttling\")\n| eval datetime = datatime/1000000000\n\n| eval status = if(_time >= relative_time(now(),\"-30m\"), if(isnull(alert_description),\"Healthy\",\"online/alert\"), \"offline\")\n| sort -_time \n| eval datetime=strftime(datetime,\"%Y-%m-%d %H:%M:%S\") \n\n| eval downlinkthroughput=round(downlinkthroughput,3).\" Mbps\",\n       uplinkthroughput=round(uplinkthroughput,3).\" Mbps\",\n       pingdroprateavg=round(pingdroprateavg,5).\" %\",\n       pinglatencymsavg=pinglatencymsavg.\" ms\",\n       obstructionpercenttime=round(obstructionpercenttime,5).\" %\",\n       signalquality=signalquality.\" %\"\n| stats latest(_time) as Time, latest(datetime) as DateTime, latest(status) as Status, latest(activealerts) as \"Active Alerts\",latest(alert_description) as \"Alert Description\", latest(alert_codes)  as \"Alert Codes\", latest(downlinkthroughput) as \"Downlink Throughput\",latest(uplinkthroughput) as \"Uplink Throughput\",latest(pingdroprateavg) as \"Average Ping Drop Rate\", latest(pinglatencymsavg) as \"Average Latency\", latest(obstructionpercenttime) as \"Obstruction Time %\", latest(uptime_formatted) as Uptime, latest(signalquality) as \"Signal Quality\", latest(secondsuntilreboot) as \"Seconds to Reboot\", latest(runningsoftwareversion) as \"Running Software\", latest(h3cellid) as h3cellid by userterminal\n| search \"Alert Codes\"!=\"none\"\n| eval Time=strftime(Time,\"%Y-%m-%d %H:%M:%S\")\n\n| join userterminal\n\n    [ search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines  \"data.active\"=true \n| spath output=\"Service Line\" path=data.serviceLineNumber\n| spath output=\"CircuitID\" path=data.nickname\n| spath output=StartDate path=data.startDate\n| spath output=PublicIP path=data.publicIp\n| eval StartDate=strftime(strptime(StartDate,\"%F\"),\"%F\")\n| stats latest(CircuitID) as \"Circuit ID\" latest(StartDate) as \"Start Date\" latest(PublicIP) as \"Public IP\" by \"Service Line\"\n| join type=left\n    [ search index=sat_leo_starlink_prod sourcetype=\"device_terminals\"     \n      | spath path=data{}.userTerminalId output=userterminal\n      | spath path=data{}.nickname output=nickname\n      | spath path=data{}.kitSerialNumber output=\"Kit S/N\"\n      | spath path=data{}.dishSerialNumber output=\"Dish S/N\"\n      | spath path=data{}.serviceLineNumber output=\"Service Line\"\n      | spath path=data{}.active output=terminal_active\n      | search \"Service Line\"!=\"null\"\n      | transaction userterminal maxspan=10m maxpause=1m\n      | dedup userterminal]\n     ]\n| sort -downlinkthroughput,-uplinkthroughput\n| eval \"Terminal S/N\"=userterminal\n\n| table Time,\"Circuit ID\", \"Service Line\",\"Kit S/N\",\"Dish S/N\",Status,\"Terminal S/N\",\"Downlink Throughput\",\"Uplink Throughput\",\"Average Ping Drop Rate\",\"Average Latency\",\"Obstruction Time %\",Uptime,\"Signal Quality\",h3cellid,\"Seconds to Reboot\",\"Running Software\",\"Active Alerts\",\"Alert Description\"",
-                "queryParameters": {
-                    "earliest": "$global_time.earliest$",
-                    "latest": "$global_time.latest$"
-                },
-                "enableSmartSources": true
-            },
-            "name": "TelemetryDataAlertsSearch"
-        },
-        "ds_Cq4WyvEO": {
-            "type": "ds.search",
-            "options": {
-                "query": "index=sat_leo_starlink_prod sourcetype=\"device_telemetry\"\r\n| spath \"data{}\"\r\n| search \"data{}\"=u\r\n| rex field=_raw \"\\\"data\\\":\\[.+?,(?<datatime>-?\\d+(?:\\.+\\d*)?),\\\"ut(?<userterminal>.+?)\\\",(?<downlinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<uplinkthroughput>-?\\d+(?:\\.+\\d*)?),(?<pingdroprateavg>-?\\d+(?:\\.+\\d*)?),(?<pinglatencymsavg>[0-9]+),(?<obstructionpercenttime>-?\\d+(?:\\.+\\d*)?),(?<uptime>-?\\d+(?:\\.+\\d*)?),(?<signalquality>-?\\d+(?:\\.+\\d*)?),(?<h3cellid>-?\\d+(?:\\.+\\d*)?),(?<secondsuntilreboot>-?\\d+(?:\\.+\\d*)?),\\\"(?<runningsoftwareversion>.+?)\\\",\"\r\n| rex field=_raw \"\\[(?<activealerts>(?:\\d+,)*\\d*)\\]\"\r\n| where isnotnull(userterminal)\r\n| eval days=floor(uptime/86400)\r\n| eval hours=floor((uptime - days*86400)/3600)\r\n| eval minutes=floor((uptime - days*86400 - hours*3600)/60)\r\n| eval seconds=floor(uptime - days*86400 - hours*3600 - minutes*60)\r\n| eval milliseconds=round((uptime - floor(uptime))*1000)\r\n| eval uptime_formatted = days . \" days \" . hours . \":\" . minutes . \":\" . seconds . \".\" . milliseconds\r\n| eval signalquality=signalquality*100\r\n| spath data{}{}\r\n| rename data{}{} as alert_codes\r\n| eval alert_codes=if(isnull(alert_codes) or alert_codes=\"\", \"none\", mvindex(alert_codes, 0))\r\n| eval alert_description=case(alert_codes == 66, \"high_time_obstruction\", alert_codes == 82, \"software_update_reboot_pending\", alert_codes == 50, \"ethernet_slow_10mbps\", alert_codes == 51, \"ethernet_slow_100mbps\", alert_codes == 52, \"power_supply_thermal_throttling\", alert_codes == 53, \"actuator_motor_stuck\", alert_codes == 54, \"mast_not_vertical\", alert_codes == 55, \"disabled_no_active_service_line\", alert_codes == 56, \"disabled_too_far_from_service_address\", alert_codes == 57, \"disabled_no_service_in_ocean\", alert_codes == 58, \"disabled_invalid_country\", alert_codes == 83, \"disabled_blocked_country\", alert_codes == 84, \"disabled_data_usage_exceeded_quota\", alert_codes == 89, \"disabled_cell_is_disabled\", alert_codes == 59, \"disabled_moving_while_not_mobile\", alert_codes == 60, \"disabled_moving_too_fast\", alert_codes == 61, \"power_disconnect_detected\", alert_codes == 62, \"pop_change\", alert_codes == 63, \"unable_to_align\", alert_codes == 80, \"thermal_shutdown\", alert_codes == 81, \"thermal_throttling\")\r\n| eval datetime = datatime/1000000000\r\n| eval status = if(_time >= relative_time(now(),\"-30m\"), if(isnull(alert_description),\"Healthy\",\"online/alert\"), \"offline\")\r\n| sort -_time\r\n| eval datetime=strftime(datetime,\"%Y-%m-%d %H:%M:%S\")\r\n| eval downlinkthroughput=round(downlinkthroughput,3).\" Mbps\",\r\n       uplinkthroughput=round(uplinkthroughput,3).\" Mbps\",\r\n       pingdroprateavg=round(pingdroprateavg,5).\" %\",\r\n       pinglatencymsavg=pinglatencymsavg.\" ms\",\r\n       obstructionpercenttime=round(obstructionpercenttime,5).\" %\",\r\n       signalquality=signalquality.\" %\"\r\n| stats latest(_time) as Time, latest(datetime) as DateTime, latest(status) as Status, latest(activealerts) as \"Active Alerts\",latest(alert_description) as \"Alert Description\", latest(alert_codes)  as \"Alert Codes\", latest(downlinkthroughput) as \"Downlink Throughput\",latest(uplinkthroughput) as \"Uplink Throughput\",latest(pingdroprateavg) as \"Average Ping Drop Rate\", latest(pinglatencymsavg) as \"Average Latency\", latest(obstructionpercenttime) as \"Obstruction Time %\", latest(uptime_formatted) as Uptime, latest(signalquality) as \"Signal Quality\", latest(secondsuntilreboot) as \"Seconds to Reboot\", latest(runningsoftwareversion) as \"Running Software\", latest(h3cellid) as h3cellid by userterminal\r\n```| search \"Alert Codes\"=\"none\"```\r\n| eval Time=strftime(Time,\"%Y-%m-%d %H:%M:%S\")\r\n| join userterminal\r\n    [ search index=\"sat_leo_starlink_prod\" sourcetype=device_servicelines  \"data.active\"=true\r\n| spath output=\"Service Line\" path=data.serviceLineNumber\r\n| spath output=\"CircuitID\" path=data.nickname\r\n| spath output=StartDate path=data.startDate\r\n| spath output=PublicIP path=data.publicIp\r\n| eval StartDate=strftime(strptime(StartDate,\"%F\"),\"%F\")\r\n| stats latest(CircuitID) as \"Circuit ID\" latest(StartDate) as \"Start Date\" latest(PublicIP) as \"Public IP\" by \"Service Line\"\r\n| join type=left\r\n    [ search index=sat_leo_starlink_prod sourcetype=\"device_terminals\"\r\n      | spath path=data{}.userTerminalId output=userterminal\r\n      | spath path=data{}.nickname output=nickname\r\n      | spath path=data{}.kitSerialNumber output=\"Kit S/N\"\r\n      | spath path=data{}.dishSerialNumber output=\"Dish S/N\"\r\n      | spath path=data{}.serviceLineNumber output=\"Service Line\"\r\n      | spath path=data{}.active output=terminal_active\r\n      | search \"Service Line\"!=\"null\"\r\n      | transaction userterminal maxspan=10m maxpause=1m\r\n      | dedup userterminal]\r\n     ]\r\n| sort -downlinkthroughput,-uplinkthroughput\r\n| eval \"Terminal S/N\"=userterminal\r\n| table Time,\"Circuit ID\", \"Service Line\",\"Kit S/N\",\"Dish S/N\",Status,\"Terminal S/N\",\"Downlink Throughput\",\"Uplink Throughput\",\"Average Ping Drop Rate\",\"Average Latency\",\"Obstruction Time %\",Uptime,\"Signal Quality\",h3cellid,\"Seconds to Reboot\",\"Running Software\",\"Active Alerts\",\"Alert Description\"\r\n| stats count(\"Service Line\")"
-            },
-            "name": "Active_Count"
-        }
-    },
-    "visualizations": {
-        "viz_zGOibI9x": {
-            "type": "splunk.table",
-            "dataSources": {
-                "primary": "ds_oAdhP9b4"
-            },
-            "eventHandlers": [
-                {
-                    "type": "drilldown.linkToDashboard",
-                    "options": {
-                        "app": "sat_access",
-                        "dashboard": "terminal_telemetry",
-                        "tokens": [
-                            {
-                                "token": "input_circuitid",
-                                "value": "row.Circuit ID.value"
-                            }
-                        ],
-                        "newTab": true
-                    }
-                }
-            ],
-            "title": "Terminals without Errors",
-            "options": {
-                "count": 20
-            }
-        },
-        "viz_JNyPKNWJ": {
-            "type": "splunk.table",
-            "dataSources": {
-                "primary": "ds_sp9yekJg_ds_oAdhP9b4"
-            },
-            "hideWhenNoData": true,
-            "options": {},
-            "eventHandlers": [
-                {
-                    "type": "drilldown.linkToDashboard",
-                    "options": {
-                        "app": "sat_access",
-                        "dashboard": "terminal_telemetry",
-                        "tokens": [
-                            {
-                                "token": "input_circuitid",
-                                "value": "row.Circuit ID.value"
-                            }
-                        ],
-                        "newTab": true
-                    }
-                }
-            ],
-            "title": "Online Terminals with Alerts",
-            "description": "Terminals with telemetry data newer than 15 minutes and showing error codes",
-            "context": {},
-            "showProgressBar": false,
-            "showLastUpdated": false
-        },
-        "viz_4mdcQYQA": {
-            "type": "splunk.markdown",
-            "options": {
-                "markdown": ""
-            }
-        },
-        "viz_UPSsN3l0": {
-            "type": "splunk.singlevalue",
-            "dataSources": {
-                "primary": "ds_NAdjoC8U"
-            },
-            "title": "Total Active Service Lines",
-            "options": {
-                "majorValue": "> sparklineValues | lastPoint()",
-                "trendValue": "> sparklineValues | delta(-2)",
-                "sparklineValues": "> primary | seriesByName('distinct_count(servicelinenumber)')"
-            },
-            "eventHandlers": [
-                {
-                    "type": "drilldown.linkToDashboard",
-                    "options": {
-                        "app": "sat_access",
-                        "dashboard": "servicelinelist",
-                        "tokens": [],
-                        "newTab": true
-                    }
-                }
-            ]
-        },
-        "viz_EYq2TjaS": {
-            "type": "splunk.singlevalue",
-            "dataSources": {
-                "primary": "ds_NAdjoC8U"
-            },
-            "title": "Total Configured Terminals",
-            "options": {
-                "majorValue": "> sparklineValues | lastPoint()",
-                "trendValue": "> sparklineValues | delta(-2)",
-                "sparklineValues": "> primary | seriesByName('count(userterminal)')"
-            }
-        },
-        "viz_3ngrpMve": {
-            "type": "splunk.rectangle",
-            "options": {
-                "fillColor": "transparent",
-                "strokeColor": "transparent"
-            }
-        },
-        "viz_L4NAlK1l": {
-            "type": "splunk.singlevalue",
-            "dataSources": {
-                "primary": "ds_Cq4WyvEO"
-            },
-            "title": "Total Online Service Lines",
-            "options": {
-                "majorValue": "> sparklineValues | lastPoint()",
-                "trendValue": "> sparklineValues | delta(-2)",
-                "sparklineValues": "> primary | seriesByName('count(Service Line)')"
-            },
-            "description": ""
-        }
-    },
-    "inputs": {
-        "input_global_trp": {
-            "type": "input.timerange",
-            "options": {
-                "token": "global_time",
-                "defaultValue": "-24h@h,now"
-            },
-            "title": "Global Time Range"
-        }
-    },
-    "layout": {
-        "type": "grid",
-        "options": {
-            "width": 1440,
-            "height": 960
-        },
-        "structure": [
-            {
-                "item": "viz_4mdcQYQA",
-                "type": "block",
-                "position": {
-                    "x": 0,
-                    "y": 1162,
-                    "w": 1440,
-                    "h": 200
-                }
-            },
-            {
-                "item": "viz_UPSsN3l0",
-                "type": "block",
-                "position": {
-                    "x": 0,
-                    "y": 0,
-                    "w": 366,
-                    "h": 66
-                }
-            },
-            {
-                "item": "viz_JNyPKNWJ",
-                "type": "block",
-                "position": {
-                    "x": 0,
-                    "y": 66,
-                    "w": 1440,
-                    "h": 469
-                }
-            },
-            {
-                "item": "viz_zGOibI9x",
-                "type": "block",
-                "position": {
-                    "x": 0,
-                    "y": 535,
-                    "w": 1440,
-                    "h": 627
-                }
-            },
-            {
-                "item": "viz_EYq2TjaS",
-                "type": "block",
-                "position": {
-                    "x": 366,
-                    "y": 0,
-                    "w": 361,
-                    "h": 66
-                }
-            },
-            {
-                "item": "viz_L4NAlK1l",
-                "type": "block",
-                "position": {
-                    "x": 727,
-                    "y": 0,
-                    "w": 381,
-                    "h": 66
-                }
-            },
-            {
-                "item": "viz_3ngrpMve",
-                "type": "block",
-                "position": {
-                    "x": 1108,
-                    "y": 0,
-                    "w": 332,
-                    "h": 66
-                }
-            }
-        ],
-        "globalInputs": [
-            "input_global_trp"
-        ]
-    },
-    "title": "DS - Starlink Online Terminals",
-    "description": "List of terminals with telemetry data newer than the last 30 minutes",
-    "defaults": {
-        "dataSources": {
-            "ds.search": {
-                "options": {
-                    "queryParameters": {
-                        "latest": "$global_time.latest$",
-                        "earliest": "$global_time.earliest$",
-                        "refresh": "120s"
-                    }
-                }
-            }
-        }
-    }
-}
+<form version="1.1" theme="light">
+  <label>YL - L2 Customer Hub Dashboard</label>
+  <init>
+    <condition match="isnotnull($form.set_customer$)">
+      <set token="form.customer_choice">$form.set_customer$</set>
+    </condition>
+  </init>
+  <fieldset>
+    <input type="dropdown" token="customer_choice" searchWhenChanged="true">
+      <label>Select Customer</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>customer_name</fieldForLabel>
+      <fieldForValue>customer_name</fieldForValue>
+      <search>
+        <query>| inputlookup satellite_circuit_lookup | dedup customer_name | table customer_name</query>
+        <earliest>@y</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <change>
+        <eval token="customer_filter">if($value$ == "*", "customer_name=*", "customer_name=\"" . $value$ . "\"")</eval>
+        <set token="form.division_choice">*</set>
+      </change>
+    </input>
+    <input type="dropdown" token="division_choice" searchWhenChanged="true">
+      <label>Select Division</label>
+      <choice value="*">All</choice>
+      <fieldForLabel>division</fieldForLabel>
+      <fieldForValue>division</fieldForValue>
+      <search>
+        <query>| inputlookup satellite_circuit_lookup | search $customer_filter$ | dedup division | table division</query>
+        <earliest>@y</earliest>
+        <latest>now</latest>
+      </search>
+      <default>*</default>
+      <change>
+        <eval token="division_filter">if($value$ == "*", "division=*", "division=\"" . $value$ . "\"")</eval>
+      </change>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Customer Usage by Day</title>
+        <search>
+          <query>
+            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
+            | spath output=UsageDate path=billingCycles.dailyDataUsage.date
+            | eval _time=strptime(UsageDate, "%F")
+            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber, _time
+            | join type=left serviceLineNumber 
+              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
+              | spath output="serviceLineNumber" path=data.serviceLineNumber 
+              | spath output="nickname" path=data.nickname
+              | fields serviceLineNumber nickname]
+            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division
+            | search $customer_filter$ $division_filter$
+            | timechart span=1d sum(priorityGB) as "Total Usage (GB)"
+          </query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Usage by Division</title>
+      <chart>
+        <title>More Detailed View</title>
+        <search>
+          <query>
+            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
+            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber
+            | join type=left serviceLineNumber 
+              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
+              | spath output="serviceLineNumber" path=data.serviceLineNumber 
+              | spath output="nickname" path=data.nickname
+              | fields serviceLineNumber nickname]
+            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, division
+            | search $customer_filter$
+            | stats sum(priorityGB) as "Total Usage (GB)" by division
+            | rename division as "Division"
+          </query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.chart">column</option>
+        <drilldown>
+          <link target="_blank">/app/sat_access/yl_-_l3_division_usage_deep-dive?form.customer_choice=$customer_choice|u$&amp;form.division_choice=$row.Division|u$&amp;form.field1.earliest=@y&amp;form.field1.latest=now</link>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Usage Prediction</title>
+        <search>
+          <query>
+            index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
+            | spath output=UsageDate path=billingCycles.dailyDataUsage.date
+            | eval _time=strptime(UsageDate, "%F")
+            | stats max(billingCycles.dailyDataUsage.priorityGB) as priorityGB by serviceLineNumber, _time
+            | join type=left serviceLineNumber 
+              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true 
+              | spath output="serviceLineNumber" path=data.serviceLineNumber 
+              | spath output="nickname" path=data.nickname
+              | fields serviceLineNumber nickname]
+            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name
+            | search $customer_filter$
+            | timechart span=1d sum(priorityGB) as "Actual Usage"
+            | predict "Actual Usage" as prediction algorithm=LLP5 holdback=16 future_timespan=60 period=7 
+            | eval prediction=if(prediction &lt; 0, 0, prediction)
+            | rename prediction as "Predicted Usage"
+            | eval "Actual Usage" = round('Actual Usage', 2), "Predicted Usage" = round('Predicted Usage', 2)
+            | timechart span=1d first("Actual Usage") as "Actual Usage" first("Predicted Usage") as "Predicted Usage"
+          </query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Active Terminal Count</title>
+        <search>
+          <query>
+            index=sat_leo_starlink_prod sourcetype="device_terminals"
+            | spath path=data{}.userTerminalId output=userterminal
+            | spath path=data{}.serviceLineNumber output=servicelinenumber
+            | spath path=data{}.active output=terminal_active
+            | where servicelinenumber!="null" AND terminal_active="true"
+            | dedup userterminal
+            | rename servicelinenumber as serviceLineNumber
+            | join serviceLineNumber type=left
+              [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true
+              | spath output="serviceLineNumber" path=data.serviceLineNumber
+              | spath output="nickname" path=data.nickname
+              | fields serviceLineNumber nickname]
+            | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name
+            | search $customer_filter$
+            | stats count
+          </query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="colorMode">block</option>
+        <option name="useThousandSeparators">true</option>
+      </single>
+    </panel>
+    <panel>
+      <chart>
+        <title>Top 10 Circuits by Usage</title>
+        <search>
+          <query>
+        index=sat_leo_starlink_prod "billingCycles.dailyDataUsage.date"="*"
+        | spath output=totalPriorityGBytes path=billingCycles.totalPriorityGB
+        | stats max(totalPriorityGBytes) as priorityGB by serviceLineNumber
+        | join type=left serviceLineNumber
+          [| search index="sat_leo_starlink_prod" sourcetype=device_servicelines "data.active"=true
+          | spath output="serviceLineNumber" path=data.serviceLineNumber
+          | spath output="nickname" path=data.nickname
+          | fields serviceLineNumber nickname]
+        | lookup satellite_circuit_lookup local=true nickname OUTPUT customer_name, circuit_alias
+        | search $customer_filter$
+        | where isnotnull(nickname) AND isnotnull(circuit_alias)
+        | sort 10 - priorityGB
+        | rename circuit_alias as "Circuit Alias", priorityGB as "Usage (GB)", nickname as " "
+        | table "Circuit Alias", "Usage (GB)", " "
+      </query>
+          <earliest>@y</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="refresh.display">progressbar</option>
+        <drilldown>
+          <link target="_blank">/app/sat_access/yl_-_l4_the_circuit_usage_forensics_view?form.customer_choice=$customer_choice|u$&amp;form.division_choice=*&amp;form.circuit_choice=$row. |u$&amp;form.field1.earliest=@y&amp;form.field1.latest=now</link>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+</form>
