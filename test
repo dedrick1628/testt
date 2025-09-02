@@ -1,34 +1,29 @@
 | inputlookup starlink_annual_pools_lookup 
-| eval Jan2025AnnualPool = if(pool_name="Jan2025AnnualPool", pool_size, null()) 
-| eval Aug2025AnnualPool = if(pool_name="Aug2025AnnualPool", pool_size, null()) 
-| stats max(Jan2025AnnualPool) as Jan2025AnnualPool, max(Aug2025AnnualPool) as Aug2025AnnualPool 
+| fields pool_name pool_size start_date 
+| eval start_ts=strptime(start_date,"%m/%d/%Y") 
+| sort 0 start_ts 
+| stats values(pool_size) as pool_size values(start_ts) as start_ts by pool_name
 | appendcols 
     [| search index=sat_leo_starlink_np "billingCycles.dailyDataUsage.date"="*" earliest=@year 
     | spath output=UsageDate path=billingCycles.dailyDataUsage.date 
     | spath output=EndDate path=billingCycles.endDate 
-    | where UsageDate >= "2025-01-01" 
-    | stats max(billingCycles.totalPriorityGB) as MaxUsage by serviceLineNumber, EndDate 
-    | stats sum(MaxUsage) as TotalPriorityGBytes] 
-| eval Jan2025AnnualPool = 1500000,
-    Aug2025AnnualPool = 3000000,
-    PoolRemaining = Jan2025AnnualPool - TotalPriorityGBytes,
-    JanPoolRemaining = if(PoolRemaining < 0, 0, PoolRemaining),
-    AugPoolRemaining = if(PoolRemaining > 0, Aug2025AnnualPool, Aug2025AnnualPool + PoolRemaining),
-    JanPoolUsed = Jan2025AnnualPool - JanPoolRemaining,
-    AugPoolUsed = Aug2025AnnualPool - AugPoolRemaining,
-    JanPoolUsedPercent = round((JanPoolUsed / Jan2025AnnualPool) * 100, 2),
-    AugPoolUsedPercent = round((AugPoolUsed / Aug2025AnnualPool) * 100, 2) 
-| eval jan_data = "January Pool," + Jan2025AnnualPool + "," + JanPoolUsed + "," + JanPoolRemaining + "," + JanPoolUsedPercent,
-    aug_data = "August Pool," + Aug2025AnnualPool + "," + AugPoolUsed + "," + AugPoolRemaining + "," + AugPoolUsedPercent 
-| eval combined_data = mvappend(jan_data, aug_data) 
-| mvexpand combined_data 
-| rex field=combined_data "^(?<Period>[^,]+),(?<PoolSize>[^,]+),(?<Used>[^,]+),(?<Remaining>[^,]+),(?<PercentUsed>[^,]+)$" 
-| eval "Pool Size (GB)" = tostring(PoolSize, "commas"),
-    "Used (GB)" = tostring(round(Used), "commas"),
-    "Remaining (GB)" = tostring(round(Remaining), "commas"),
-    "Percent Used" = PercentUsed + "%" 
-| fields "Period", "Pool Size (GB)", "Used (GB)", "Remaining (GB)", "Percent Used" 
-| fields - _mkv_child
-
-
-We have two possible approaches for calculating the Starlink pool usage: Cumulative Allocation Total usage is treated as a single value and allocated across the pools sequentially (Jan → Apr → Aug). Each pool shows how much of the total has been consumed until it is either exhausted or partially filled. Useful if we want to see how overall consumption “flows through” the pools. Example: If total usage = 2.2M GB Jan Pool (1.5M) → fully used = 1.5M Apr Pool (1.0M) → partially used = 0.7M Aug Pool (3.0M) → not touched = 0 Interval-Based Allocation Each pool has its own reporting window, from its start date up to the next pool’s start date (e.g., Jan–Apr, Apr–Aug, Aug–Now). Usage is summed only within that window. This makes it easier to compare usage quarter-by-quarter (or month-by-month in the future). Example: If usage in each period was: Jan–Mar = 1.0M Apr–Jul = 0.7M Aug–Now = 0.5M Then: Jan Pool shows 1.0M used Apr Pool shows 0.7M used Aug Pool shows 0.5M used Both are valid, but they answer slightly different questions: Option 1 shows lifetime cumulative consumption against available pools. Option 2 shows time-bounded usage per pool interval (better for quarterly/monthly analysis). Could you let me know which version aligns better with how you’d like to review the data?
+    | where UsageDate >= strftime(relative_time(now(),"@y"), "%Y-%m-%d") 
+    | stats max(billingCycles.totalPriorityGB) as MaxUsage by serviceLineNumber EndDate 
+    | stats sum(MaxUsage) as TotalPriorityGBytes
+        ] 
+| eval TotalPriorityGBytes=coalesce(TotalPriorityGBytes,0)
+| streamstats sum(pool_size) as cum_capacity 
+| eval prev_capacity=cum_capacity - pool_size 
+| eval Used=case(
+    TotalPriorityGBytes<=prev_capacity, 0,
+    TotalPriorityGBytes>cum_capacity, pool_size,
+    true(), TotalPriorityGBytes - prev_capacity
+    ) 
+| eval Remaining=pool_size - Used 
+| eval PercentUsed=round(100*Used/pool_size,2)
+| eval "Pool Size (GB)" = tostring(pool_size,"commas"),
+    "Used (GB)" = tostring(round(Used),"commas"),
+    "Remaining (GB)" = tostring(round(Remaining),"commas"),
+    "Percent Used" = PercentUsed . "%" 
+| rename pool_name as Period 
+| fields Period "Pool Size (GB)" "Used (GB)" "Remaining (GB)" "Percent Used"
