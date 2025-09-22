@@ -1,6 +1,7 @@
 ...
 I looked into the Workflow API files for dev, QA, and prod. Here’s the summary:
 Current state: 
+Current state: 
 Our current setup uses three separate main files (main-prod.py, main-qa.py, main.py) for different environments. This leads to significant code redundancy. The core logic for tasks and workflows - including models, database queries, and API endpoints - is largely duplicated across these files. The main differences are confined to the environment-specific configurations like the JWKS URLs and database connection strings.
 
 Feasibility: 
@@ -9,4 +10,4 @@ we can create a single, unified main.py file. This new file will manage environm
 Benefits: 
 Reduced Code Duplication: We eliminate redundant code, making the project easier to maintain.
 Simplified Management: We can manage all three environments from a single codebase.
-Streamlined Deployment: We only need to de
+Streamlined Deployment: We only need to deploy one version of the application code, configured for its target environment.
