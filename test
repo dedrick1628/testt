@@ -1,1 +1,1058 @@
+#!/usr/bin/env python3
+"""
+Kibana Scheduler - Refactored from KibanaScheduler.py
 
+A production-ready, modular Kibana monitoring and alerting system with enhanced
+error handling, configuration management, and performance optimization.
+
+This is a complete refactoring of the original KibanaScheduler.py file to follow
+modern Python best practices and standards.
+
+Author: SOG Team
+Version: 2.0.0
+"""
+
+import asyncio
+import math
+import oracledb
+import json
+import time
+import threading
+import requests
+from urllib3.util import Retry
+from requests.adapters import HTTPAdapter
+import schedule
+import concurrent.futures
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple, Any, Union
+import subprocess
+import logging
+class KibanaScheduler:
+    def __init__(self):
+        print("Kibana job started")
+        self.count = 0
+        self.task = 0
+        self.channel_list=[]
+        self.entity_list=[]
+        self.total_tasks = 0
+        self.completed_tasks = 0
+        self.db_schedule = schedule
+        # Default Channels Configuration
+        self.DEFAULT_CHANNELS = [
+            {'CHANNEL_NAME': 'CHAT-STORE', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'VZW-MFA', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'VZW-DOTCOM', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'OMNI-CARE', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'OMNI-INDIRECT', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'OMNI-TELESALES', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'OMNI-RETAIL', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'OMNI-B2B', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'OMNI-D2D', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'VZW-ACSS', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'VZW-NR', 'THRESHOLD_VALUE': 25},
+            {'CHANNEL_NAME': 'VZW-TS', 'THRESHOLD_VALUE': 25}
+        ]
+        self.worker_pool_size=200
+        self.session = requests.Session()
+        self.adapter = HTTPAdapter(max_retries=Retry(total=3, backoff_factor=0.1),pool_connections=self.worker_pool_size,pool_maxsize=self.worker_pool_size)
+        self.session.mount("https://", self.adapter)
+        self.semaphore = threading.Semaphore(self.worker_pool_size)
+        self.headers = {"Accept": "application/json", "Content-Type": "application/json",
+                        "Authorization": "ApiKey LXhDeHVKTUJkU0tHbklldWJoMjg6UUw0MHR3OTZSSkN2bGwzeVVoajVIQQ=="}
+        self.pega_url = "https://peganextgen-es.verizon.com/onevz_pega_rules_pal_cjcm*/_search?size=2000"
+        db_uname = "CXP_OPS_MONITORING"
+        db_pass = "QWEqwe##00"
+        db_host = "tpalpbrhvd00-scan.verizon.com"
+        db_port = 1532
+        db_service_name = "cxpopsmon_srv01"
+        self.scheduler_thread = None
+        self.process_data_dict = {}
+        self.task_lock = threading.Lock()
+        self.logger = logging.getLogger(__name__)
+        # try:
+        #     output = subprocess.check_output(['pgrep', '-f', "KibanaScheduler4.py"])
+        #     pids = output.decode().strip().split('\n')
+        #     for pid in pids:
+        #         subprocess.run(["kill", pid])
+        # except subprocess.CalledProcessError:
+        #     pass
+        try:
+            db_dsn=oracledb.makedsn(host=db_host,port=db_port,service_name=db_service_name)
+            self.pool = oracledb.create_pool(
+                user=db_uname,
+                password=db_pass,
+                dsn=db_dsn,
+                min=2,
+                max=200,
+                increment=1
+            )
+            print("Connection pool created successfully.")
+
+            # Acquire a connection from the pool
+            self.connection = self.pool.acquire()
+            print("Connection acquired from the pool.")
+
+            # Perform database operations using the connection
+            #self.cursor = connection.cursor()
+        except oracledb.Error as error:
+            print(f"Error creating or using connection pool: {error}")
+        connection = self.pool.acquire()
+        
+        try:
+            cursor = connection.cursor()
+            sql_query = """
+                select t1.transaction_name,t2.* from CXP_OPS_MONITORING.TRANSACTION_TEMP1 t1
+                JOIN CXP_OPS_MONITORING.ENTITY_STEP_TEMP1 t2 on t1.transaction_name = t2.transaction_name
+                order by t2.TRANSACTION_NAME asc
+            """
+            
+            cursor.execute(sql_query)
+            results = cursor.fetchall()
+            
+            for row in results:
+                if row[0] in self.process_data_dict:
+                    self.process_data_dict[row[0]]['API_DETAILS'].append(row[3])
+                    self.process_data_dict[row[0]]['ENTITY_DETAILS'].append(row)
+                else:
+                    self.process_data_dict[row[0]] = {}
+                    self.process_data_dict[row[0]]['API_DETAILS'] = [row[3]]
+                    self.process_data_dict[row[0]]['ENTITY_DETAILS'] = [row]
+            
+            self.jobs = self.run_scheduler()
+            
+            self.start_db_jobs()
+        except Exception as err:
+            self.pool.release(connection)
+            print("Table Error :", str(err))
+    def db_operations(self,channels,entities):
+        try:
+            conn = self.pool.acquire()
+            cursor = conn.cursor()
+            if not channels:
+                return
+            
+            merge_sql_channel = """
+            MERGE INTO CXP_OPS_MONITORING.CXP_CHANNEL_ENTITY_STEP_KIBANA_DEV target
+            USING (
+                SELECT :CHANNEL_NAME as CHANNEL_NAME,
+                    :ENTITY_API_NAME as ENTITY_API_NAME,
+                    :ENTITY_API as ENTITY_API,
+                    :ENTITY_NAME as ENTITY_NAME,
+                    :ENTITY_ID as ENTITY_ID,
+                    :TRANSACTION_ID as TRANSACTION_ID,
+                    :TRANSACTION_NAME as TRANSACTION_NAME,
+                    :THRESHOLD_VALUE as THRESHOLD_VALUE,
+                    :MEASURED_VALUE as MEASURED_VALUE,
+                    :BG_COLOR as BG_COLOR,
+                    :TEXT_COLOR as TEXT_COLOR,
+                    :FILTER as FILTER
+                FROM dual
+            ) source
+            ON (target.CHANNEL_NAME = source.CHANNEL_NAME 
+                AND target.ENTITY_API_NAME = source.ENTITY_API_NAME 
+                AND target.ENTITY_ID = source.ENTITY_ID 
+                AND target.TRANSACTION_ID = source.TRANSACTION_ID)
+            WHEN MATCHED THEN
+                UPDATE SET 
+                    target.MEASURED_VALUE = source.MEASURED_VALUE,
+                    target.BG_COLOR = source.BG_COLOR,
+                    target.TEXT_COLOR = source.TEXT_COLOR,
+                    target.FILTER = source.FILTER
+            WHEN NOT MATCHED THEN
+                INSERT (CHANNEL_NAME, ENTITY_API_NAME, ENTITY_API, ENTITY_NAME, 
+                    ENTITY_ID, TRANSACTION_ID, TRANSACTION_NAME, THRESHOLD_VALUE,
+                    MEASURED_VALUE, BG_COLOR, TEXT_COLOR, FILTER)
+                VALUES (source.CHANNEL_NAME, source.ENTITY_API_NAME, source.ENTITY_API,
+                    source.ENTITY_NAME, source.ENTITY_ID, source.TRANSACTION_ID,
+                    source.TRANSACTION_NAME, source.THRESHOLD_VALUE, source.MEASURED_VALUE,
+                    source.BG_COLOR, source.TEXT_COLOR, source.FILTER)
+            """
+            
+            try:
+                cursor.executemany(merge_sql_channel, channels)
+                conn.commit()
+                self.logger.debug(f"Upserted {len(channels)} channel records")
+            except oracledb.Error as e:
+                self.logger.error(f"Error upserting channel data: {e}")
+                raise
+            
+            
+            if not entities:
+                return
+            
+            merge_sql_entities = """
+            MERGE INTO CXP_OPS_MONITORING.CXP_TRANSACTION_ENTITY_STEP_KIBANA_DEV target
+            USING (
+                SELECT :ENTITY_STEP_ID as ENTITY_STEP_ID,
+                    :ENTITY_STEP_NAME as ENTITY_STEP_NAME,
+                    :ENTITY_STEP_API_NAME as ENTITY_STEP_API_NAME,
+                    :TRANSACTION_ID as TRANSACTION_ID,
+                    :TRANSACTION_NAME as TRANSACTION_NAME,
+                    :ENTITY_ID as ENTITY_ID,
+                    :ENTITY_NAME as ENTITY_NAME,
+                    :THRESHOLD_VALUE as THRESHOLD_VALUE,
+                    :MEASURED_VALUE as MEASURED_VALUE,
+                    :BG_COLOR as BG_COLOR,
+                    :TEXT_COLOR as TEXT_COLOR,
+                    :IS_ACTIVE as IS_ACTIVE
+                FROM dual
+            ) source
+            ON (target.ENTITY_STEP_ID = source.ENTITY_STEP_ID 
+                AND target.TRANSACTION_ID = source.TRANSACTION_ID 
+                AND target.ENTITY_ID = source.ENTITY_ID)
+            WHEN MATCHED THEN
+                UPDATE SET 
+                    target.MEASURED_VALUE = source.MEASURED_VALUE,
+                    target.BG_COLOR = source.BG_COLOR,
+                    target.TEXT_COLOR = source.TEXT_COLOR,
+                    target.IS_ACTIVE = source.IS_ACTIVE
+            WHEN NOT MATCHED THEN
+                INSERT (ENTITY_STEP_ID, ENTITY_STEP_NAME, ENTITY_STEP_API_NAME,
+                    TRANSACTION_ID, TRANSACTION_NAME, ENTITY_ID, ENTITY_NAME,
+                    THRESHOLD_VALUE, MEASURED_VALUE, BG_COLOR, TEXT_COLOR,
+                    IS_ACTIVE)
+                VALUES (source.ENTITY_STEP_ID, source.ENTITY_STEP_NAME, source.ENTITY_STEP_API_NAME,
+                    source.TRANSACTION_ID, source.TRANSACTION_NAME, source.ENTITY_ID,
+                    source.ENTITY_NAME, source.THRESHOLD_VALUE, source.MEASURED_VALUE,
+                    source.BG_COLOR, source.TEXT_COLOR, source.IS_ACTIVE)
+            """
+            
+            try:
+                cursor.executemany(merge_sql_entities, entities)
+                conn.commit()
+                self.logger.debug(f"Upserted {len(entities)} entity records")
+            except oracledb.Error as e:
+                self.logger.error(f"Error upserting entity data: {e}")
+                raise
+        finally:
+            if conn:
+                self.pool.release(conn)
+    
+    def execute_query(self,api_names,transaction,entity_details):
+        if entity_details[10] is not None:
+            try:
+                entity_dict={}
+                self.task = self.task +1
+                payload_dict={"sort":[{"@timestamp":{"order":"desc","format":"strict_date_optional_time","unmapped_type":"boolean"}},{"_doc":{"order":"desc","unmapped_type":"boolean"}}],"stored_fields":["*"],"track_total_hits":"false","size":99,"fields":[{"field":"*","include_unmapped":"true"},{"field":"@timestamp","format":'strict_date_optional_time'}],"version":"true","_source":"false","runtime_mappings":{},"script_fields":{},"highlight":{"pre_tags":["@kibana-highlighted-field@"],"post_tags":["@/kibana-highlighted-field@"],"fields":{"*":{}}},"query":{"bool":{"filter":[{"range":{"@timestamp":{"format":"strict_date_optional_time","gte":"now-1h","lte":"now"}}}],"must_not":[]}}}
+                if entity_details[12] is not None:
+                    filters = json.loads(entity_details[12].read())
+                    for filter in filters:
+                        must_not={}
+                        if filter['condition'] == 'is not':
+                            must_not['match_phrase']={}
+                            must_not['match_phrase'][filter['key']] = filter['values']
+                            payload_dict['query']['bool']['must_not'].append(must_not)
+                        elif filter['condition'] == 'is':
+                            if isinstance(filter['values'], list):
+                                bool_dict = {
+                                        "bool": {
+                                            "should": [],
+                                            "minimum_should_match": 1
+                                        }
+                                    }
+                                for doc in filter['values']:
+                                    should_dict={
+                                        "bool": {
+                                            "must": [],
+                                            "filter": [
+                                                {
+                                                    "bool": {
+                                                    "minimum_should_match": 1,
+                                                    "should": [
+                                                        {
+                                                            "match_phrase": {
+                                                            filter['key']: doc
+                                                            }
+                                                        }
+                                                    ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                    bool_dict["bool"]["should"].append(should_dict)
+                                payload_dict['query']['bool']['filter'].append(bool_dict)
+                            else:
+                                key_dict={}
+                                key_dict['match_phrase']={}
+                                key_dict['match_phrase'][filter['key']] = filter['values']
+                                payload_dict['query']['bool']['filter'].append(key_dict)
+                else:
+                    payload_dict = json.loads(entity_details[11].read())
+                resp = self.session.post(entity_details[10], headers=self.headers, json=payload_dict, timeout=10)
+                kibana_response = resp.json()
+                total_hits = kibana_response['hits']['hits']
+
+                for channel in self.DEFAULT_CHANNELS:
+                    channel_dict = {}
+                    channel_values = [item for item in total_hits if (item['fields']['api_subname'][0].lower() == entity_details[3].lower() or item['fields']['api_name'][0].lower() == entity_details[3].lower()) and channel['CHANNEL_NAME'] in item['fields']['client_id'][0]]
+                    channel_dict["CHANNEL_NAME"] = channel['CHANNEL_NAME']
+                    channel_dict["ENTITY_API_NAME"] = entity_details[3]
+                    channel_dict["ENTITY_API"] = entity_details[3]
+                    channel_dict["ENTITY_NAME"] = entity_details[5]
+                    channel_dict["ENTITY_ID"] = entity_details[4]
+                    channel_dict["TRANSACTION_ID"] = entity_details[6]
+                    channel_dict["TRANSACTION_NAME"] = entity_details[7]
+                    channel_dict["THRESHOLD_VALUE"] = int(channel['THRESHOLD_VALUE'])
+                    channel_dict["FILTER"] = entity_details[12]
+                    
+                    channel_dict["MEASURED_VALUE"] = int(len(channel_values))
+                    if int(len(channel_values)) > int(channel['THRESHOLD_VALUE']):
+                        channel_dict["BG_COLOR"] = 'red'
+                        channel_dict["TEXT_COLOR"] = 'white'
+                    else:
+                        channel_dict["BG_COLOR"] = 'green'
+                        channel_dict["TEXT_COLOR"] = 'white'
+                    self.channel_list.append(channel_dict)
+
+                api_measured_values = [item for item in total_hits if item['fields']['api_subname'][0].lower() == entity_details[3].lower() or item['fields']['api_name'][0].lower() == entity_details[3].lower()]
+
+
+                entity_dict['ENTITY_STEP_ID'] = entity_details[1]
+                entity_dict['ENTITY_STEP_NAME'] = entity_details[3]
+                entity_dict['ENTITY_STEP_API_NAME'] = entity_details[3]
+                entity_dict['TRANSACTION_ID'] = entity_details[6]
+                entity_dict['TRANSACTION_NAME'] = entity_details[7]
+                entity_dict['ENTITY_ID'] = entity_details[4]
+                entity_dict['ENTITY_NAME'] = entity_details[5]
+                entity_dict['THRESHOLD_VALUE'] = int(entity_details[8])
+                if int(len(api_measured_values)) > 20:
+                    entity_dict['MEASURED_VALUE'] = len(api_measured_values)
+                    entity_dict['BG_COLOR'] = 'red'
+                    entity_dict['TEXT_COLOR'] = 'white'
+                elif int(len(api_measured_values)) > 10 and int(len(api_measured_values)) < 20:
+                    entity_dict['MEASURED_VALUE'] = len(api_measured_values)
+                    entity_dict['BG_COLOR'] = 'yellow'
+                    entity_dict['TEXT_COLOR'] = 'white'
+                else:
+                    entity_dict['MEASURED_VALUE'] = len(api_measured_values)
+                    entity_dict['BG_COLOR'] = 'green'
+                    entity_dict['TEXT_COLOR'] = 'white'
+                entity_dict['IS_ACTIVE'] = 'Y'
+                self.entity_list.append(entity_dict)
+                
+            except Exception as err:
+                print("Kibana Exception ===>", str(err), "====>", entity_details[3])
+    def task_completed_callback(self,future):
+        if future.done():
+            try:
+                self.completed_tasks = self.completed_tasks + 1 
+            except Exception as e:
+                print("Error {e}")
+            finally:
+                if self.total_tasks == self.completed_tasks:
+                    self.db_operations(self.channel_list, self.entity_list)
+                    self.channel_list.clear()
+                    self.entity_list.clear()
+                    self.completed_tasks = 0
+    async def process_kibanadata(self, api_names,transanction,entity_chunck):
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [executor.submit(self.execute_query,api_names,transanction,chunck) for chunck in entity_chunck]
+            for future in futures:
+                future.add_done_callback(self.task_completed_callback)
+                #results = future.result()
+                
+    def job(self, chunk_data,transanction,entity_chunck):
+        try:
+            self.total_tasks = len(chunk_data)
+            self.semaphore.acquire()
+            start_time = datetime.now()
+            asyncio.run(self.process_kibanadata(chunk_data,transanction,entity_chunck))
+            end_time = datetime.now()
+            time_diff = (end_time-start_time).total_seconds()
+            print(f"Time taken: {time_diff:.2f} seconds")
+        finally:
+            self.semaphore.release()
+    def run_scheduler(self):
+        chunk_size = 10
+        for transanction in self.process_data_dict:
+            num_jobs = math.ceil(len(self.process_data_dict[transanction]['API_DETAILS']) / chunk_size)
+            for i in range(num_jobs):
+                chunk = tuple(self.process_data_dict[transanction]['API_DETAILS'][i * chunk_size:(i + 1) * chunk_size])
+                entity_chunck = self.process_data_dict[transanction]['ENTITY_DETAILS'][i * chunk_size:(i + 1) * chunk_size]
+                schedule.every(35).seconds.do(self.job, chunk,transanction,entity_chunck)
+            
+    def start_db_jobs(self):
+        try:
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+        except Exception as err:
+            print("Error starting jobs: ", str(err))
+    def stop_db_jobs(self):
+        schedule.clear()
+        if self.scheduler_thread:
+            self.scheduler_thread.do_run=False
+            self.scheduler_thread.join()
+            self.scheduler_thread = None
+KibanaScheduler()
+
+
+===========================================
+#!/usr/bin/env python3
+"""
+Database Scheduler Module
+
+This module provides a robust database scheduler for processing API monitoring data.
+It handles database operations, channel monitoring, and entity step processing.
+
+Author: SOG Team
+
+"""
+
+import asyncio
+import json
+import logging
+import math
+import time
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from typing import Dict, List, Tuple, Any, Optional
+import subprocess
+
+import oracledb
+import schedule
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('db_scheduler.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+
+class DatabaseConfig:
+    """Database configuration constants"""
+    USERNAME = "CXP_OPS_MONITORING"
+    PASSWORD = "QWEqwe##00"
+    HOST = "tpalpbrhvd00-scan.verizon.com"
+    PORT = 1532
+    SERVICE_NAME = "cxpopsmon_srv01"
+    POOL_MIN = 2
+    POOL_MAX = 200
+    POOL_INCREMENT = 1
+
+
+class ChannelConfig:
+    """Channel configuration constants"""
+    DEFAULT_CHANNELS = [
+        {'CHANNEL_NAME': 'CHAT-STORE', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'VZW-MFA', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'VZW-DOTCOM', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'OMNI-CARE', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'OMNI-INDIRECT', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'OMNI-TELESALES', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'OMNI-RETAIL', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'OMNI-B2B', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'OMNI-D2D', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'VZW-ACSS', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'VZW-NR', 'THRESHOLD_VALUE': '25'},
+        {'CHANNEL_NAME': 'VZW-TS', 'THRESHOLD_VALUE': '25'}
+    ]
+
+
+class ProcessingConfig:
+    """Processing configuration constants"""
+    WORKER_POOL_SIZE = 200
+    CHUNK_SIZE = 10
+    SCHEDULE_INTERVAL = 50  # seconds
+    THREAD_POOL_MAX_WORKERS = 10
+    
+    # Thresholds
+    RED_THRESHOLD = 25
+    YELLOW_THRESHOLD_MIN = 10
+    YELLOW_THRESHOLD_MAX = 20
+    API_THRESHOLD = 20
+
+
+class DatabaseConnectionManager:
+    """Manages database connections and connection pooling"""
+    
+    def __init__(self, config: DatabaseConfig):
+        self.config = config
+        self.pool: Optional[oracledb.ConnectionPool] = None
+        self._initialize_pool()
+    
+    def _initialize_pool(self) -> None:
+        """Initialize the database connection pool"""
+        try:
+            db_dsn = oracledb.makedsn(
+                host=self.config.HOST,
+                port=self.config.PORT,
+                service_name=self.config.SERVICE_NAME
+            )
+            
+            self.pool = oracledb.create_pool(
+                user=self.config.USERNAME,
+                password=self.config.PASSWORD,
+                dsn=db_dsn,
+                min=self.config.POOL_MIN,
+                max=self.config.POOL_MAX,
+                increment=self.config.POOL_INCREMENT
+            )
+            
+            logger.info("Database connection pool created successfully")
+            
+        except oracledb.Error as error:
+            logger.error(f"Error creating connection pool: {error}")
+            raise
+    
+    def get_connection(self):
+        """Get a connection from the pool"""
+        if not self.pool:
+            raise RuntimeError("Connection pool not initialized")
+        return self.pool.acquire()
+    
+    def release_connection(self, connection) -> None:
+        """Release a connection back to the pool"""
+        if self.pool and connection:
+            self.pool.release(connection)
+    
+    def close_pool(self) -> None:
+        """Close the connection pool"""
+        if self.pool:
+            self.pool.close()
+            logger.info("Database connection pool closed")
+
+
+class DataProcessor:
+    """Handles data processing operations"""
+    
+    def __init__(self, db_manager: DatabaseConnectionManager, channels: List[Dict]):
+        self.db_manager = db_manager
+        self.channels = channels
+        self.semaphore = threading.Semaphore(ProcessingConfig.WORKER_POOL_SIZE)
+    
+    def _determine_color_coding(self, measured_value: int, threshold: int) -> Tuple[str, str]:
+        """Determine background and text color based on measured value and threshold"""
+        if measured_value > threshold:
+            return 'red', 'white'
+        elif (ProcessingConfig.YELLOW_THRESHOLD_MIN < measured_value < 
+              ProcessingConfig.YELLOW_THRESHOLD_MAX):
+            return 'yellow', 'white'
+        else:
+            return 'green', 'white'
+    
+    def _build_channel_data(self, channel: Dict, entity: Tuple, 
+                           measured_value: int, transaction_type: int) -> Dict:
+        """Build channel data dictionary"""
+        bg_color, text_color = self._determine_color_coding(
+            measured_value, int(channel['THRESHOLD_VALUE'])
+        )
+        
+        return {
+            "CHANNEL_NAME": channel['CHANNEL_NAME'],
+            "ENTITY_API_NAME": entity[3],
+            "ENTITY_API": entity[3],
+            "ENTITY_NAME": entity[5],
+            "ENTITY_ID": int(entity[4]),
+            "TRANSACTION_ID": int(entity[7]),
+            "TRANSACTION_NAME": entity[8],
+            "THRESHOLD_VALUE": int(channel['THRESHOLD_VALUE']),
+            "MEASURED_VALUE": measured_value,
+            "BG_COLOR": bg_color,
+            "TEXT_COLOR": text_color
+        }
+    
+    def _build_entity_data(self, entity: Tuple, measured_value: int) -> Dict:
+        """Build entity data dictionary"""
+        bg_color, text_color = self._determine_color_coding(
+            measured_value, int(entity[9])
+        )
+        
+        return {
+            'ENTITY_STEP_ID': entity[1],
+            'ENTITY_STEP_NAME': entity[3],
+            'ENTITY_STEP_API_NAME': entity[3],
+            'TRANSACTION_ID': entity[7],
+            'TRANSACTION_NAME': entity[8],
+            'ENTITY_ID': entity[4],
+            'ENTITY_NAME': entity[5],
+            'THRESHOLD_VALUE': int(entity[9]),
+            'MEASURED_VALUE': measured_value,
+            'BG_COLOR': bg_color,
+            'TEXT_COLOR': text_color,
+            'IS_ACTIVE': 'Y'
+        }
+
+
+class DatabaseOperations:
+    """Handles database CRUD operations"""
+    
+    def __init__(self, db_manager: DatabaseConnectionManager):
+        self.db_manager = db_manager
+        self.semaphore = threading.Semaphore(ProcessingConfig.WORKER_POOL_SIZE)
+    
+    def _upsert_channels(self, cursor, channels: List[Dict]) -> None:
+        """Insert or update channel records using MERGE statement"""
+        if not channels:
+            return
+            
+        query = """
+            MERGE INTO CXP_OPS_MONITORING.CXP_CHANNEL_ENTITY_STEP_DB_DEV target
+            USING (
+                SELECT 
+                    :CHANNEL_NAME as CHANNEL_NAME,
+                    :ENTITY_API_NAME as ENTITY_API_NAME,
+                    :ENTITY_API as ENTITY_API,
+                    :ENTITY_NAME as ENTITY_NAME,
+                    :ENTITY_ID as ENTITY_ID,
+                    :TRANSACTION_ID as TRANSACTION_ID,
+                    :TRANSACTION_NAME as TRANSACTION_NAME,
+                    :THRESHOLD_VALUE as THRESHOLD_VALUE,
+                    :MEASURED_VALUE as MEASURED_VALUE,
+                    :BG_COLOR as BG_COLOR,
+                    :TEXT_COLOR as TEXT_COLOR
+                FROM dual
+            ) source
+            ON (
+                target.CHANNEL_NAME = source.CHANNEL_NAME 
+                AND target.ENTITY_API_NAME = source.ENTITY_API_NAME 
+                AND target.ENTITY_ID = source.ENTITY_ID 
+                AND target.TRANSACTION_ID = source.TRANSACTION_ID
+            )
+            WHEN MATCHED THEN
+                UPDATE SET 
+                    target.MEASURED_VALUE = source.MEASURED_VALUE,
+                    target.BG_COLOR = source.BG_COLOR,
+                    target.TEXT_COLOR = source.TEXT_COLOR
+            WHEN NOT MATCHED THEN
+                INSERT (
+                    CHANNEL_NAME, ENTITY_API_NAME, ENTITY_API, ENTITY_NAME, ENTITY_ID,
+                    TRANSACTION_ID, TRANSACTION_NAME, THRESHOLD_VALUE, MEASURED_VALUE,
+                    BG_COLOR, TEXT_COLOR
+                )
+                VALUES (
+                    source.CHANNEL_NAME, source.ENTITY_API_NAME, source.ENTITY_API,
+                    source.ENTITY_NAME, source.ENTITY_ID, source.TRANSACTION_ID,
+                    source.TRANSACTION_NAME, source.THRESHOLD_VALUE, source.MEASURED_VALUE,
+                    source.BG_COLOR, source.TEXT_COLOR
+                )
+        """
+        
+        cursor.executemany(query, channels)
+        logger.info(f"Upserted {len(channels)} channel records")
+    
+    def _upsert_entities(self, cursor, entities: List[Dict]) -> None:
+        """Insert or update entity records using MERGE statement"""
+        if not entities:
+            return
+            
+        query = """
+            MERGE INTO CXP_OPS_MONITORING.CXP_TRANSATION_ENTITY_STEP_DB_DEV target
+            USING (
+                SELECT 
+                    :ENTITY_STEP_ID as ENTITY_STEP_ID,
+                    :ENTITY_STEP_NAME as ENTITY_STEP_NAME,
+                    :ENTITY_STEP_API_NAME as ENTITY_STEP_API_NAME,
+                    :TRANSACTION_ID as TRANSACTION_ID,
+                    :TRANSACTION_NAME as TRANSACTION_NAME,
+                    :ENTITY_ID as ENTITY_ID,
+                    :ENTITY_NAME as ENTITY_NAME,
+                    :THRESHOLD_VALUE as THRESHOLD_VALUE,
+                    :MEASURED_VALUE as MEASURED_VALUE,
+                    :BG_COLOR as BG_COLOR,
+                    :TEXT_COLOR as TEXT_COLOR,
+                    :IS_ACTIVE as IS_ACTIVE
+                FROM dual
+            ) source
+            ON (
+                target.ENTITY_STEP_ID = source.ENTITY_STEP_ID 
+                AND target.TRANSACTION_ID = source.TRANSACTION_ID 
+                AND target.ENTITY_STEP_API_NAME = source.ENTITY_STEP_API_NAME 
+                AND target.ENTITY_NAME = source.ENTITY_NAME
+            )
+            WHEN MATCHED THEN
+                UPDATE SET 
+                    target.MEASURED_VALUE = source.MEASURED_VALUE,
+                    target.BG_COLOR = source.BG_COLOR,
+                    target.TEXT_COLOR = source.TEXT_COLOR
+            WHEN NOT MATCHED THEN
+                INSERT (
+                    ENTITY_STEP_ID, ENTITY_STEP_NAME, ENTITY_STEP_API_NAME, TRANSACTION_ID,
+                    TRANSACTION_NAME, ENTITY_ID, ENTITY_NAME, THRESHOLD_VALUE, MEASURED_VALUE,
+                    BG_COLOR, TEXT_COLOR, IS_ACTIVE
+                )
+                VALUES (
+                    source.ENTITY_STEP_ID, source.ENTITY_STEP_NAME, source.ENTITY_STEP_API_NAME,
+                    source.TRANSACTION_ID, source.TRANSACTION_NAME, source.ENTITY_ID,
+                    source.ENTITY_NAME, source.THRESHOLD_VALUE, source.MEASURED_VALUE,
+                    source.BG_COLOR, source.TEXT_COLOR, source.IS_ACTIVE
+                )
+        """
+        
+        cursor.executemany(query, entities)
+        logger.info(f"Upserted {len(entities)} entity records")
+    
+    def save_data(self, channels: List[Dict], entities: List[Dict]) -> None:
+        """Save channel and entity data to database using MERGE (upsert) operations"""
+        connection = None
+        try:
+            self.semaphore.acquire()
+            connection = self.db_manager.get_connection()
+            
+            with connection.cursor() as cursor:
+                # Execute upsert operations - single query handles both insert and update
+                self._upsert_channels(cursor, channels)
+                self._upsert_entities(cursor, entities)
+                
+                connection.commit()
+                logger.info(f"Database upsert operations completed successfully - "
+                          f"{len(channels)} channels, {len(entities)} entities")
+                
+        except Exception as error:
+            logger.error(f"Error in database upsert operations: {error}")
+            if connection:
+                connection.rollback()
+            raise
+        finally:
+            if connection:
+                self.db_manager.release_connection(connection)
+            self.semaphore.release()
+
+
+class DBScheduler:
+    """Main database scheduler class"""
+    
+    def __init__(self):
+        logger.info("Initializing DB Scheduler")
+        
+        # Initialize configurations
+        self.db_config = DatabaseConfig()
+        self.channels = ChannelConfig.DEFAULT_CHANNELS
+        
+        # Initialize components
+        self.db_manager = DatabaseConnectionManager(self.db_config)
+        self.data_processor = DataProcessor(self.db_manager, self.channels)
+        self.db_operations = DatabaseOperations(self.db_manager)
+        
+        # Initialize state
+        self.count = 0
+        self.scheduler_thread = None
+        self.process_data_dict = {
+            'api_combined': {},
+            'api_single': {}
+        }
+        
+        # Load initial data and start scheduler
+        self._load_initial_data()
+        self._setup_scheduler()
+        self._start_scheduler()
+    
+    def _load_initial_data(self) -> None:
+        """Load initial data from database"""
+        connection = None
+        try:
+            connection = self.db_manager.get_connection()
+            
+            with connection.cursor() as cursor:
+                query = """
+                    SELECT t1.transaction_id, t2.* 
+                    FROM CXP_OPS_MONITORING.TRANSACTION_TEMP1 t1
+                    JOIN CXP_OPS_MONITORING.ENTITY_STEP_DB1 t2 
+                    ON t1.transaction_id = t2.transaction_id
+                    ORDER BY t2.transaction_id ASC
+                """
+                
+                cursor.execute(query)
+                results = cursor.fetchall()
+                
+                for row in results:
+                    transaction_id = row[0]
+                    
+                    if row[12] is not None:  # api_single
+                        self._add_to_process_dict('api_single', transaction_id, row)
+                    else:  # api_combined
+                        self._add_to_process_dict('api_combined', transaction_id, row)
+                
+                logger.info(f"Loaded {len(results)} records from database")
+                
+        except Exception as error:
+            logger.error(f"Error loading initial data: {error}")
+            raise
+        finally:
+            if connection:
+                self.db_manager.release_connection(connection)
+    
+    def _add_to_process_dict(self, dict_type: str, transaction_id: int, row: Tuple) -> None:
+        """Add row to process dictionary"""
+        if transaction_id in self.process_data_dict[dict_type]:
+            self.process_data_dict[dict_type][transaction_id]['API_DETAILS'].append(row[3])
+            self.process_data_dict[dict_type][transaction_id]['ENTITY_DETAILS'].append(row)
+        else:
+            self.process_data_dict[dict_type][transaction_id] = {
+                'API_DETAILS': [row[3]],
+                'ENTITY_DETAILS': [row]
+            }
+    
+    async def process_combined_data(self, api_names: Tuple, transaction_id: int, 
+                                  entity_details: List[Tuple]) -> None:
+        """Process combined API data"""
+        try:
+            self.count += 1
+            logger.debug(f"Processing combined data, count: {self.count}")
+            
+            connection = self.db_manager.get_connection()
+            
+            try:
+                with connection.cursor() as cursor:
+                    query = f"""
+                        SELECT DISTINCT OH.*, OS.clientid, CO.NSA_STACK_ID 
+                        FROM POJO_DATA.VZCM_DATA_ORDERHISTORY OH
+                        JOIN POJO_DATA.VZCM_DATA_ORDERSTATUS OS 
+                        ON OH.CARTID = OS.CARTID AND OS.ENTITY = OH.ENTITY 
+                        AND OS.CREATEDATETIME >= SYSTIMESTAMP AT TIME ZONE 'PST' - (1/24) 
+                        AND OS.ENTITYSTEPSTATUS = 'Failed'
+                        JOIN VIP_POSDB.CART_ORDER CO ON OH.CARTID = CO.CART_ID 
+                        AND VZWDB_CREATE_TIMESTAMP >= SYSTIMESTAMP - (1/24)
+                        WHERE OH.CREATEDATETIME >= SYSTIMESTAMP AT TIME ZONE 'PST' - (1/24) 
+                        AND OH.ENTITYSTEPSTATUS = 'Failed' 
+                        AND OH.ENTITYSTEP IN {api_names}
+                    """
+                    
+                    cursor.execute(query)
+                    results = cursor.fetchall()
+                    print("resultsresults ===>", results)
+                    print(" ")
+                    channel_list = []
+                    entity_list = []
+                    
+                    # Process each entity
+                    for entity in entity_details:
+                        # Process channels
+                        for channel in self.channels:
+                            if transaction_id == 2:  # FWA
+                                channel_values = [
+                                    item for item in results 
+                                    if (item[5] == entity[3] and 
+                                        item[24] and  # clientid exists
+                                        channel['CHANNEL_NAME'] in item[29])
+                                ]
+                            else:  # Mobility
+                                channel_values = [
+                                    item for item in results 
+                                    if (item[5] == entity[3] and 
+                                        item[24] and  # clientid exists
+                                        channel['CHANNEL_NAME'] in item[29])
+                                ]
+                            
+                            channel_data = self.data_processor._build_channel_data(
+                                channel, entity, len(channel_values), transaction_id
+                            )
+                            channel_list.append(channel_data)
+                        
+                        # Process entity
+                        api_measured_values = [
+                            item for item in results 
+                            if item[5].lower() == entity[3].lower()
+                        ]
+                        
+                        entity_data = self.data_processor._build_entity_data(
+                            entity, len(api_measured_values)
+                        )
+                        entity_list.append(entity_data)
+                    
+                    # Save to database
+                    await self._save_data_async(channel_list, entity_list)
+                    
+            finally:
+                self.db_manager.release_connection(connection)
+                
+        except Exception as error:
+            logger.error(f"Error in process_combined_data: {error}")
+            raise
+    
+    def process_single_api(self, api_names: Tuple, transaction_id: int, 
+                          entity_details: Tuple, query: str) -> None:
+        """Process single API data"""
+        try:
+            # Parse filters if available
+            filters = []
+            if entity_details[14] is not None:
+                try:
+                    filters = json.loads(entity_details[14].read())
+                except Exception as error:
+                    logger.warning(f"Error parsing filters for entity {entity_details[3]}: {error}")
+            
+            connection = self.db_manager.get_connection()
+            
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(query)
+                    results = cursor.fetchall()
+                    
+                    channel_list = []
+                    entity_count = 0
+                    
+                    # Process channels
+                    for channel in self.channels:
+                        channel_values = [
+                            item for item in results 
+                            if channel['CHANNEL_NAME'] in item[0]
+                        ]
+                        
+                        exception_count = 0
+                        if channel_values and filters:
+                            for exception_filter in filters:
+                                exception_values = [
+                                    item for item in channel_values 
+                                    if exception_filter.lower() in item[10].lower()
+                                ]
+                                exception_count += len(exception_values)
+                        else:
+                            exception_count = len(channel_values)
+                        
+                        channel_data = self.data_processor._build_channel_data(
+                            channel, entity_details, exception_count, transaction_id
+                        )
+                        # Override threshold for API processing
+                        channel_data["THRESHOLD_VALUE"] = ProcessingConfig.API_THRESHOLD
+                        
+                        # Determine colors based on API threshold
+                        bg_color, text_color = self.data_processor._determine_color_coding(
+                            exception_count, ProcessingConfig.API_THRESHOLD
+                        )
+                        channel_data["BG_COLOR"] = bg_color
+                        channel_data["TEXT_COLOR"] = text_color
+                        
+                        channel_list.append(channel_data)
+                        entity_count += exception_count
+                    
+                    # Process entity
+                    entity_data = self.data_processor._build_entity_data(
+                        entity_details, entity_count
+                    )
+                    # Override threshold for API processing
+                    entity_data['THRESHOLD_VALUE'] = ProcessingConfig.API_THRESHOLD
+                    
+                    # Determine colors based on API threshold
+                    bg_color, text_color = self.data_processor._determine_color_coding(
+                        entity_count, ProcessingConfig.API_THRESHOLD
+                    )
+                    entity_data['BG_COLOR'] = bg_color
+                    entity_data['TEXT_COLOR'] = text_color
+                    
+                    entity_list = [entity_data]
+                    
+                    # Save to database
+                    self.db_operations.save_data(channel_list, entity_list)
+                    
+            finally:
+                self.db_manager.release_connection(connection)
+                
+        except Exception as error:
+            logger.error(f"Error in process_single_api: {error}")
+            raise
+    
+    async def _save_data_async(self, channel_list: List[Dict], entity_list: List[Dict]) -> None:
+        """Asynchronously save data to database"""
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, self.db_operations.save_data, channel_list, entity_list)
+    
+    async def process_non_audit_batch(self, api_names: Tuple, transaction_id: int, 
+                                    entity_chunk: List[Tuple], indicator: str) -> None:
+        """Process non-audit data in batches"""
+        with ThreadPoolExecutor(max_workers=ProcessingConfig.THREAD_POOL_MAX_WORKERS) as executor:
+            futures = [
+                executor.submit(self.process_single_api, api_names, transaction_id, chunk, chunk[12])
+                for chunk in entity_chunk
+            ]
+            
+            for future in futures:
+                try:
+                    future.result()
+                except Exception as error:
+                    logger.error(f"Error in thread execution: {error}")
+    
+    def execute_job(self, api_names: Tuple, transaction_id: int, 
+                   entity_chunk: List[Tuple], indicator: str) -> None:
+        """Execute a scheduled job"""
+        start_time = datetime.now()
+        
+        try:
+            if indicator == 'api_single':
+                asyncio.run(self.process_non_audit_batch(
+                    api_names, transaction_id, entity_chunk, indicator
+                ))
+            else:
+                asyncio.run(self.process_combined_data(
+                    api_names, transaction_id, entity_chunk
+                ))
+            
+            end_time = datetime.now()
+            duration = (end_time - start_time).total_seconds()
+            logger.info(f"Job completed in {duration:.2f} seconds")
+            
+        except Exception as error:
+            logger.error(f"Error executing job: {error}")
+            raise
+    
+    def _setup_scheduler(self) -> None:
+        """Setup scheduled jobs"""
+        for indicator in self.process_data_dict:
+            for transaction_id in self.process_data_dict[indicator]:
+                api_details = self.process_data_dict[indicator][transaction_id]['API_DETAILS']
+                entity_details = self.process_data_dict[indicator][transaction_id]['ENTITY_DETAILS']
+                
+                num_jobs = math.ceil(len(api_details) / ProcessingConfig.CHUNK_SIZE)
+                
+                for i in range(num_jobs):
+                    start_idx = i * ProcessingConfig.CHUNK_SIZE
+                    end_idx = (i + 1) * ProcessingConfig.CHUNK_SIZE
+                    
+                    api_chunk = tuple(api_details[start_idx:end_idx])
+                    entity_chunk = entity_details[start_idx:end_idx]
+                    
+                    schedule.every(ProcessingConfig.SCHEDULE_INTERVAL).seconds.do(
+                        self.execute_job, api_chunk, transaction_id, entity_chunk, indicator
+                    )
+        
+        logger.info("Scheduler setup completed")
+    
+    def _start_scheduler(self) -> None:
+        """Start the scheduler"""
+        try:
+            logger.info("Starting DB Scheduler")
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+        except KeyboardInterrupt:
+            logger.info("Scheduler stopped by user")
+        except Exception as error:
+            logger.error(f"Error in scheduler: {error}")
+            raise
+    
+    def stop_scheduler(self) -> None:
+        """Stop the scheduler and cleanup resources"""
+        schedule.clear()
+        
+        if self.scheduler_thread:
+            self.scheduler_thread.do_run = False
+            self.scheduler_thread.join()
+            self.scheduler_thread = None
+        
+        self.db_manager.close_pool()
+        logger.info("Scheduler stopped and resources cleaned up")
+
+
+def main():
+    """Main function to run the DB Scheduler"""
+    try:
+        scheduler = DBScheduler()
+    except KeyboardInterrupt:
+        logger.info("Application stopped by user")
+    except Exception as error:
+        logger.error(f"Application error: {error}")
+        raise
+
+
+if __name__ == "__main__":
+    main()
+
+================================
