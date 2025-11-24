@@ -1,1 +1,166 @@
+from typing import Union
+from fastapi.responses import StreamingResponse
+from fastapi.responses import HTMLResponse
+from fastapi import Request,FastAPI,Response,File,UploadFile
+#from fastapi.response import JSONResponse
+from starlette.responses import JSONResponse
+import oracledb
+import json
+import urllib.parse
+import os
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Request
+from starlette.responses import RedirectResponse
+
+import io
+import pandas as pd
+
+import asyncio
+import httpx
+import io
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import StreamingResponse
+
+from AysIncidents_NP import AYSAnalyser_NP
+from RuleEngine_NP import SimpleRuleEngine_NP
+
+server = FastAPI()
+
+origins = ["*"]
+
+oracledb.defaults.fetch_lobs = False
+
+server.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+proxy = f'http://vzproxy.verizon.com:9290'
+os.environ['http_proxy'] = '' 
+os.environ['HTTP_PROXY'] = ''
+os.environ['https_proxy'] = ''
+os.environ['HTTPS_PROXY'] = ''
+
+# ============================================
+# 1) Existing Slack Endpoint (NO CHANGE)
+# ============================================
+@server.post("/api/v1/process_slack_orders_NP")
+async def process_slack_orders(request: Request):
+    try:
+        req = await request.json()
+        DB_CONFIG = {
+            'user': 'CXP_OPS_MONITORING',
+            'password': 'QWEqwe##00',
+            'dsn': 'tpalpbrhvd00-scan.verizon.com:1532/cxpopsmon_srv01'
+        }
+
+        print("Testing singel orders==>", req)
+        rule_engine = SimpleRuleEngine_NP(DB_CONFIG)
+        result = rule_engine.process_order_request(
+            order_number=req.get('order_number'),
+            location_code=req.get('location_code'),
+            order_type='PENDING ORDER',
+            user_name=''
+        )
+        return JSONResponse(content=result)
+    except Exception as er:
+        print("Error in ", er)
+
+
+
+# ============================================
+# 2) NEW MTN ACTIVATION API (POSTMAN + UI TEXTBOX)
+# ============================================
+@server.post("/api/v1/activation")
+async def activation_api(request: Request):
+    """
+    Expected JSON:
+    {
+        "order_number": "9089",
+        "location_code": "D486701",
+        "mtn": "1234567890,2345678901"
+    }
+    """
+    try:
+        req = await request.json()
+
+        order_number = req.get("order_number")
+        location_code = req.get("location_code")
+        mtn_raw = req.get("mtn", "")
+
+        # Split MTN comma-separated string into list
+        mtn_list = [m.strip() for m in mtn_raw.split(",") if m.strip()]
+
+        DB_CONFIG = {
+            'user': 'CXP_OPS_MONITORING',
+            'password': 'QWEqwe##00',
+            'dsn': 'tpalpbrhvd00-scan.verizon.com:1532/cxpopsmon_srv01'
+        }
+
+        rule_engine = SimpleRuleEngine_NP(DB_CONFIG)
+
+        # We pass order_type="MTN" to trigger the MTN flow inside the rule engine
+        result = rule_engine.process_order_request(
+            order_number=order_number,
+            location_code=location_code,
+            order_type="MTN",
+            user_name="",
+            mtn_list=mtn_list
+        )
+
+        return JSONResponse(content=result)
+
+    except Exception as er:
+        print("Activation API Error:", er)
+        return JSONResponse(content={"error": str(er)}, status_code=500)
+
+
+
+# ============================================
+# 3) Existing AYS Endpoint (NO CHANGE)
+# ============================================
+@server.post("/api/v1/process-aysincident_NP")
+async def process_aysincident_V1(file: UploadFile = File(...)):
+    print("api is calling")
+    if not file.filename.endswith('.xlsx'):
+        raise HTTPException(status_code=400, detail="Invalid file type. Please upload a .xlsx file.")
+    print("api is calling")
+    try:
+        contents = await file.read()
+        buffer = io.BytesIO(contents)
+        
+        df = pd.read_excel(buffer)
+        ays_inc_bot = AYSAnalyser_NP()
+
+        for index, row in df.iterrows():
+            single_row_df = pd.DataFrame([row])
+            ays_inc_bot.process_ays_orders(row)
+
+        results = ays_inc_bot.process_pending_orders()
+        results_df = pd.DataFrame(results)
+
+        results_df.to_excel('AYS_processed_data.xlsx', index=False)
+
+        output_buffer = io.BytesIO()
+        with pd.ExcelWriter(output_buffer, engine='openpyxl') as writer:
+            results_df.to_excel(writer, index=False, sheet_name='ProcessedAYSData')
+
+        output_buffer.seek(0)
+        headers = {
+            "Content-Disposition": "attachment; filename=AYS_processed_data.xlsx",
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        }
+
+        return StreamingResponse(
+            output_buffer,
+            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            headers=headers
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
