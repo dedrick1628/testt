@@ -1,1 +1,17 @@
 
+@server.get("/debug/mtn")
+async def debug_mtn(order_number: str, location_code: str):
+    DB_CONFIG = {
+        'user': 'CXP_OPS_MONITORING',
+        'password': 'QWEqwe##00',
+        'dsn': 'tpalpbrhvd00-scan.verizon.com:1532/cxpopsmon_srv01'
+    }
+    
+    engine = SimpleRuleEngine_NP(DB_CONFIG)
+    rows = engine._load_activation_details()
+    return rows
+Then call:
+
+bash
+Copy code
+GET http://localhost:8000/debug/mtn?order_number=1769684&location_code=2253701
