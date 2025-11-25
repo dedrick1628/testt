@@ -95,3 +95,16 @@
     "simotaDetailsList": null,
     "esimTransactionsList": null
 }
+
+The end-to-end flow for a single MTN already works correctly — the rule engine takes one activation detail, evaluates the rules, and performs the reflow/submit actions.
+
+Now my job is to read the single-MTN flow step-by-step and find the exact point where the engine takes the single activationDetailsList[0] record and runs the rules on it. That is the spot where I need to introduce the loop.
+
+For testing, I’ll mock the activationDetailsList JSON inside the rule engine instead of depending on live APIs. Then I’ll pass multiple MTNs from Postman, split them, filter the mocked list, and run the same rule-execution block for each selected MTN.
+
+In short:
+• understand the single-MTN flow first
+• locate the exact place where one activation detail is processed
+• wrap only that section in a loop
+• use mocked activation details for testing
+• run only the rules you approve for multi-MTN (allow-list, table-driven later)
