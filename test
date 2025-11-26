@@ -1,28 +1,41 @@
-# ... inside _call_configured_api ...
-
-            if is_multi_mtn_api:
-                # ... (Existing matching logic) ...
+if is_multi_mtn_api:
+                # Get the full list from backend response (or the Mock Data we injected into context)
+                activationDetailsList = self.find_key_recursively(context, 'activationDetailsList')
                 
-                # [EXISTING LOOP]
+                # Get the User's input MTNs from context
+                user_mtn_list = context.get('mtn_list', [])
+
                 if activationDetailsList and isinstance(activationDetailsList, list):
                     if user_mtn_list and len(user_mtn_list) > 0:
+                        print(f" ==================== Processing {len(user_mtn_list)} User MTNs against backend data...")
+                        # Loop through user inputs and find matches
                         for user_mtn in user_mtn_list:
-                             # ... match logic ...
-                             if match:
+                            clean_user_mtn = str(user_mtn).strip()
+                            # Find exact match in backend list
+                            match = next((item for item in activationDetailsList if str(item.get('mtn')) == str(clean_user_mtn)), None)
+                            if match:
+                                print(f"  ================ Found match for MTN: {clean_user_mtn}")
                                 items_to_process.append(match)
-                             else:
-                                print(f"         ⚠️ No detail found for MTN: {user_mtn} - Skipping")
+                            else:
+                                print(f" ================= No backend detail found for MTN: {clean_user_mtn} - Skipping")
+                        
+                        # 🔴 CRITICAL FIX: Stop if NO matching MTNs were found
+                        # This prevents the system from skipping the loop and sending a "Success" message
+                        if len(items_to_process) == 0:
+                            print(" ================= ❌ No valid MTNs found to process.")
+                            return self._create_response(
+                                "ERROR", 
+                                "No valid MTNs found in the order details. Please check your input numbers.", 
+                                rule['rule_id']
+                            )
 
-                # 🔴 NEW CODE: ADD THIS CHECK IMMEDIATELY AFTER THE MATCHING LOOP
-                if len(items_to_process) == 0:
-                    print("         ❌ No matching MTNs found in backend/mock data.")
-                    # Return a failure response to stop the flow
-                    return self._create_response(
-                        "ERROR", 
-                        "No valid MTNs found to process. Please check your input.", 
-                        rule['rule_id']
-                    )
-
+                    else:
+                        # Fallback: No user input provided, default to index 0 (Old Behavior)
+                        print(f" ================ No input MTN list found. Defaulting to first item in backend list.")
+                        items_to_process.append(activationDetailsList[0])
+                else:
+                    print(f" ===================== Activation details list missing or invalid in backend response.")
+                    return self._create_response("ERROR", "Activation details not found for processing", rule['rule_id'])
             else:
-                # For all other APIs (Get Order, Cancel, etc.), run once
+                # For all other APIs (Get Order, Cancel, etc.), run once with no specific item context
                 items_to_process.append(None)
