@@ -1,199 +1,186 @@
-1. High-Level Summary: What We Have Achieved
-The Problem: Previously, the system was designed to handle single-item processing. It relied on hardcoded logic that always selected the first item (index [0]) from the backend response (activationDetailsList). If a user sent multiple MTNs (phone numbers) or a specific MTN that wasn't at the top of the list, the system would ignore them or process the wrong line item.
+🚀 STARTING ORDER PROCESSING
+============================================================
+📦 Order Number: 1051684
+📍 Location Code: 1822101
+📋 Order Type: ACTIVATION
+👤 User:
+🆔 Session ID: SS_20251126_101653_fc73a53e
+------------------------------------------------------------
+🔍 Step 1: Calling problem finder... 1051684   1822101
+🔍 Step 1: Finding matching rule for order type11
+rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+         🚀 Running test mock data function...
+rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+🔥 EXECUTING RULE: API_CALL with context: None
+Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
 
-The Solution: We have upgraded the Rule Engine to support Multi-MTN Bulk Processing.
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+         📡 Method: POST
+📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251126_101653_fc73a53e)
+         🚀 Making API call...
+Current rules ===> RULE_200
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
+response ==> RULE_200
+         ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+response ==> RULE_200
+Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails
+                  🔍 Searching for field: orderDetails
+                  🔍 Checking API result11: api_result_RULE_200
+                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
+                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
+            🔍 Condition Details:
+               Field Path: orderDetails
+               Operator: EQUALS
+               Actual Value: '1'
+               Expected Value: '1'
+         ✅ Condition met for rule: get-correction-order-details-success
+Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_207', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.billRegion=VB
+            🔍 Condition Details:
+               Field Path: orderDetails{}.billRegion=VB
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: b2b-customer-check
+Finding failure case for22
+Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
+field_pathfield_path ===> orderDetails{}.portIn
+                  🔍 Searching for field: orderDetails{}.portIn
+                  🔍 Checking API result11: api_result_RULE_200
+                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
+                  📋 Object 'None' not found in this API response
+                  ❌ Data not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: orderDetails{}.portIn
+               Operator: EQUALS
+               Actual Value: '0'
+               Expected Value: 'False'
+         ❌ Condition not met for rule: portin-check
+Finding failure case for22
+Finding failure case for  orderDetails{}.portIn ACTIVATION EQUALS
+field_pathfield_path ===> orderDetails{}.aceOrderStatus=Completed(CO)
+            🔍 Condition Details:
+               Field Path: orderDetails{}.aceOrderStatus=Completed(CO)
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: order-status-check
+Next scenario rule {'rule_id': 'RULE_214', 'rule_name': 'check payment status', 'rule_step_number': 14, 'JSON_PATH_VALUE': 'orderDetails{}.paymentStatus=Success', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_217', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.paymentStatus=Success
+            🔍 Condition Details:
+               Field Path: orderDetails{}.paymentStatus=Success
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: check payment status
+Next scenario rule {'rule_id': 'RULE_217', 'rule_name': 'fraud check success', 'rule_step_number': 17, 'JSON_PATH_VALUE': 'orderDetails{}.fraudStatus=Success', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_201', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.fraudStatus=Success
+            🔍 Condition Details:
+               Field Path: orderDetails{}.fraudStatus=Success
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: fraud check success
+Next scenario rule {'rule_id': 'RULE_201', 'rule_name': 'get-correction-activation-details', 'rule_step_number': 2, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_204', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
+Inside execute api call step method {'conf_id': 'CONF_110', 'rule_id': 'RULE_201', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}\t', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'get-correction-activation-details'}
 
-Dynamic Input Parsing: The API now accepts comma-separated MTNs and converts them into a list.
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details
+         📡 Method: POST
+📝 LOGGED: API_CALL_START for get-correction-activation-details (Session: SS_20251126_101653_fc73a53e)
+         🚀 Making API call...
+Current rules ===> RULE_201
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details
+API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': None, 'activationDetailsList': [{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}], 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
+response ==> RULE_201
+         ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_201', 'rule_name': 'get-correction-activation-details', 'rule_step_number': 2, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_204', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
+response ==> RULE_201
+Next scenario rule {'rule_id': 'RULE_204', 'rule_name': 'check-correction-activation-details', 'rule_step_number': 4, 'JSON_PATH_VALUE': 'activationDetailsList', 'operator': 'NOT EQUALS', 'expected_value': '0', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_226', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_201', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> activationDetailsList
+                  🔍 Searching for field: activationDetailsList
+                  🔍 Checking API result11: api_result_RULE_201
+                  🔍 Value: {'rule_name': 'get-correction-activation-details', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': None, 'activationDetailsList': [{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}], 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
+                  🔍 Value111: [{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]
+                  📊 Found Value '[{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]'
+            🔍 Condition Details:
+               Field Path: activationDetailsList
+               Operator: NOT EQUALS
+               Actual Value: '[{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]'
+               Expected Value: '0'
+         ✅ Condition met for rule: check-correction-activation-details
+Next scenario rule {'rule_id': 'RULE_226', 'rule_name': 'activation-status-check', 'rule_step_number': 26, 'JSON_PATH_VALUE': "activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None", 'operator': 'MULTI_FIELD_MATCH', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_227', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_201', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+               🎯 Evaluating complex condition: activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None ===> RULE_201
+               📋 Array: activationDetailsList
+               📋 Field conditions: {'activationStatus': 'None'}
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID1111 ==> RULE_201
+Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+Rule ID ==> RULE_201
+Filed Path ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+[{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]
+               📋 Found array 'activationDetailsList' with 4 items
+               🔍 Checking item 0: {'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}
+                  📋 activationStatus: 'None' == 'None' → True
+               ✅ Found matching item: {'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}
+            🔍 Condition Details:
+               Field Path: activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
+               Operator: MULTI_FIELD_MATCH
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: activation-status-check
+Next scenario rule {'rule_id': 'RULE_227', 'rule_name': 'submit-activation-api-call', 'rule_step_number': 27, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_228', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
+Inside execute api call step method {'conf_id': 'CONF_111', 'rule_id': 'RULE_227', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}\t', 'timeout_seconds': 30, 'request_body': '{"orderNo":"{order_number}","mtn":"{mtn}","locationCode":"{location_code}","mldSeqNo":"1","masterOrderNo":"{masterOrderNo}","creditApplicationNum":"{credit_app_num}","nsaStackId":"{stack_id}","custOrdType":"{cust_ord_type}"}', 'api_name': 'Submit Order API'}
 
-Intelligent Matching: Instead of blindly picking the first item, the engine now loops through the user's request and searches the backend response for the exact matching MTN.
-
-Iterative Execution: The system executes the specific business rule (Reflow/Submit) for each valid MTN found, not just one.
-
-Testability: We injected a Mock Data mechanism to prove this logic works immediately, even without live backend connectivity.
-
-2. Technical Explanation of Changes
-Here is the file-by-file breakdown of what changed.
-
-A. server.py: Input Handling
-Change: Updated the /api/v1/activation endpoint to parse the mtn string.
-
-Before: The server might have passed the raw string or only looked at a single value.
-
-After: We use Python list comprehension to split the input by commas and strip whitespace: [m.strip() for m in mtn_raw.split(",") if m.strip()].
-
-Benefit: Allows the user to send payloads like "mtn": "4029608762, 4023069459" and have both processed.
-
-B. RuleEngine_NP.py: The Core Logic
-Change 1: Context Propagation (process_order_request)
-
-Logic: We updated the method signature to accept mtn_list and added it to the context dictionary.
-
-Fix: We also removed a hardcoded value ('order_type': 'PENDING_ORDERS') and replaced it with the dynamic variable order_type, ensuring ACTIVATION flows work correctly.
-
-Change 2: Looping & Matching Logic (_call_configured_api)
-
-Logic: We replaced the single-execution block with a loop.
-
-The "Smart Match":
-
-Python
-
-match = next((item for item in activationDetailsList if str(item.get('mtn')) == str(user_mtn)), None)
-This line is the "brain" of the update. It looks at the huge list from the backend and picks only the object that matches the specific phone number the user requested.
-
-Change 3: Mock Data Injection
-
-Logic: We added a temporary block inside _call_configured_api that checks if the API name involves 'Reflow' or 'Submit_Order'. If yes, it injects a static JSON object containing 4 sample MTNs.
-
-Benefit: This allows you to demo the logic (looping and matching) right now without worrying about the live API returning the specific data you need for testing.
-
-3. Visual Logic Flow (For the Demo)
-Input: User sends MTN: A, B.
-
-Fetch: Engine gets full list [A, B, C, D] from Backend (or Mock).
-
-Loop 1: System takes A. Searches Backend List. Found A! -> Executes Rule for A.
-
-Loop 2: System takes B. Searches Backend List. Found B! -> Executes Rule for B.
-
-Completion: Returns success for processed items.
-
-4. Demo Script (How to Present)
-Step 1: The Setup
-
-"I will now demonstrate the new Multi-MTN processing capability. I have configured the system to accept a list of MTNs. For this demo, I am injecting a mock backend response that contains 4 different phone lines."
-
-Step 2: The Request (Postman)
-
-"In Postman, I am sending a request for two specific MTNs: 4029608762 and 4023069459. Note that I am not requesting the other two lines available in the data."
-
-Step 3: Execution & Logs
-
-"As I hit send, watch the logs..."
-
-"You see the system acknowledges receiving 2 User MTNs."
-
-"It scans the backend data..."
-
-"It specifically finds and matches only the two MTNs we requested."
-
-"It triggers the API call for those specific lines individually."
-
-Step 4: Conclusion
-
-"This confirms that we have successfully moved away from index-based processing to intelligent, search-based bulk processing."
-
-
-
-
-
-/get-correction-activation-details
-{
-    "orderNo": null,
-    "locationCode": null,
-    "mtn": null,
-    "orderType": null,
-    "orderDetails": null,
-    "activationDetailsList": [
-        {
-            "mtn": "4029608762",
-            "currentPlan": "LLP",
-            "deplType": "L",
-            "postInLine": "false",
-            "multiLineSeqNo": "1",
-            "lineActionType": "BYOD",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000006",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        },
-        {
-            "mtn": "4029905316",
-            "currentPlan": "LLP",
-            "deplType": "NA",
-            "postInLine": "false",
-            "multiLineSeqNo": "4",
-            "lineActionType": "FEA",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000007",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        },
-        {
-            "mtn": "4026573252",
-            "currentPlan": "LLP",
-            "deplType": "NA",
-            "postInLine": "false",
-            "multiLineSeqNo": "3",
-            "lineActionType": "FEA",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000009",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,`
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        },
-        {
-            "mtn": "4023069459",
-            "currentPlan": "LLP",
-            "deplType": "NA",
-            "postInLine": "false",
-            "multiLineSeqNo": "2",
-            "lineActionType": "FEA",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000009",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        }
-    ],
-    "switchDetailsList": null,
-    "pendingOrders": null,
-    "status": null,
-    "statusMessage": null,
-    "errorMessage": null,
-    "simotaDetailsList": null,
-    "esimTransactionsList": null
-}
-
-The end-to-end flow for a single MTN already works correctly — the rule engine takes one activation detail, evaluates the rules, and performs the reflow/submit actions.
-
-Now my job is to read the single-MTN flow step-by-step and find the exact point where the engine takes the single activationDetailsList[0] record and runs the rules on it. That is the spot where I need to introduce the loop.
-
-For testing, I’ll mock the activationDetailsList JSON inside the rule engine instead of depending on live APIs. Then I’ll pass multiple MTNs from Postman, split them, filter the mocked list, and run the same rule-execution block for each selected MTN.
-
-In short:
-• understand the single-MTN flow first
-• locate the exact place where one activation detail is processed
-• wrap only that section in a loop
-• use mocked activation details for testing
-• run only the rules you approve for multi-MTN (allow-list, table-driven later)
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
+         📡 Method: POST
+📝 LOGGED: API_CALL_START for submit-activation-api-call (Session: SS_20251126_101653_fc73a53e)
+         🚀 Making API call...
+Current rules ===> RULE_227
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
+API DATA status is 404 ==> {'timestamp': 1764173827296, 'status': 404, 'error': 'Not Found', 'path': '/order360-correction-services/submit-activation111'}
+📝 LOGGED: API_CALL_PARTIAL_FAIL for submit-activation-api-call (Session: SS_20251126_101653_fc73a53e)
+response ==> RULE_227
+         ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_227', 'rule_name': 'submit-activation-api-call', 'rule_step_number': 27, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_228', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
+response ==> RULE_227
+Next scenario rule {'rule_id': 'RULE_228', 'rule_name': 'submit-activation-api-status', 'rule_step_number': 29, 'JSON_PATH_VALUE': 'errorMessage', 'operator': 'EQUALS', 'expected_value': 'False', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_229', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_227', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> errorMessage
+                  🔍 Searching for field: errorMessage
+                  ❌ Data not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: errorMessage
+               Operator: EQUALS
+               Actual Value: '0'
+               Expected Value: 'False'
+         ❌ Condition not met for rule: submit-activation-api-status
+Finding failure case for22
+Finding failure case for  errorMessage ACTIVATION EQUALS
+📝 LOGGED: TEMPLATE_RESPONSE_START for activation-status-check (Session: SS_20251126_101653_fc73a53e)
+         📋 Template: Activation success message
+         🔄 Processing template placeholders...
+         🔧 Replacing placeholders:
+         ✅ Response template processed successfully
+response ==> ACTIVATION_SUCCESS_MESSAGE
+         ✅ Template response generated for rule: Device successfully Activated
+         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Device successfully Activated', 'response': 'Device successfully Activated', 'rule_id': '', 'timestamp': '2025-11-26T10:17:09.171036'}
+📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for activation-status-check (Session: SS_20251126_101653_fc73a53e)
+🎯 RULE EXECUTION RESULT:
+   Result: {'status': 'SUCCESS', 'message': 'API call completed successfully', 'response': 'API call completed successfully', 'rule_id': '', 'timestamp': '2025-11-26T10:16:58.425579'}
+   Status: SUCCESS
+   Message: API call completed successfully
+🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
+📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251126_101653_fc73a53e)
