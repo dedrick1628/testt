@@ -1,110 +1,109 @@
-/get-correction-activation-details
-{
-    "orderNo": null,
-    "locationCode": null,
-    "mtn": null,
-    "orderType": null,
-    "orderDetails": null,
-    "activationDetailsList": [
-        {
-            "mtn": "4029608762",
-            "currentPlan": "LLP",
-            "deplType": "L",
-            "postInLine": "false",
-            "multiLineSeqNo": "1",
-            "lineActionType": "BYOD",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000006",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        },
-        {
-            "mtn": "4029905316",
-            "currentPlan": "LLP",
-            "deplType": "NA",
-            "postInLine": "false",
-            "multiLineSeqNo": "4",
-            "lineActionType": "FEA",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000007",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        },
-        {
-            "mtn": "4026573252",
-            "currentPlan": "LLP",
-            "deplType": "NA",
-            "postInLine": "false",
-            "multiLineSeqNo": "3",
-            "lineActionType": "FEA",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000009",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,`
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        },
-        {
-            "mtn": "4023069459",
-            "currentPlan": "LLP",
-            "deplType": "NA",
-            "postInLine": "false",
-            "multiLineSeqNo": "2",
-            "lineActionType": "FEA",
-            "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-            "aceOrdStatus": "CO",
-            "aceOrdSaleType": "S",
-            "aceOrdCrdAppNum": "601867687",
-            "activationRequest": "2025-11-16 13:31:59.0000009",
-            "powerOnActivationRequired": "false",
-            "activationTime": null,
-            "dvsError": null,
-            "dvsErrorTimeStamp": null,
-            "dvsSuccessMsg": "375709336",
-            "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-            "setUpLater": "false"
-        }
-    ],
-    "switchDetailsList": null,
-    "pendingOrders": null,
-    "status": null,
-    "statusMessage": null,
-    "errorMessage": null,
-    "simotaDetailsList": null,
-    "esimTransactionsList": null
-}
+# ... existing code ...
+headers = json.loads(api_config.get('api_headers'))
+print("Current rules ===>", rule['rule_id'])
 
-The end-to-end flow for a single MTN already works correctly — the rule engine takes one activation detail, evaluates the rules, and performs the reflow/submit actions.
+# ==================================================================================
+# 🛠️ TESTING ONLY: MOCK DATA INJECTION
+# This block injects the specific JSON you provided so you can test the Loop Logic
+# without depending on the real Get Order API response.
+# ==================================================================================
+if 'Reflow' in api_name or 'Submit_Order' in api_name:
+    print("🧪 INJECTING MOCK DATA FOR TESTING...")
+    mock_data = {
+        "orderNo": None,
+        "locationCode": None,
+        "mtn": None,
+        "orderType": None,
+        "orderDetails": None,
+        "activationDetailsList": [
+            {
+                "mtn": "4029608762",
+                "currentPlan": "LLP",
+                "deplType": "L",
+                "postInLine": "false",
+                "multiLineSeqNo": "1",
+                "lineActionType": "BYOD",
+                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                "aceOrdStatus": "CO",
+                "aceOrdSaleType": "S",
+                "aceOrdCrdAppNum": "601867687",
+                "activationRequest": "2025-11-16 13:31:59.0000006",
+                "powerOnActivationRequired": "false",
+                "activationTime": None,
+                "dvsError": None,
+                "dvsErrorTimeStamp": None,
+                "dvsSuccessMsg": "375709336",
+                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                "setUpLater": "false"
+            },
+            {
+                "mtn": "4029905316",
+                "currentPlan": "LLP",
+                "deplType": "NA",
+                "postInLine": "false",
+                "multiLineSeqNo": "4",
+                "lineActionType": "FEA",
+                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                "aceOrdStatus": "CO",
+                "aceOrdSaleType": "S",
+                "aceOrdCrdAppNum": "601867687",
+                "activationRequest": "2025-11-16 13:31:59.0000007",
+                "powerOnActivationRequired": "false",
+                "activationTime": None,
+                "dvsError": None,
+                "dvsErrorTimeStamp": None,
+                "dvsSuccessMsg": "375709336",
+                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                "setUpLater": "false"
+            },
+            {
+                "mtn": "4026573252",
+                "currentPlan": "LLP",
+                "deplType": "NA",
+                "postInLine": "false",
+                "multiLineSeqNo": "3",
+                "lineActionType": "FEA",
+                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                "aceOrdStatus": "CO",
+                "aceOrdSaleType": "S",
+                "aceOrdCrdAppNum": "601867687",
+                "activationRequest": "2025-11-16 13:31:59.0000009",
+                "powerOnActivationRequired": "false",
+                "activationTime": None,
+                "dvsError": None,
+                "dvsErrorTimeStamp": None,
+                "dvsSuccessMsg": "375709336",
+                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                "setUpLater": "false"
+            },
+            {
+                "mtn": "4023069459",
+                "currentPlan": "LLP",
+                "deplType": "NA",
+                "postInLine": "false",
+                "multiLineSeqNo": "2",
+                "lineActionType": "FEA",
+                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                "aceOrdStatus": "CO",
+                "aceOrdSaleType": "S",
+                "aceOrdCrdAppNum": "601867687",
+                "activationRequest": "2025-11-16 13:31:59.0000009",
+                "powerOnActivationRequired": "false",
+                "activationTime": None,
+                "dvsError": None,
+                "dvsErrorTimeStamp": None,
+                "dvsSuccessMsg": "375709336",
+                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                "setUpLater": "false"
+            }
+        ]
+    }
+    # Inject directly into context so find_key_recursively will find THIS instead of real API data
+    context['activationDetailsList'] = mock_data['activationDetailsList']
+# ==================================================================================
 
-Now my job is to read the single-MTN flow step-by-step and find the exact point where the engine takes the single activationDetailsList[0] record and runs the rules on it. That is the spot where I need to introduce the loop.
 
-For testing, I’ll mock the activationDetailsList JSON inside the rule engine instead of depending on live APIs. Then I’ll pass multiple MTNs from Postman, split them, filter the mocked list, and run the same rule-execution block for each selected MTN.
+# --- STEP 1: Determine items to process (Looping Logic) ---
+items_to_process = []
 
-In short:
-• understand the single-MTN flow first
-• locate the exact place where one activation detail is processed
-• wrap only that section in a loop
-• use mocked activation details for testing
-• run only the rules you approve for multi-MTN (allow-list, table-driven later)
+# ... rest of your code ...
