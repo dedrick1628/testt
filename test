@@ -1,186 +1,2208 @@
-🚀 STARTING ORDER PROCESSING
-============================================================
-📦 Order Number: 1051684
-📍 Location Code: 1822101
-📋 Order Type: ACTIVATION
-👤 User:
-🆔 Session ID: SS_20251126_101653_fc73a53e
-------------------------------------------------------------
-🔍 Step 1: Calling problem finder... 1051684   1822101
-🔍 Step 1: Finding matching rule for order type11
-rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-         🚀 Running test mock data function...
-rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-🔥 EXECUTING RULE: API_CALL with context: None
-Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
+"""
+Database-Driven Rule Engine for Order Processing
+Fully configurable through database with no hardcoded values
+"""
 
-         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-         📡 Method: POST
-📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251126_101653_fc73a53e)
-         🚀 Making API call...
-Current rules ===> RULE_200
-         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
-response ==> RULE_200
-         ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-response ==> RULE_200
-Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails
-                  🔍 Searching for field: orderDetails
-                  🔍 Checking API result11: api_result_RULE_200
-                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
-                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
-            🔍 Condition Details:
-               Field Path: orderDetails
-               Operator: EQUALS
-               Actual Value: '1'
-               Expected Value: '1'
-         ✅ Condition met for rule: get-correction-order-details-success
-Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_207', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails{}.billRegion=VB
-            🔍 Condition Details:
-               Field Path: orderDetails{}.billRegion=VB
-               Operator: EQUALS
-               Actual Value: 'False'
-               Expected Value: 'True'
-         ❌ Condition not met for rule: b2b-customer-check
-Finding failure case for22
-Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
-field_pathfield_path ===> orderDetails{}.portIn
-                  🔍 Searching for field: orderDetails{}.portIn
-                  🔍 Checking API result11: api_result_RULE_200
-                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
-                  📋 Object 'None' not found in this API response
-                  ❌ Data not found in any API response, treating as length 0
-            🔍 Condition Details:
-               Field Path: orderDetails{}.portIn
-               Operator: EQUALS
-               Actual Value: '0'
-               Expected Value: 'False'
-         ❌ Condition not met for rule: portin-check
-Finding failure case for22
-Finding failure case for  orderDetails{}.portIn ACTIVATION EQUALS
-field_pathfield_path ===> orderDetails{}.aceOrderStatus=Completed(CO)
-            🔍 Condition Details:
-               Field Path: orderDetails{}.aceOrderStatus=Completed(CO)
-               Operator: EQUALS
-               Actual Value: 'True'
-               Expected Value: 'True'
-         ✅ Condition met for rule: order-status-check
-Next scenario rule {'rule_id': 'RULE_214', 'rule_name': 'check payment status', 'rule_step_number': 14, 'JSON_PATH_VALUE': 'orderDetails{}.paymentStatus=Success', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_217', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails{}.paymentStatus=Success
-            🔍 Condition Details:
-               Field Path: orderDetails{}.paymentStatus=Success
-               Operator: EQUALS
-               Actual Value: 'True'
-               Expected Value: 'True'
-         ✅ Condition met for rule: check payment status
-Next scenario rule {'rule_id': 'RULE_217', 'rule_name': 'fraud check success', 'rule_step_number': 17, 'JSON_PATH_VALUE': 'orderDetails{}.fraudStatus=Success', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_201', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails{}.fraudStatus=Success
-            🔍 Condition Details:
-               Field Path: orderDetails{}.fraudStatus=Success
-               Operator: EQUALS
-               Actual Value: 'True'
-               Expected Value: 'True'
-         ✅ Condition met for rule: fraud check success
-Next scenario rule {'rule_id': 'RULE_201', 'rule_name': 'get-correction-activation-details', 'rule_step_number': 2, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_204', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
-Inside execute api call step method {'conf_id': 'CONF_110', 'rule_id': 'RULE_201', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}\t', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'get-correction-activation-details'}
+import json
+import oracledb
+import requests
+import logging
+import os
+import json
+from datetime import datetime
+import re
+from typing import Dict, Any, List, Optional
+import uuid  # For session ID generation
+import random
+# Add Slack integration
+from slack_sdk import WebClient
+import urllib3
 
-         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details
-         📡 Method: POST
-📝 LOGGED: API_CALL_START for get-correction-activation-details (Session: SS_20251126_101653_fc73a53e)
-         🚀 Making API call...
-Current rules ===> RULE_201
-         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details
-API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': None, 'activationDetailsList': [{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}], 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
-response ==> RULE_201
-         ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_201', 'rule_name': 'get-correction-activation-details', 'rule_step_number': 2, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_204', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
-response ==> RULE_201
-Next scenario rule {'rule_id': 'RULE_204', 'rule_name': 'check-correction-activation-details', 'rule_step_number': 4, 'JSON_PATH_VALUE': 'activationDetailsList', 'operator': 'NOT EQUALS', 'expected_value': '0', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_226', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_201', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> activationDetailsList
-                  🔍 Searching for field: activationDetailsList
-                  🔍 Checking API result11: api_result_RULE_201
-                  🔍 Value: {'rule_name': 'get-correction-activation-details', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': None, 'activationDetailsList': [{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}], 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
-                  🔍 Value111: [{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]
-                  📊 Found Value '[{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]'
-            🔍 Condition Details:
-               Field Path: activationDetailsList
-               Operator: NOT EQUALS
-               Actual Value: '[{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]'
-               Expected Value: '0'
-         ✅ Condition met for rule: check-correction-activation-details
-Next scenario rule {'rule_id': 'RULE_226', 'rule_name': 'activation-status-check', 'rule_step_number': 26, 'JSON_PATH_VALUE': "activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None", 'operator': 'MULTI_FIELD_MATCH', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_227', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_201', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-               🎯 Evaluating complex condition: activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None ===> RULE_201
-               📋 Array: activationDetailsList
-               📋 Field conditions: {'activationStatus': 'None'}
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID1111 ==> RULE_201
-Filed Path111 ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-Rule ID ==> RULE_201
-Filed Path ==> activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-[{'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}, {'mtn': '5204250369', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '1', 'lineActionType': 'BYOD', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': None, 'dvsErrorTimeStamp': None, 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'false'}, {'mtn': '5208490574', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '3', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '600000526', 'dvsSuccessTimestamp': '2025-11-25T18:31:11.605561Z', 'setUpLater': 'false'}, {'mtn': '5209717631', 'currentPlan': 'LLP', 'deplType': 'L', 'postInLine': 'false', 'multiLineSeqNo': '2', 'lineActionType': 'EUP', 'activationStatus': 'FAILED GET ICCID ST', 'aceOrdStatus': 'CO', 'aceOrdSaleType': 'P', 'aceOrdCrdAppNum': '563202344', 'activationRequest': '2025-11-23 16:50:51.0000005', 'powerOnActivationRequired': 'true', 'activationTime': '25-11-2025 09:32:45', 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1.', 'dvsErrorTimeStamp': '2025-11-25T19:12:35.293463Z', 'dvsSuccessMsg': '625927507', 'dvsSuccessTimestamp': '2025-11-25T20:55:25.075492Z', 'setUpLater': 'true'}]
-               📋 Found array 'activationDetailsList' with 4 items
-               🔍 Checking item 0: {'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}
-                  📋 activationStatus: 'None' == 'None' → True
-               ✅ Found matching item: {'mtn': '5204883316', 'currentPlan': 'LLP', 'deplType': 'NA', 'postInLine': 'false', 'multiLineSeqNo': '4', 'lineActionType': 'FEA', 'activationStatus': None, 'aceOrdStatus': None, 'aceOrdSaleType': None, 'aceOrdCrdAppNum': None, 'activationRequest': None, 'powerOnActivationRequired': 'true', 'activationTime': None, 'dvsError': 'Error::Application Error: An error in LineValidationForOrder, lines# 1,.', 'dvsErrorTimeStamp': '2025-11-25T14:32:45.234980Z', 'dvsSuccessMsg': '0', 'dvsSuccessTimestamp': '2025-11-25T14:32:45.275712Z', 'setUpLater': 'false'}
-            🔍 Condition Details:
-               Field Path: activationDetailsList[].activationStatus='',activationStatus=null,activationStatus=None
-               Operator: MULTI_FIELD_MATCH
-               Actual Value: 'True'
-               Expected Value: 'True'
-         ✅ Condition met for rule: activation-status-check
-Next scenario rule {'rule_id': 'RULE_227', 'rule_name': 'submit-activation-api-call', 'rule_step_number': 27, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_228', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
-Inside execute api call step method {'conf_id': 'CONF_111', 'rule_id': 'RULE_227', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}\t', 'timeout_seconds': 30, 'request_body': '{"orderNo":"{order_number}","mtn":"{mtn}","locationCode":"{location_code}","mldSeqNo":"1","masterOrderNo":"{masterOrderNo}","creditApplicationNum":"{credit_app_num}","nsaStackId":"{stack_id}","custOrdType":"{cust_ord_type}"}', 'api_name': 'Submit Order API'}
+# Disable SSL warnings for API calls
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
-         📡 Method: POST
-📝 LOGGED: API_CALL_START for submit-activation-api-call (Session: SS_20251126_101653_fc73a53e)
-         🚀 Making API call...
-Current rules ===> RULE_227
-         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
-API DATA status is 404 ==> {'timestamp': 1764173827296, 'status': 404, 'error': 'Not Found', 'path': '/order360-correction-services/submit-activation111'}
-📝 LOGGED: API_CALL_PARTIAL_FAIL for submit-activation-api-call (Session: SS_20251126_101653_fc73a53e)
-response ==> RULE_227
-         ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_227', 'rule_name': 'submit-activation-api-call', 'rule_step_number': 27, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_228', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
-response ==> RULE_227
-Next scenario rule {'rule_id': 'RULE_228', 'rule_name': 'submit-activation-api-status', 'rule_step_number': 29, 'JSON_PATH_VALUE': 'errorMessage', 'operator': 'EQUALS', 'expected_value': 'False', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_229', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_227', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> errorMessage
-                  🔍 Searching for field: errorMessage
-                  ❌ Data not found in any API response, treating as length 0
-            🔍 Condition Details:
-               Field Path: errorMessage
-               Operator: EQUALS
-               Actual Value: '0'
-               Expected Value: 'False'
-         ❌ Condition not met for rule: submit-activation-api-status
-Finding failure case for22
-Finding failure case for  errorMessage ACTIVATION EQUALS
-📝 LOGGED: TEMPLATE_RESPONSE_START for activation-status-check (Session: SS_20251126_101653_fc73a53e)
-         📋 Template: Activation success message
-         🔄 Processing template placeholders...
-         🔧 Replacing placeholders:
-         ✅ Response template processed successfully
-response ==> ACTIVATION_SUCCESS_MESSAGE
-         ✅ Template response generated for rule: Device successfully Activated
-         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Device successfully Activated', 'response': 'Device successfully Activated', 'rule_id': '', 'timestamp': '2025-11-26T10:17:09.171036'}
-📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for activation-status-check (Session: SS_20251126_101653_fc73a53e)
-🎯 RULE EXECUTION RESULT:
-   Result: {'status': 'SUCCESS', 'message': 'API call completed successfully', 'response': 'API call completed successfully', 'rule_id': '', 'timestamp': '2025-11-26T10:16:58.425579'}
-   Status: SUCCESS
-   Message: API call completed successfully
-🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
-📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251126_101653_fc73a53e)
+class SimpleRuleEngine_NP:
+    """
+    Database-driven rule engine that processes order requests
+    All configurations stored in database
+    """
+
+    def __init__(self, db_config: Dict[str, str]):
+        self.db_config = db_config
+        self.logger = logging.getLogger(__name__)
+        self.log_context=[]
+        # Add output capturing for detailed messages
+        self.output_buffer = []
+        # Initialize session ID for this execution
+        self.session_id = None
+        self.current_context = {}
+        self.flow_type = None
+        self.e2eFlag = None
+        connection_params = {
+            'user': 'CXP_OPS_MONITORING',
+            'password': 'QWEqwe##00',
+            'dsn': 'tpalpbrhvd00-scan.verizon.com:1532/cotpaprd'
+        }
+        try:
+            self.connection = oracledb.connect(**connection_params)
+            self.cursor = self.connection.cursor()
+            print("Database connection established successfully.")
+        except oracledb.DatabaseError as e:
+            error, = e.args
+            print(f"Database connection error {error.code}: {error.message}")
+
+    def _generate_session_id(self) -> str:
+        """Generate unique session ID for this execution"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        unique_id = str(uuid.uuid4())[:8]
+        return f"SS_{timestamp}_{unique_id}"
+
+    def _log_execution_step(self, rule_dict: Dict[str, Any], action: str, 
+                       input_data: Any = None, output_data: Any = None,
+                       error_message: str = None, message_type: str = "INFO",
+                       action_status: str = "SUCCESS") -> None:
+        """Log execution step to database"""
+        try:
+            # Prepare data for logging
+            rule_id = rule_dict.get('rule_id', '')
+            rule_name = rule_dict.get('rule_name', '')
+            step_id = rule_dict.get('rule_step_number', '')
+
+            # Convert complex data to JSON strings
+            input_json = json.dumps(input_data, default=str) if input_data else None
+            output_json = json.dumps(output_data, default=str) if output_data else None
+
+            # Generate LOG_ID using timestamp + random number
+            log_id = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) + random.randint(1, 999)
+
+            insert_sql = """
+                INSERT INTO CXP_OPS_MONITORING.CXP_STORE_SUPPORT_EXECUTION_LOG_NP (
+                    LOG_ID, RULE_ID, SESSION_ID, RULE_NAME, ORDER_NUMBER, 
+                    LOCATION_CODE, STEP_ID, STEP_NAME, ACTION, INPUT_DATA, 
+                    OUTPUT_DATA, ERROR_MESSAGE, MESSAGE_TYPE, ACTION_STATUS, CREATED_DATE
+                ) VALUES (
+                    :log_id, :rule_id, :session_id, :rule_name, :order_number,
+                    :location_code, :step_id, :step_name, :action, :input_data,
+                    :output_data, :error_message, :message_type, :action_status, SYSTIMESTAMP
+                )
+            """
+
+            self.cursor.execute(insert_sql, {
+                'log_id': log_id,
+                'rule_id': rule_id,
+                'session_id': self.session_id,
+                'rule_name': rule_name,
+                'order_number': self.current_context.get('order_number', ''),
+                'location_code': self.current_context.get('location_code', ''),
+                'step_id': str(step_id),
+                'step_name': rule_name,
+                'action': action,
+                'input_data': input_json,
+                'output_data': output_json,
+                'error_message': error_message,
+                'message_type': message_type,
+                'action_status': action_status
+            })
+
+            self.connection.commit()
+
+            print(f"📝 LOGGED: {action} for {rule_name} (Session: {self.session_id})")
+
+        except Exception as e:
+            print(f"❌ Logging error: {str(e)}")
+            # Don't fail the main process due to logging issues
+            pass
+    def _log_execution_step1(self, rule_dict: Dict[str, Any], action: str, 
+                           input_data: Any = None, output_data: Any = None,
+                           error_message: str = None, message_type: str = "INFO",
+                           action_status: str = "SUCCESS") -> None:
+        """Log execution step to database"""
+        try:
+            # Prepare data for logging
+            rule_id = rule_dict.get('rule_id', '')
+            rule_name = rule_dict.get('rule_name', '')
+            step_id = rule_dict.get('rule_step_number', '')
+
+            # Convert complex data to JSON strings
+            input_json = json.dumps(input_data, default=str) if input_data else None
+            output_json = json.dumps(output_data, default=str) if output_data else None
+
+            # Insert log entry (LOG_ID is auto-generated identity column, so exclude it)
+            insert_sql = """
+                INSERT INTO CXP_OPS_MONITORING.CXP_STORE_SUPPORT_EXECUTION_LOG_NP (
+                    RULE_ID, SESSION_ID, RULE_NAME, ORDER_NUMBER, 
+                    LOCATION_CODE, STEP_ID, STEP_NAME, ACTION, INPUT_DATA, 
+                    OUTPUT_DATA, ERROR_MESSAGE, MESSAGE_TYPE, ACTION_STATUS, CREATED_DATE
+                ) VALUES (
+                    :rule_id, :session_id, :rule_name, :order_number,
+                    :location_code, :step_id, :step_name, :action, :input_data,
+                    :output_data, :error_message, :message_type, :action_status, SYSTIMESTAMP
+                )
+            """
+
+            self.cursor.execute(insert_sql, {
+                'rule_id': rule_id,
+                'session_id': self.session_id,
+                'rule_name': rule_name,
+                'order_number': self.current_context.get('order_number', ''),
+                'location_code': self.current_context.get('location_code', ''),
+                'step_id': str(step_id),
+                'step_name': rule_name,
+                'action': action,
+                'input_data': input_json,
+                'output_data': output_json,
+                'error_message': error_message,
+                'message_type': message_type,
+                'action_status': action_status
+            })
+
+            self.connection.commit()
+
+            print(f"📝 LOGGED: {action} for {rule_name} (Session: {self.session_id})")
+
+        except Exception as e:
+            # self.cursor.close()
+            # self.db_connection.close()
+            print(f"❌ Logging error: {str(e)}")
+            # Don't fail the main process due to logging issues
+            pass
+    def _log_and_capture(self, message: str):
+        """Log message to console and capture for detailed response"""
+
+        self.output_buffer.append(message)
+
+
+    def _get_captured_output(self) -> str:
+        """Get captured output as formatted string"""
+        return "\n".join(self.output_buffer)
+
+    def testing(self):
+        print("COapi_configapi_configntext is")
+
+        """Update execution log in database"""    
+    def process_order_request(self, order_number: str, location_code: str, 
+                            order_type: str, user_name: str, mtn_list: Optional[list[str]] = None) -> Dict[str, Any]:
+        print("context is")
+        try:
+            # Initialize session and context for logging
+            self.session_id = self._generate_session_id()
+            self.current_context = {
+                'order_number': order_number,
+                'location_code': location_code,
+                'order_type': order_type,
+                'user_name': user_name,
+                'mtn_list': mtn_list or []
+            }
+
+            # Clear any previous messages and add a flag for template responses
+            self.output_buffer = []
+            self.template_response = None  # Add template response tracker
+
+            print(f"\n🚀 STARTING ORDER PROCESSING")
+            print(f"=" * 60)
+            print(f"📦 Order Number: {order_number}")
+            print(f"📍 Location Code: {location_code}")
+            print(f"📋 Order Type: {order_type}")
+            print(f"👤 User: {user_name}")
+            print(f"🆔 Session ID: {self.session_id}")
+            print(f"-" * 60)
+
+            print(f"🔍 Step 1: Calling problem finder...",order_number," ",location_code)
+            # Step 1: Find matching rule
+            # intent_type = None
+            ntent_type = None
+            if order_type == "PENDING ORDER":
+                intent_type = "PENDING_ORDERS"
+            elif order_type == "ACTIVATION":
+                intent_type = "ACTIVATION"   
+
+            if order_number and location_code:
+                print(f"🔍 Step 1: Finding matching rule for order type11")
+                # intent_type = self.call_problem_finder(order_number,location_code)
+                # print("intent_type ==>",intent_type)
+
+                rule_step = 1
+            elif order_number and not location_code:
+                print(f"🔍 Step 1: Finding matching rule for order type22 ")
+
+                rule_step = 32
+            elif order_number is None and location_code is None:
+
+                rule_step = 18
+            # uncomment for testing with mock data for new rule
+            # rule = self._find_rule_by_intent_and_step(intent_type,41)
+
+            rule = self._find_rule_by_intent_and_step(intent_type,rule_step)
+            print("rulerulerulerule ===>", rule)
+            if not rule:
+                print(f"❌ No specific rule found for order type '{order_type}'")
+                # Log the failed rule search
+                self._log_execution_step(
+                    {'rule_id': 'UNKNOWN', 'rule_name': 'Rule Search', 'rule_step_number': 0},
+                    'RULE_SEARCH', 
+                    {'order_type': order_type, 'intent_type': intent_type},
+                    None,
+                    f"No rule found for order type: {order_type}",
+                    "ERROR",
+                    "FAILED"
+                )
+                return self._create_response("INFO", f"No specific rule found for order type '{order_type}'. Using default processing.",)
+
+            context = {
+                'order_number': order_number,
+                'location_code': location_code,
+                'order_type': order_type,
+                'user_name': 'User',
+                'mtn_list': mtn_list,
+            }
+
+
+            print("         🚀 Running test mock data function...")
+            print("rule_typerule_type ==>", rule)
+            rule_type = rule['rule_type']
+            rule_context = rule.get('rule_context', '')
+            print(f"🔥 EXECUTING RULE: {rule_type} with context: {rule_context}")
+            result = self._execute_rule(intent_type, rule_type, context, rule, rule['rule_id'], rule_context)
+
+            print(f"🎯 RULE EXECUTION RESULT:")
+            print(f"   Result: {result}")
+            print(f"   Status: {result.get('status', 'NONE') if result else 'NO_RESULT'}")
+            print(f"   Message: {result.get('message', 'NONE') if result else 'NO_MESSAGE'}")
+
+            # Check if a template response was captured during execution
+            if hasattr(self, 'template_response') and self.template_response:
+                print(f"🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!")
+                # Log successful completion with template response
+                self._log_execution_step(
+                    rule, 'PROCESS_COMPLETE_TEMPLATE',
+                    self.current_context,
+                    self.template_response,
+                    None, "INFO", "SUCCESS"
+                )
+                return self.template_response
+
+            # If we got a template response, return it directly
+            if result and result.get('status').lower() == 'success' and 'policy' in result.get('message', '').lower():
+                print(f"🎯 TEMPLATE RESPONSE DETECTED - returning template message")
+                # Log template response detected
+                self._log_execution_step(
+                    rule, 'PROCESS_COMPLETE_POLICY',
+                    self.current_context,
+                    result,
+                    None, "INFO", "SUCCESS"
+                )
+                return result
+
+            print(f"\n🎯 PROCESSING COMPLETE")
+            print(f"Status: {result.get('status', 'UNKNOWN') if result else 'NO_RESULT'}")
+            print(f"=" * 60)
+
+            # Log process completion
+            final_status = result.get('status', 'UNKNOWN') if result else 'NO_RESULT'
+            self._log_execution_step(
+                rule, 'PROCESS_COMPLETE',
+                self.current_context,
+                result,
+                None, "INFO", final_status
+            )
+
+            # Return the result from rule execution
+            return self._create_response("SUCCESS", "Process completed","Dear User, Order processing failed. Please check your order details and try again. If the issue persists, contact customer support.",result) if result else self._create_response("ERROR", "No result from rule execution","Dear User, Order processing failed. Please check your order details and try again. If the issue persists, contact customer support.",result)
+
+        except Exception as e:
+            error_msg = f"Order processing error: {str(e)}"
+            print(f"❌ {error_msg}")
+
+            # Log process error
+            self._log_execution_step(
+                {'rule_id': 'PROCESS_ERROR', 'rule_name': 'Process Error', 'rule_step_number': 999},
+                'PROCESS_ERROR',
+                self.current_context,
+                None,
+                error_msg,
+                "ERROR", "FAILED"
+            )
+            return self._create_response("ERROR", error_msg,rule['rule_id'])
+        except Exception as e:
+            error_msg = f"System error processing order: {str(e)}"
+            return self._create_response("ERROR", error_msg)
+
+    def _evaluate_simple_condition(self, json_path_value: str, operator: str, expected_value: str, context: Dict[str, Any],api_rule_id) -> bool:
+        try:
+            # Parse the field path
+            response_data = context.get('api_result_'+api_rule_id, {}).get('response_data', {})
+            #print(f'response_data',response_data)
+            if '{}.' in json_path_value:
+                # Handle nested object path like "orderDetails{}.aceOrderStatus"
+                parts = json_path_value.split('{}.')
+                parent_key = parts[0]
+                child_key = parts[1]
+
+                # Check if expected value is in the path (after =)
+                if '=' in child_key:
+                    child_key, path_expected_value = child_key.split('=', 1)
+                    #if expected_value is None:
+                    expected_value = path_expected_value
+                # Navigate to the nested value
+                if parent_key in response_data and isinstance(response_data[parent_key], dict):
+                    if child_key in response_data[parent_key]:
+                        actual_value = response_data[parent_key][child_key]
+                        return str(actual_value) == str(expected_value)
+            else:
+                # Handle direct path
+                key = json_path_value
+                if '=' in key:
+                    key, path_expected_value = key.split('=', 1)
+                    if expected_value is None:
+                        expected_value = path_expected_value
+                if key in response_data:
+                    actual_value = response_data[key]
+                    return str(actual_value) == str(expected_value)
+            return False
+        except Exception as e:
+            print(f"Error checking field path: {e}")
+            return False
+
+    def _evaluate_condition(self, condition_config: Dict[str, Any], context: Dict[str, Any],prev_rule_id:str,context_rule:str,rule:Dict[str,Any]) -> bool:
+        """Evaluate condition against context"""
+        try:
+
+            json_path_value = condition_config['json_path_value']
+            operator = condition_config['operator']
+            expected_value = condition_config['expected_value']
+
+
+
+
+            actual_value = context.get('json_path_value')
+
+            print("field_pathfield_path ===>", json_path_value)
+            if '[].' in json_path_value and '=' not in json_path_value and ',' not in json_path_value and  actual_value is None:
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            elif '{}' in json_path_value and '=' in json_path_value:
+                actual_value = self._evaluate_simple_condition(json_path_value, operator, expected_value, context,context_rule)
+            elif '=' in json_path_value and ',' in json_path_value or operator == 'MULTI_FIELD_MATCH':
+
+                actual_value =  self._evaluate_complex_condition(json_path_value, operator, expected_value, context,context_rule)
+            elif 'orderDetails' in json_path_value and actual_value is None:
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            # elif 'ACE_FFL_TRACKING_NO' in json_path_value and actual_value is None:
+            #     actual_value = self._execute_dynamic_carrier_api(context,context_rule)
+            elif 'ACE_FFL_TRACKING_NO_UPS' in json_path_value and actual_value is None:
+                actual_value = self._check_for_carrier(context,context_rule)
+                print("ACE_FFL_TRACKING_NO_UPS actual_value",actual_value)
+            elif 'description' in json_path_value and actual_value is None:
+               actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            elif '[].' in json_path_value:
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            elif '[]' in json_path_value:
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            elif 'pendingOrderDetail' in json_path_value:
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            elif '=' in json_path_value and operator == 'SINGLE_FIELD_MATCH':
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+            else:
+                actual_value = self._extract_field_from_api_responses(json_path_value, context,context_rule,rule)
+
+
+            print(f"            🔍 Condition Details:")
+            print(f"               Field Path: {json_path_value}")
+            print(f"               Operator: {operator}")
+            print(f"               Actual Value: '{actual_value}'")
+            print(f"               Expected Value: '{expected_value}'")
+
+            # print(f"               Actual Value: '{actual_value}'")
+            if operator == 'CONTAINS':
+                return str(actual_value) != str(expected_value)
+            elif operator == 'NOT EQUALS':
+                return str(actual_value) != str(expected_value)
+            elif operator == 'SINGLE_FIELD_MATCH':
+                print(f"               Expected Value111: '{expected_value}'")
+                print(f"               Actual Value111: '{actual_value}'")
+                return str(actual_value) != str(expected_value)
+            elif operator == 'MULTI_FIELD_MATCH':
+                return str(actual_value) == str(expected_value)
+            elif operator == 'EQUALS':
+                    return str(actual_value).lower() == str(expected_value).lower()
+            elif operator == 'IN':
+                expected_list = [v.strip() for v in str(expected_value).split(',')]
+                # Also check the actual value with and without trimming for better compatibility
+                actual_str = str(actual_value)
+                actual_trimmed = actual_str.strip()
+
+                result = actual_str in expected_list or actual_trimmed in expected_list
+                msg_data = {
+                    'message':result
+                }
+                print("In result ===>", result)
+                return msg_data
+            else:
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Condition evaluation error: {str(e)}")
+            return False
+    def _check_for_carrier(self, context: Dict[str, Any],rule_id:str) -> Dict[str, Any]:
+        """Execute dynamic carrier API based on previous condition result"""
+        try:
+            print(f"         🚚 Dynamic Carrier API: Determining which carrier to call...",context)
+            tracking_number = context.get('query_result_'+rule_id, {}).get('trackingNumber')
+
+        #     # Check tracking number format from context
+        #     tracking_number = context.get('tracking_number')
+            if not tracking_number:
+                print(f"         ❌ No tracking number available for carrier API call")
+                return self._create_response("ERROR", "No tracking number available for carrier API call", rule_id)
+
+            print(f"         📦 Tracking number: {tracking_number}")
+
+            # Determine carrier based on tracking format
+            if str(tracking_number).startswith('1Z'):
+                return 'True'
+            else:
+                return 'False'  
+
+        except Exception as e:
+            print(f"         ❌ Dynamic carrier API error: {str(e)}")
+            return self._create_response("ERROR", f"Dynamic carrier API error: {str(e)}",rule_id)
+    def _execute_rule(self, intent_type, rule_type: str, context: Dict[str, Any], rule: Dict[str, Any], prev_rule_id:str,rule_context:str) -> Dict[str, Any]:
+
+        condition_config = {
+                    'json_path_value': rule['JSON_PATH_VALUE'],
+                    'operator': rule['operator'],
+                    'expected_value': rule['expected_value'],
+                    'condition_id': rule['rule_id']
+                }
+        try:
+            if rule_type == 'API_CALL':
+               result = self._execute_api_call_step(intent_type,rule,context)
+            #    self._log_execution_step(
+            #             rule, rule['rule_name'],
+            #             rule['JSON_PATH_VALUE'],
+            #             result,
+            #             None, "INFO", result['status']
+            #         )               
+               if result['status'] == 'SUCCESS':
+                  if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+                     next_rule = self._find_rule_by_intent_and_rule_id(intent_type,rule['rule_next_step'])
+                     print("Next scenario rule",next_rule)
+                     if next_rule:
+                        self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_next_step'],next_rule['rule_context'])
+                  return result
+            elif rule_type == 'API_RESPONSE':
+                result = self._evaluate_condition(condition_config,context,prev_rule_id,rule['rule_context'],rule)
+                # self._log_execution_step(
+                #         rule, rule['rule_name'],
+                #         rule['JSON_PATH_VALUE'],
+                #         result,
+                #         None, "INFO", result['status']
+                #     )
+                if result:
+
+                    print(f"         ✅ Condition met for rule: {rule['rule_name']}")
+                    next_rule = None
+                    if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+
+                        next_rule = self._find_rule_by_intent_and_rule_id(intent_type,rule['rule_next_step'])
+                        print("Next scenario rule",next_rule)
+                        if next_rule:
+                            result  = self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_id'],next_rule['rule_context'])
+
+                        else:
+                                    print(f"❌ No rule configured for : {rule['rule_next_step']}")
+                elif not result:
+                    print(f"         ❌ Condition not met for rule: {rule['rule_name']}")
+                    next_step = self._find_failure_case_rule(intent_type,rule)
+
+                    next_rule = self._find_rule_by_intent_and_rule_id(intent_type,next_step)
+
+                    if next_rule:
+
+                        result  = self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_id'],next_rule['rule_context'])
+                        # If failure case returned a template response, store and return it immediately
+                        if result and result.get('status') == 'SUCCESS' and 'policy' in result.get('message', '').lower():
+                            print(f"         🚨 FAILURE CASE RETURNED TEMPLATE - PROPAGATING UP!")
+                            # Store template response for main method to capture
+                            self.template_response = result
+                            return result
+                    else:
+                                    print(f"❌ No rule configured for : {next_step}")
+            elif rule_type == 'DB_QUERY':
+
+                result =  self._execute_database_query_step(rule, context,rule['rule_id'])
+                self._log_execution_step(
+                        rule, rule['rule_name'],
+                        rule['JSON_PATH_VALUE'],
+                        result,
+                        None, "INFO", result['status']
+                    )
+                print("DB_QUERY result ===>",result)
+                print("Excuting query rule ===>", rule)
+                if str(result) == 'True':
+                    print(f"         ✅ Condition met for rule query: {rule['rule_name']}")
+                    next_rule = None
+                    if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+                        next_rule = self._find_rule_by_intent_and_rule_id(intent_type,rule['rule_next_step'])
+                        if next_rule:
+                            result  = self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_id'],next_rule['rule_context'])
+                elif str(result) == 'False':
+                    print(f"         ✅ Condition Not met for rule negative scenario query: {rule['rule_name']}")
+                    next_step = self._find_failure_case_rule(intent_type,rule)
+
+                    next_rule = self._find_rule_by_intent_and_rule_id(intent_type,next_step)
+
+                    if next_rule:
+                            result  = self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_id'],next_rule['rule_context'])
+
+            elif rule_type == 'QUERY_RESULTS':
+                result = self._evaluate_condition(condition_config,context,prev_rule_id,rule['rule_context'],rule)
+                self._log_execution_step(
+                        rule, rule['rule_name'],
+                        rule['JSON_PATH_VALUE'],
+                        result,
+                        None, "INFO", result['status']
+                    )
+                if result == True:
+                    print(f"         ✅ Condition met for rule: {rule['rule_name']}")
+                    if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+                            next_rule = self._find_rule_by_intent_and_rule_id(intent_type,rule['rule_next_step'])
+
+                            if next_rule:
+                                result  = self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_id'],next_rule['rule_context'])
+                elif result == False:
+                    print(f"         ✅ Condition met for rule negative scenario: {rule['rule_name']}")
+                    next_step = self._find_failure_case_rule(intent_type,rule)
+
+                    next_rule = self._find_rule_by_intent_and_rule_id(intent_type,next_step)
+
+                    if next_rule:
+                            result  = self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_id'],next_rule['rule_context'])
+            elif rule_type == 'TEMPLATE_RESPONSE':
+                # Log template response start
+                self._log_execution_step(
+                    rule, 'TEMPLATE_RESPONSE_START',
+                    {'rule_context': rule.get('rule_context', ''), 'context': context},
+                    None, None, "INFO", "STARTED"
+                )
+
+                result = self._execute_response_template_step(context,rule['rule_context'])
+                if result['status'] == 'SUCCESS':
+                    print(f"         ✅ Template response generated for rule: {result['message']}")
+                    print(f"         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {result}")
+
+                    # Log successful template response
+                    self._log_execution_step(
+                        rule, 'TEMPLATE_RESPONSE_SUCCESS',
+                        {'rule_context': rule.get('rule_context', '')},
+                        {'message': result['message']},
+                        None, "INFO", "SUCCESS"
+                    )
+
+                    # Store template response for main method to capture
+                    self.template_response = result
+                    return result
+                else:
+                    print(f"         ❌ Template response failed: {result}")
+
+                    # Log failed template response
+                    self._log_execution_step(
+                        rule, 'TEMPLATE_RESPONSE_FAILED',
+                        {'rule_context': rule.get('rule_context', '')},
+                        None,
+                        result.get('message', 'Template response failed'),
+                        "ERROR", "FAILED"
+                    )
+                    return result
+        except Exception as e:
+            return self._create_response("ERROR", f"Step execution error: {str(e)}",rule['rule_id'])
+
+
+    def _execute_database_query_step(self, rule: Dict[str, Any], context: Dict[str, Any],rule_id:str) -> Dict[str, Any]:
+        """Execute database query step using configuration"""
+
+        try:
+                # Log database query start
+                self._log_execution_step(
+                    rule, 'DB_QUERY_START',
+                    {'rule_id': rule_id, 'context': context},
+                    None, None, "INFO", "STARTED"
+                )
+
+                # Get and execute generic database query
+                query_config = self._get_database_query_config(rule_id)
+                if not query_config:
+                    # Log failed query config lookup
+                    self._log_execution_step(
+                        rule, 'DB_QUERY_CONFIG_FAILED',
+                        {'rule_id': rule_id},
+                        None,
+                        f"No database query found for action_id: {rule_id}",
+                        "ERROR", "FAILED"
+                    )
+                    return self._create_response("ERROR", f"No database query found for action_id: ",rule['rule_id'])
+                # result = self._mock_testing_db_query(context)
+                result = self._execute_configured_query(query_config, context,rule_id)
+
+                print("Database query result ===>", result)
+                if result:
+                    # Log successful database query
+                    self._log_execution_step(
+                        rule, 'DB_QUERY_SUCCESS',
+                        {
+                            'rule_id': rule_id,
+                            'query_config': str(query_config)[:500]  # Truncate long queries
+                        },
+                        result,
+                        None, "INFO", "SUCCESS"
+                    )
+                    return 'True'
+                else:
+                    # Log query with no results
+                    self._log_execution_step(
+                        rule, 'DB_QUERY_NO_RESULTS',
+                        {'rule_id': rule_id},
+                        None,
+                        "Database query returned no results",
+                        "INFO", "NO_RESULTS"
+                    )
+                    return 'False'
+
+        except Exception as e:
+            # Log database query error
+            self._log_execution_step(
+                rule, 'DB_QUERY_ERROR',
+                {'rule_id': rule_id},
+                None,
+                f"Database query error: {str(e)}",
+                "ERROR", "FAILED"
+            )
+            return self._create_response("ERROR", f"Database query error: {str(e)}",rule['rule_id'])
+    # def _create_response(self, status: str, message: str, rule_id: str) -> Dict[str, Any]:
+    #     """Create standardized response"""
+    #     print("Creating response ===>", rule_id)
+    #     return {
+    #         'status': status,
+    #         'message': message,
+    #         'response': message,  # For compatibility with SlackListener
+    #         'timestamp': datetime.now().isoformat()
+    #     }
+    def _find_failure_case_rule(self, intent_type: str,rule_dict:dict) -> Optional[Dict[str, Any]]:
+        print("Finding failure case for22 ")
+        JSON_PATH_VALUE = rule_dict['JSON_PATH_VALUE']
+        operator = rule_dict['operator']
+        expected_value = rule_dict['expected_value']
+        print("Finding failure case for ",JSON_PATH_VALUE,intent_type,operator)
+        try:
+            self.cursor.execute("""
+                    SELECT distinct
+                    rule_next_step,
+                    RULE_CONTEXT
+                FROM
+                    cxp_ops_monitoring.CXP_STORE_SUPPORT_RULE_AYS_NP
+                WHERE
+                        JSON_PATH_VALUE = :JSON_PATH_VALUE
+                    AND rule_intent_type = :intent_type
+                    AND operator = :operator
+                    AND expected_value = 'False'
+                    AND is_active = 1
+            """, [JSON_PATH_VALUE,intent_type,operator])
+            result = self.cursor.fetchone()
+
+            if result:
+                return str(result[0])
+            else:
+                self.e2eFlag = False
+                print(f"❌ No failure case rule found for: JSON_PATH_VALUE={JSON_PATH_VALUE}, intent={intent_type}, operator={operator}")
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Database error finding rule:22 {str(e)}")
+            return None
+    def _find_rule_by_intent_and_rule_id(self, intent_type: str, rule_id: int) -> Optional[Dict[str, Any]]:
+
+        try:
+            self.cursor.execute("""
+                    SELECT
+                    rule_id,
+                    rule_name, 
+                    rule_step_number,
+                    JSON_PATH_VALUE,
+                    operator,
+                    expected_value,
+                    rule_action,
+                    rule_next_step,
+                    rule_type,
+                    rule_context,
+                    RULE_INTENT_TYPE
+                FROM
+                    cxp_ops_monitoring.CXP_STORE_SUPPORT_RULE_AYS_NP
+                WHERE
+                        rule_intent_type = :intent_type
+                    AND rule_id = :rule_id
+                    AND is_active = 1
+            """, [intent_type,rule_id])
+            result = self.cursor.fetchone()
+
+            if result:
+                return {
+                    'rule_id': result[0],
+                    'rule_name': result[1],
+                    'rule_step_number': result[2],
+                    'JSON_PATH_VALUE': result[3],
+                    'operator': result[4],
+                    'expected_value': result[5],
+                    'rule_action': result[6],
+                    'rule_next_step': result[7],
+                    'rule_type': result[8],
+                    'rule_context': result[9],
+                    'intent_type': result[10]
+                }
+            return None
+
+        except Exception as e:
+            self.logger.error(f"Database error finding rule:11 {str(e)}")
+            return None
+    def _find_rule_by_intent_and_step(self, intent_type: str, rule_step: int) -> Optional[Dict[str, Any]]:
+
+        try:
+            self.cursor.execute("""
+                    SELECT
+                    rule_id,
+                    rule_name,
+                    rule_step_number,
+                    JSON_PATH_VALUE,
+                    operator,
+                    expected_value,
+                    rule_action,
+                    rule_next_step,
+                    rule_type,
+                    rule_context
+                FROM
+                    cxp_ops_monitoring.CXP_STORE_SUPPORT_RULE_AYS_NP
+                WHERE
+                        rule_intent_type = :intent_type
+                    AND rule_step_number = :rule_step
+                    AND is_active = 1
+            """, [intent_type,rule_step])
+            result = self.cursor.fetchone()
+
+            if result:
+                return {
+                    'rule_id': result[0],
+                    'rule_name': result[1],
+                    'rule_step_number': result[2],
+                    'JSON_PATH_VALUE': result[3],
+                    'operator': result[4],
+                    'expected_value': result[5],
+                    'rule_action': result[6],
+                    'rule_next_step': result[7],
+                    'rule_type': result[8],
+                    'rule_context': result[9]
+                }
+            return None
+
+        except Exception as e:
+            # self.cursor.close()
+            # self.db_connection.close()
+            self.logger.error(f"Database error finding rule:333 {str(e)}")
+            return None
+
+    def _get_database_query_config(self, rule_id) -> Optional[Dict[str, Any]]:
+        """Get database query configuration from the database"""
+
+        try:
+            self.cursor.execute("""
+                SELECT
+                conf_id,
+                query_name,
+                query,
+                rule_id
+            FROM
+                CXP_OPS_MONITORING.cxp_store_support_api_db_configuration_NP
+            WHERE
+                rule_id = :rule_id
+            """, [str(rule_id)])
+
+            result = self.cursor.fetchone()
+
+            if result:
+                # Handle CLOB content properly
+                query_sql = result[2]
+                if hasattr(query_sql, 'read'):
+                    sql_content = query_sql.read()
+                else:
+                    sql_content = str(query_sql)
+
+                return {
+                    'conf_id': result[0],
+                    'query_name': result[1],
+                    'query_sql': sql_content,
+                    'rule_id': result[3]
+                }
+            return None
+
+        except Exception as e:
+            # self.cursor.close()
+            # self.db_connection.close()
+            self.logger.error(f"Database query config error: {str(e)}")
+            return None
+
+    def _mock_testing_db_query(self, context: Dict[str, Any]) -> Any:
+        """Mock database query execution for testing"""
+        context['query_result_RULE_106'] = {
+                            'trackingNumber': '486366183350'
+                        }
+        context['trackingNumber'] = '486366183350'
+    def _execute_configured_query(self, query_config: Dict[str, Any], context: Dict[str, Any],rule_id:str) -> Optional[str]:
+        """Execute a configured database query with context parameters"""
+        conn = None
+        try:
+
+
+            # Replace placeholders in SQL with context values
+            sql = query_config['query_sql']
+            parameters = {}
+
+            # Map context to SQL parameters - handle various case variations
+            order_number = context.get('order_number')
+            location_code = context.get('location_code')
+
+            # Check for different parameter name patterns in SQL
+            if ':orderNumber' in sql or ':ORDERNUMBER' in sql or ':order_number' in sql:
+                # Try different variations
+                if ':orderNumber' in sql:
+                    parameters['orderNumber'] = order_number
+                if ':ORDERNUMBER' in sql:
+                    parameters['ORDERNUMBER'] = order_number
+                if ':order_number' in sql:
+                    parameters['order_number'] = order_number
+
+            if ':locationCode' in sql or ':LOCATIONCODE' in sql or ':location_code' in sql:
+                # Try different variations
+                if ':locationCode' in sql:
+                    parameters['locationCode'] = location_code
+                if ':LOCATIONCODE' in sql:
+                    parameters['LOCATIONCODE'] = location_code
+                if ':location_code' in sql:
+                    parameters['location_code'] = location_code
+
+
+            # Execute the query
+            self.cursor.execute(sql, parameters)
+            result = self.cursor.fetchone()
+
+            if result and result[0]:
+                context['query_result_'+rule_id] = {
+                            'trackingNumber': str(result[0])
+                        }
+                context['trackingNumber'] = str(result[0])
+                return str(result[0])
+            else:
+                context['query_result_'+rule_id] = {
+                            'trackingNumber': ''
+                        }
+                return None
+
+        except Exception as e:
+            self.logger.error(f"Database query execution error: {str(e)}")
+            return None
+
+    def call_problem_finder(self, order_number: str, location_code: str):
+        """
+        Call multiple APIs to determine order intent type
+        Returns: "PENDING_ORDERS", "ACTIVATION", or "No intent type found"
+        """
+        try:
+            print(f"🔍 PROBLEM FINDER: Analyzing order {order_number} at location {location_code}")
+
+            # Step 1: Call Pending Order API
+            print(f"🚀 Step 1: Calling Pending Order API...")
+            original_proxies = self._clear_proxy_env()
+
+            try:
+                pending_url = "https://order360-jl8v.verizon.com/order360-correction-services/get-correction-pending-order-details"
+                pending_payload = {
+                    "orderNo": order_number,
+                    "locationCode": location_code
+                }
+                headers = {'Content-Type': 'application/json'}
+
+                pending_response = requests.post(pending_url, headers=headers, json=pending_payload, timeout=30, verify=False)
+
+                if pending_response.status_code == 200:
+                    pending_data = pending_response.json()
+                    print(f"✅ Pending Order API completed successfully")
+
+                    # Check if pendingOrders is not null
+                    pending_orders = pending_data.get('pendingOrders')
+                    if pending_orders is not None:
+                        print(f"✅ pendingOrders found - returning PENDING_ORDERS")
+                        return "PENDING_ORDERS"
+                    else:
+                        print(f"ℹ️ pendingOrders is null - proceeding to Step 2")
+                else:
+                    print(f"❌ Pending Order API failed: HTTP {pending_response.status_code}: {pending_response.text}")
+
+            except Exception as e:
+                print(f"❌ Pending Order API error: {str(e)}")
+            finally:
+                self._restore_proxy_env(original_proxies)
+
+            # Step 2: Call Order Details API (only if pendingOrders was null)
+            print(f"🚀 Step 2: Calling Order Details API...")
+            original_proxies = self._clear_proxy_env()
+
+            try:
+                details_url = "https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details"
+                details_payload = {
+                    "orderNo": order_number,
+                    "locationCode": location_code
+                }
+                headers = {'Content-Type': 'application/json'}
+
+                details_response = requests.post(details_url, headers=headers, json=details_payload, timeout=30, verify=False)
+
+                if details_response.status_code == 200:
+                    details_data = details_response.json()
+                    print(f"✅ Order Details API completed successfully")
+
+                    # Check if orderDetails is not null
+                    order_details = details_data.get('orderDetails')
+                    if order_details is not None:
+                        print(f"✅ orderDetails found - checking aceOrderStatus")
+
+                        # Check aceOrderStatus
+                        ace_order_status = order_details.get('aceOrderStatus')
+                        print(f"📋 aceOrderStatus: {ace_order_status}")
+
+                        if ace_order_status in ['Completed(CO)', 'Completed(CR)']:
+                            print(f"✅ aceOrderStatus is {ace_order_status} - returning ACTIVATION")
+                            return "ACTIVATION"
+                        else:
+                            print(f"ℹ️ aceOrderStatus is {ace_order_status} - not in completed states")
+                    else:
+                        print(f"ℹ️ orderDetails is null")
+                else:
+                    print(f"❌ Order Details API failed: HTTP {details_response.status_code}: {details_response.text}")
+
+            except Exception as e:
+                print(f"❌ Order Details API error: {str(e)}")
+            finally:
+                self._restore_proxy_env(original_proxies)
+
+            # If we reach here, no intent type was found
+            print(f"❌ No intent type found based on API responses")
+            return "No intent type found"
+
+        except Exception as e:
+            print(f"❌ Problem Finder error: {str(e)}")
+            return "No intent type found"
+    def _get_api_headers(self, api_id: int) -> Dict[str, str]:
+        """Get API headers - using correct headers based on API type"""
+        try:
+            # Get API configuration to determine the right headers
+            api_config = self._get_api_configuration(api_id)
+
+            if api_config and 'order360' in api_config.get('api_url', '').lower():
+                # Order360 APIs only need simple JSON headers
+                headers = {
+                    'Content-Type': 'application/json'
+                }
+            elif api_config and 'TRACKING' in api_config.get('api_name', ''):
+                # Tracking APIs need specific headers
+                headers = {
+                    'CORRELATION_ID': 'CJCMUPSAPI!-736146388',
+                    'CLIENT_ID': 'CJCM-MyOrders',
+                    'E2EREQUESTID': 'testing',
+                    'Content-Type': 'application/json'
+                }
+            elif "Cancel Orders" in api_config.get('api_name'):
+                headers = {
+                    'CORRELATION_ID': 'CJCMUPSAPI!-736146388',
+                    'CLIENT_ID': 'CJCM-MyOrders',
+                    'E2EREQUESTID': 'testing',
+                    'Content-Type': 'application/json'
+                }
+            else:
+                # Verizon eligibility APIs need full headers
+                import uuid
+                e2e_request_id = str(uuid.uuid4())
+                correlation_id = str(uuid.uuid4())
+
+                headers = {
+                    'E2EREQUESTID': e2e_request_id,
+                    'x-apikey': 'AIAodwK4gZJO0etJXdO2bgSAsJhDPRlK',
+                    'CORRELATION_ID': correlation_id,
+                    'CLIENT_ID': 'VZW-NETACE',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'Verizon-Internal-App/1.0',
+                    'Accept': 'application/json'
+                }
+
+            return headers
+
+        except Exception as e:
+            self.logger.error(f"API headers error: {str(e)}")
+            return {}
+
+    def _clear_proxy_env(self) -> Dict[str, str]:
+        """Temporarily clear proxy environment variables"""
+        original_proxies = {}
+        for proxy_var in ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY']:
+            if proxy_var in os.environ:
+                original_proxies[proxy_var] = os.environ[proxy_var]
+                del os.environ[proxy_var]
+        return original_proxies
+
+    def _restore_proxy_env(self, original_proxies: Dict[str, str]):
+        """Restore proxy environment variables"""
+        for proxy_var, proxy_value in original_proxies.items():
+            os.environ[proxy_var] = proxy_value
+
+    def _extract_data_from_array(self, data_array: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Extract latest data from array of dictionaries based on createdTmstamp"""
+        try:
+            if not data_array or len(data_array) == 0:
+                print(f"                  ❌ No data in array")
+                return None
+
+            print(f"                  📋 Processing {len(data_array)} objects to find latest")
+
+            # Find the object with the latest createdTmstamp
+            latest_object = None
+            latest_timestamp = None
+
+            for obj in data_array:
+                if isinstance(obj, dict) and 'createdTmstamp' in obj:
+                    created_timestamp = obj['createdTmstamp']
+
+                    # Convert timestamp to comparable format if needed
+                    if isinstance(created_timestamp, str):
+                        # If it's a string, compare directly or convert to datetime
+                        current_timestamp = created_timestamp
+                    else:
+                        current_timestamp = str(created_timestamp)
+
+                    print(f"                     🕐 Checking timestamp: {current_timestamp}")
+
+                    if latest_timestamp is None or current_timestamp > latest_timestamp:
+                        latest_timestamp = current_timestamp
+                        latest_object = obj
+                        print(f"                     ✅ New latest found: {current_timestamp}")
+                else:
+                    print(f"                     ⚠️ Object missing createdTmstamp: {obj}")
+
+            if latest_object:
+                print(f"                  🎯 Latest object found with timestamp: {latest_timestamp}")
+                return latest_object
+            else:
+                print(f"                  ❌ No valid objects with createdTmstamp found")
+                return None
+
+        except Exception as e:
+            print(f"                  ❌ Error extracting latest data: {str(e)}")
+            return None
+
+    def find_attribute_in_json(self, json_data: Any, attribute_name: str, return_all: bool = False) -> Any:
+        """
+        Recursively search for an attribute in complex nested JSON data
+
+        Args:
+            json_data: The JSON data to search (dict, list, or any type)
+            attribute_name: The attribute name to search for
+            return_all: If True, returns all occurrences; if False, returns first occurrence
+
+        Returns:
+            - If return_all=False: First found value or None if not found
+            - If return_all=True: List of all found values (empty list if none found)
+        """
+        try:
+            print(f"🔍 Searching for attribute '{attribute_name}' in JSON data...")
+
+            if return_all:
+                results = []
+                self._recursive_attribute_search(json_data, attribute_name, results, [])
+                print(f"📊 Found {len(results)} occurrences of '{attribute_name}'")
+                return results
+            else:
+                result = self._find_first_attribute(json_data, attribute_name, [])
+                if result is not None:
+                    print(f"✅ Found '{attribute_name}': {result['value']} at path: {' -> '.join(result['path'])}")
+                    return result['value']
+                else:
+                    print(f"❌ Attribute '{attribute_name}' not found in JSON data")
+                    return None
+
+        except Exception as e:
+            print(f"❌ Error searching for attribute '{attribute_name}': {str(e)}")
+            return None if not return_all else []
+
+    def _find_first_attribute(self, data: Any, attribute_name: str, current_path: list) -> dict:
+        """Find first occurrence of attribute (internal helper)"""
+        # Case 1: Data is a dictionary
+        if isinstance(data, dict):
+            # Check if the attribute exists at this level
+            if attribute_name in data:
+                return {
+                    'value': data[attribute_name],
+                    'path': current_path + [attribute_name],
+                    'parent': data
+                }
+
+            # Search deeper in dictionary values
+            for key, value in data.items():
+                result = self._find_first_attribute(value, attribute_name, current_path + [key])
+                if result is not None:
+                    return result
+
+        # Case 2: Data is a list
+        elif isinstance(data, list):
+            for index, item in enumerate(data):
+                result = self._find_first_attribute(item, attribute_name, current_path + [f"[{index}]"])
+                if result is not None:
+                    return result
+
+        # Case 3: Data is primitive (string, int, etc.) - nothing to search
+        return None
+
+    def _recursive_attribute_search(self, data: Any, attribute_name: str, results: list, current_path: list) -> None:
+        """Recursively collect all occurrences of attribute (internal helper)"""
+        # Case 1: Data is a dictionary
+        if isinstance(data, dict):
+            # Check if the attribute exists at this level
+            if attribute_name in data:
+                results.append({
+                    'value': data[attribute_name],
+                    'path': current_path + [attribute_name],
+                    'parent': data,
+                    'full_path': ' -> '.join(current_path + [attribute_name])
+                })
+
+            # Continue searching deeper in dictionary values
+            for key, value in data.items():
+                self._recursive_attribute_search(value, attribute_name, results, current_path + [key])
+
+        # Case 2: Data is a list
+        elif isinstance(data, list):
+            for index, item in enumerate(data):
+                self._recursive_attribute_search(item, attribute_name, results, current_path + [f"[{index}]"])
+
+        # Case 3: Data is primitive (string, int, etc.) - nothing to search
+        return
+
+    def get_attribute_with_details(self, json_data: Any, attribute_name: str) -> dict:
+        """
+        Get detailed information about an attribute including its location and parent context
+
+        Returns:
+            dict with keys: 'found', 'value', 'path', 'parent', 'full_path'
+        """
+        try:
+            result = self._find_first_attribute(json_data, attribute_name, [])
+
+            if result:
+                return {
+                    'found': True,
+                    'value': result['value'],
+                    'path': result['path'],
+                    'parent': result['parent'],
+                    'full_path': ' -> '.join(result['path']),
+                    'attribute_type': type(result['value']).__name__
+                }
+            else:
+                return {
+                    'found': False,
+                    'value': None,
+                    'path': [],
+                    'parent': None,
+                    'full_path': '',
+                    'attribute_type': None
+                }
+
+        except Exception as e:
+            print(f"❌ Error getting attribute details: {str(e)}")
+            return {
+                'found': False,
+                'error': str(e),
+                'value': None,
+                'path': [],
+                'parent': None,
+                'full_path': '',
+                'attribute_type': None
+            }
+
+    def _extract_json_path_value(self, response_data: Dict[str, Any], json_path: str) -> Any:
+        """Extract value from JSON data using dot notation path"""
+        """
+            Safely gets a value from a nested dict/list using a path string.
+            Handles ['key'], ["key"], and [0].
+        """
+        try:
+            # This regex now finds single-quoted, double-quoted, or numeric keys
+            # It returns tuples of (single_key, double_key, index)
+            key_tuples = re.findall(r"\[(?:'([^']*)'|\"([^\"]*)\"|(\d+))\]", json_path)
+
+            current_value = response_data
+            for single_key, double_key, index_key in key_tuples:
+                if single_key:
+                    # It's a single-quoted key
+                    current_value = current_value[single_key]
+                elif double_key:
+                    # It's a double-quoted key
+                    current_value = current_value[double_key]
+                elif index_key:
+                    # It's a list index (e.g., '0')
+                    current_value = current_value[int(index_key)]
+
+            return current_value
+
+        except (KeyError, IndexError, TypeError) as e:
+            print(f"Error: Could not access the path '{json_path}'.")
+            print(f"Reason: {e}")
+            return None
+
+    def extract_json_value_by_path(self, json_data: Dict[str, Any], path_list: List) -> Any:
+        """
+        Extract value from JSON data using a path list.
+
+        Args:
+            json_data: The JSON data to search through
+            path_list: List containing the path elements
+                      Example: ['data', 'trackReply', 'completedTrackDetails', 0, 'trackDetails', 0, 'statusDetail']
+
+        Returns:
+            The value at the specified path, or None if path doesn't exist
+
+        Example:
+            path = ['data', 'trackReply', 'completedTrackDetails', 0, 'trackDetails', 0, 'statusDetail']
+            result = extract_json_value_by_path(json_data, path)
+        """
+        try:
+            print(f"🔍 Extracting value from JSON path: {' -> '.join([str(p) for p in path_list])}")
+
+            current_value = json_data
+
+            for i, key in enumerate(path_list):
+                if current_value is None:
+                    print(f"❌ Path traversal stopped at step {i}: current value is None")
+                    return None
+
+                try:
+                    if isinstance(key, int):
+                        # Handle list index
+                        if isinstance(current_value, list) and 0 <= key < len(current_value):
+                            current_value = current_value[key]
+                            print(f"   📋 Step {i+1}: Accessed list index [{key}]")
+                        else:
+                            print(f"❌ Step {i+1}: Invalid list index [{key}] or not a list")
+                            return None
+                    else:
+                        # Handle dictionary key
+                        if isinstance(current_value, dict) and key in current_value:
+                            current_value = current_value[key]
+                            print(f"   📋 Step {i+1}: Accessed key '{key}'")
+                        else:
+                            print(f"❌ Step {i+1}: Key '{key}' not found or not a dictionary")
+                            return None
+
+                except (KeyError, IndexError, TypeError) as e:
+                    print(f"❌ Step {i+1}: Error accessing '{key}': {str(e)}")
+                    return None
+
+            print(f"✅ Successfully extracted value: {current_value}")
+            return current_value
+
+        except Exception as e:
+            print(f"❌ Error extracting JSON path: {str(e)}")
+            return None
+
+    def extract_json_value_by_string_path(self, json_data: Dict[str, Any], path_string: str) -> Any:
+        """
+        Extract value from JSON data using a string path.
+
+        Args:
+            json_data: The JSON data to search through  
+            path_string: String path like "['data']['trackReply']['completedTrackDetails'][0]['trackDetails'][0]['statusDetail']"
+
+        Returns:
+            The value at the specified path, or None if path doesn't exist
+
+        Example:
+            path = "['data']['trackReply']['completedTrackDetails'][0]['trackDetails'][0]['statusDetail']"
+            result = extract_json_value_by_string_path(json_data, path)
+        """
+        try:
+            print(f"🔍 Parsing string path: {path_string}")
+
+            # Parse the string path to extract keys and indices
+            # This regex matches ['key'] or [0] patterns
+            import re
+            matches = re.findall(r"\[(?:'([^']*)'|\"([^\"]*)\"|(\d+))\]", path_string)
+
+            path_list = []
+            for single_quote, double_quote, number in matches:
+                if single_quote:
+                    path_list.append(single_quote)
+                elif double_quote:
+                    path_list.append(double_quote)
+                elif number:
+                    path_list.append(int(number))
+
+            print(f"📋 Parsed path: {path_list}")
+
+            # Use the existing function to extract the value
+            return self.extract_json_value_by_path(json_data, path_list)
+
+        except Exception as e:
+            print(f"❌ Error parsing string path: {str(e)}")
+            return None
+
+    def _extract_field_data_api_responses(self, json_path_value: str, context: Dict[str, Any],api_rule_id:str,rule: Dict[str, Any]) -> Any:
+        if context.get('api_result_'+api_rule_id):
+            response_data = context.get('api_result_'+api_rule_id, {}).get('response_data', {})
+            file_path_key_value = json_path_value.split("=")
+
+            extracted_value = self.find_attribute_in_json(response_data, file_path_key_value[0])
+            if extracted_value != file_path_key_value[1]:
+                return 'False'
+            else:
+                return 'True'
+        else:
+            return None
+            # return extracted_value
+    def _extract_field_from_api_responses(self, json_path_value: str, context: Dict[str, Any],api_rule_id:str,rule: Dict[str, Any]) -> Any:
+        """Extract field value from API response data stored in context"""
+        try:
+            print(f"                  🔍 Searching for field: {json_path_value}")
+
+            # Handle array length check like "pendingOrders[].length"
+            if '[].' in json_path_value and json_path_value.endswith('.length'):
+
+                array_part = json_path_value.split('[].')[0]  # "pendingOrders"
+                print(f"                  📋 Checking array length for: {array_part}")
+
+                # Look through all API results in context
+                pendingOrders = self.find_key_recursively(context, array_part)
+                print("pendingOrders111",pendingOrders)
+                print("rulerulerule",rule)
+                if not pendingOrders:
+                    print(f"                  ❌ Array '{array_part}' not found in any API response, treating as length 0")
+                    return 'False'
+                else:
+                    if isinstance(pendingOrders, list):
+                        context['processedPendingOrderDetails'] = pendingOrders
+                        #     next_rule = self._find_rule_by_intent_and_rule_id(rule['intent_type'],rule['rule_next_step'])
+                        #     print("next_rulenext_rule for pending orders",next_rule)
+                        # #     print("Next scenario rule",next_rule)
+                        #     if next_rule:
+                        #         self._execute_rule(rule['intent_type'],next_rule['rule_type'], context,next_rule,next_rule['rule_next_step'],next_rule['rule_context'])
+                        array_length = len(pendingOrders)
+                        print(f"                  📊 Found array '{array_part}' with length: {array_length}")
+                        return 'True'
+                    else:
+                        print(f"                  📋 Found array '{array_part}' but it's not a list")
+                        return 'False'
+                return 0
+            elif 'description' in json_path_value:
+
+                if context.get('api_result_'+api_rule_id):
+
+                    response_data = context.get('api_result_'+api_rule_id, {}).get('response_data', {})
+                    extracted_value = self._extract_json_path_value(response_data, json_path_value)
+
+                    return extracted_value
+            elif '[]' in json_path_value and 'results' in json_path_value:
+                if context.get('api_result_'+api_rule_id):
+                    response_data = context.get('api_result_'+api_rule_id, {}).get('response_data', {})
+                    results = self._extract_data_from_array(response_data['result'])
+                    if results:
+                        context['api_result_'+rule['rule_id']] = {
+                            'rule_name': rule['rule_name'],
+                            'response_data': results
+                        }
+                        return 'True'
+                    else:
+                        return 'False'
+            elif 'pendingOrderDetail' in json_path_value:
+                if context.get('api_result_'+api_rule_id):
+
+                    response_data = context.get('api_result_'+api_rule_id, {}).get('response_data', {})
+                    results = self.find_attribute_in_json(response_data, json_path_value)
+                    if results:
+                        context['api_result_'+rule['rule_id']] = {
+                            'rule_name': rule['rule_name'],
+                            'response_data': results
+                        }
+                        return 'True'
+                    else:
+                        return 'False'
+            elif 'orderDetails' in json_path_value:
+               for key, value in context.items():
+                    if key.startswith('api_result_'+api_rule_id) and isinstance(value, dict):
+                        print(f"                  🔍 Checking API result11: {key}")
+                        print(f"                  🔍 Value: {value}")
+                        response_data = value.get('response_data', {})
+                        object_data = None
+                        if json_path_value in response_data:
+                            object_data = response_data[json_path_value]
+                            print(f"                  🔍 Value111: {object_data}")
+                            if isinstance(object_data, dict):
+                                context['orderDetailsSingleDict'] = object_data
+                                return 1
+                            elif object_data is not None:
+                                context['orderDetailsSingleDict'] = object_data
+                                return object_data
+                            else:
+                                return 0
+                        else:
+                            print(f"                  📋 Object '{object_data}' not found in this API response")
+               print(f"                  ❌ Data not found in any API response, treating as length 0")
+               return 0
+
+            else:
+
+                for key, value in context.items():
+                    if key.startswith('api_result_'+api_rule_id) and isinstance(value, dict):
+                        print(f"                  🔍 Checking API result11: {key}")
+                        print(f"                  🔍 Value: {value}")
+                        response_data = value.get('response_data', {})
+                        object_data = None
+                        if json_path_value in response_data:
+                            object_data = response_data[json_path_value]
+                            print(f"                  🔍 Value111: {object_data}")
+                            if isinstance(object_data, dict):
+                                print(f"                  📊 Found Object '{object_data}'")
+                                return 1
+                            elif object_data is not None:
+                                print(f"                  📊 Found Value '{object_data}'")
+                                return object_data
+                            else:
+                                return 0
+                        else:
+                            print(f"                  📋 Object '{object_data}' not found in this API response")
+                print(f"                  ❌ Data not found in any API response, treating as length 0")
+                return 0
+
+        except Exception as e:
+            print(f"                  ❌ Field extraction error: {str(e)}")
+            return None
+
+    def _execute_api_call_step (self, intent_type, rule: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
+
+        api_config = self._get_api_configuration(rule['rule_id'])
+        if not api_config:
+            print(f"         ❌ No API configuration found for rule_id: {rule['rule_id']}")
+            # Log the failed API configuration
+            self._log_execution_step(
+                rule, 'API_CONFIG_LOOKUP', 
+                {'rule_id': rule['rule_id']}, None,
+                f"No API configuration found for rule_id: {rule['rule_id']}",
+                "ERROR", "FAILED"
+            )
+            return self._create_response("ERROR", f"No API configuration found for rule_id: ",rule['rule_id'])
+
+        print("Inside execute api call step method", api_config)
+        print()
+        print(f"         🌐 URL: {api_config['api_url']}")
+        print(f"         📡 Method: {api_config['http_method']}")
+
+        # Log API call start
+        self._log_execution_step(
+            rule, 'API_CALL_START',
+            {
+                'api_url': api_config['api_url'],
+                'http_method': api_config['http_method'],
+                'context': context
+            },
+            None, None, "INFO", "STARTED"
+        )
+
+        # Execute the API call
+        print(f"         🚀 Making API call...")
+
+        result = self._call_configured_api(api_config, context, rule)
+
+
+
+        if result:
+            # Log successful API call
+
+
+            print(f"         ✅ API call completed successfully ==>111111", rule)
+            return self._create_response("SUCCESS", f"API call completed successfully", rule['rule_id'])
+        else:
+            # Log failed API call
+            self._log_execution_step(
+                rule, 'API_CALL_FAILED',
+                {
+                    'api_url': api_config['api_url'],
+                    'http_method': api_config['http_method']
+                },
+                None,
+                "API call returned no data",
+                "ERROR", "FAILED"
+            )
+            print(f"         ⚠️  API call completed but returned no data")
+            return self._create_response("INFO", "API call completed but returned no data", rule['rule_id'])
+    def find_key_recursively(self,data, target_key):
+        """
+        Recursively searches a nested dictionary or list for a specific key.
+        """
+        # Case 1: Data is a dictionary
+        if isinstance(data, dict):
+            if target_key in data:
+                # Found it! Return the value.
+                return data[target_key]
+
+            # Didn't find it at this level, so search all values
+            for value in data.values():
+                result = self.find_key_recursively(value, target_key)
+                if result is not None:
+                    # Found it in a deeper level
+                    return result
+
+        # Case 2: Data is a list
+        elif isinstance(data, list):
+            # Search all items in the list
+            for item in data:
+                result = self.find_key_recursively(item, target_key)
+                if result is not None:
+                    # Found it in a deeper level
+                    return result
+
+        # Case 3: Data is something else (string, int, etc.)
+        # Or we've finished searching a branch and found nothing
+        return None
+######
+    def _call_configured_api(self, api_config: Dict[str, Any], context: Dict[str, Any], rule: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Call API using database configuration with Multi-MTN support and Mock Data for Testing"""
+        try:
+            cancel_order_flag = False
+            original_proxies = self._clear_proxy_env()
+            
+            api_name = api_config.get('api_name', '')
+            method = api_config.get('http_method')
+            
+            # Get headers from database
+            headers = json.loads(api_config.get('api_headers'))
+            print("Current rules ===>", rule['rule_id'])
+
+            # ==================================================================================
+            # TESTING ONLY: MOCK DATA INJECTION
+            # This block injects the specific JSON you provided so you can test the Loop Logic
+            # without depending on the real Get Order API response.
+            # ==================================================================================
+            if 'Reflow' in api_name or 'Submit_Order' in api_name:
+                print("🧪 INJECTING MOCK DATA FOR TESTING...")
+                mock_data_list = [
+                    {
+                        "mtn": "4029608762",
+                        "currentPlan": "LLP",
+                        "deplType": "L",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "1",
+                        "lineActionType": "BYOD",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000006",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    },
+                    {
+                        "mtn": "4029905316",
+                        "currentPlan": "LLP",
+                        "deplType": "NA",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "4",
+                        "lineActionType": "FEA",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000007",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    },
+                    {
+                        "mtn": "4026573252",
+                        "currentPlan": "LLP",
+                        "deplType": "NA",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "3",
+                        "lineActionType": "FEA",
+                        "activationStatus": "",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000009",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    },
+                    {
+                        "mtn": "4023069459",
+                        "currentPlan": "LLP",
+                        "deplType": "NA",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "2",
+                        "lineActionType": "FEA",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000009",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    }
+                ]
+                # Inject directly into context so find_key_recursively will find THIS instead of real API data
+                context['activationDetailsList'] = mock_data_list
+            # ==================================================================================
+
+            # --- STEP 1: Determine items to process (Looping Logic) ---
+            items_to_process = []
+            
+            # Check if this is an API that requires iterating over MTNs (Reflow or Submit)
+            is_multi_mtn_api = 'Reflow' in api_name or 'Submit_Order' in api_name
+            
+            if is_multi_mtn_api:
+                # Get the full list from backend response (or the Mock Data we just injected)
+                activationDetailsList = self.find_key_recursively(context, 'activationDetailsList')
+                
+                # Get the User's input MTNs from context
+                user_mtn_list = context.get('mtn_list', [])
+
+                if activationDetailsList and isinstance(activationDetailsList, list):
+                    if user_mtn_list and len(user_mtn_list) > 0:
+                        print(f" ==================== Processing {len(user_mtn_list)} User MTNs against backend data...")
+                        # Loop through user inputs and find matches
+                        for user_mtn in user_mtn_list:
+                            # Find exact match in backend list
+                            match = next((item for item in activationDetailsList if str(item.get('mtn')) == str(user_mtn)), None)
+                            if match:
+                                print(f"  ================ Found match for MTN: {user_mtn}")
+                                items_to_process.append(match)
+                            else:
+                                print(f" ================= No backend detail found for MTN: {user_mtn} - Skipping")
+                    else:
+                        # Fallback: No user input provided, default to index 0 (Old Behavior)
+                        print(f" ================ No input MTN list found. Defaulting to first item in backend list.")
+                        items_to_process.append(activationDetailsList[0])
+                else:
+                    print(f" ===================== Activation details list missing or invalid in backend response.")
+                    return self._create_response("ERROR", "Activation details not found for processing", rule['rule_id'])
+            else:
+                # For all other APIs (Get Order, Cancel, etc.), run once with no specific item context
+                items_to_process.append(None)
+
+            # --- STEP 2: Execute Loop ---
+            last_result = None
+            
+            for index, item_data in enumerate(items_to_process):
+                try:
+                    # Initialize payload variables
+                    payload = {}
+                    api_url = api_config['api_url']
+                    request_body_template = api_config.get('request_body')
+
+                    # --- STEP 3: Build Payload based on API Type ---
+                    if 'Reflow' in api_name and item_data:
+                        # Reflow: Use the specific matched item data
+                        payload = {
+                            "orderNo": context.get('order_number'),
+                            "mtn": item_data.get('mtn'),
+                            "errorMessage": item_data.get('activationStatus')
+                        }
+                    elif 'Submit_Order' in api_name and item_data:
+                        # Submit: Use the specific matched item data
+                        orderDetails = self.find_key_recursively(context, 'orderDetails')
+                        payload = {
+                            "orderNo": context.get('order_number'),
+                            "mtn": item_data.get('mtn'),
+                            "locationCode": context.get('location_code'),
+                            "mldSeqNo": item_data.get('multiLineSeqNo'),
+                            "masterOrderNo": orderDetails.get('masterOrderNo') if orderDetails else '',
+                            "creditApplicationNum": orderDetails.get('orderCreditAppNumber') if orderDetails else '',
+                            "nsaStackId": orderDetails.get('nsaStackId') if orderDetails else '',
+                            "custOrdType": orderDetails.get('aceOrderType') if orderDetails else ''
+                        }
+                    elif 'get-correction-activation-details' in api_name:
+                         payload = {
+                             "orderNo": context.get('order_number'),
+                             "locationCode": context.get('location_code')
+                         }
+                    elif 'Cancel' in api_name:
+                        # Cancel Logic (Preserved from original)
+                        order_number = None
+                        orderDetails = self.find_key_recursively(context, 'orderDetailsSingleDict')
+                        pendingOrders = self.find_key_recursively(context, 'processedPendingOrderDetails')
+                        
+                        # Handle list vs dict variations for pendingOrders
+                        current_pending_order = pendingOrders[0] if isinstance(pendingOrders, list) else pendingOrders
+
+                        if current_pending_order and str(current_pending_order.get('sourceTypeVal')) == "3":
+                           order_number = str(current_pending_order.get('orderNumber', ''))
+                        elif orderDetails and isinstance(orderDetails, dict) and orderDetails.get('channel') == 'EROES':
+                           order_number = str(orderDetails.get('orderCreditAppNumber', ''))
+                        elif isinstance(orderDetails, list) and orderDetails[0].get('channel') == 'EROES':
+                           order_number = str(orderDetails[0].get('orderCreditAppNumber', ''))
+                        else:
+                           order_number = str(context.get('order_number', ''))
+
+                        # Basic replacements for Cancel
+                        if request_body_template:
+                            payload_str = request_body_template
+                            replacements = {
+                                '{orderNo}': str(order_number),
+                                '{locationCode}': str(context.get('location_code', '')),
+                            }
+                            pass
+                            
+                        # If we didn't build a manual payload above, use the template builder
+                        if not payload:
+                            payload_str = self.build_payload(request_body_template, context, rule)
+                            payload = json.loads(payload_str)
+                            
+                    elif 'ups' in api_name:
+                         payload = {"shippingTrackingNum": context.get('trackingNumber')}
+                    elif 'fedex' in api_name:
+                         payload = {"trackingNumber": context.get('trackingNumber')}
+                    else:
+                        # GENERIC API (Get Order, etc.)
+                        if request_body_template:
+                            payload_str = self.build_payload(request_body_template, context, rule)
+                            payload = json.loads(payload_str)
+                            
+                            if "sourceTypeVal" in payload and payload['sourceTypeVal'] in "3":
+                                api_url = "https://order360-jl8v.verizon.com/order360-correction-services/pending-order-reflow"
+                        else:
+                             # No body, check for URL formatting
+                            print("No request body template found, using empty payload", context, rule)
+                            api_resp_data = None
+                            if rule['rule_context'] is not None and context.get('api_result_'+rule['rule_context']):
+                                api_resp_data = context.get('api_result_'+rule['rule_context'], {}).get('response_data', {})
+                                
+                            if api_resp_data is not None: 
+                                api_url = api_url.format(customer_id=api_resp_data.get('custIdNo',''), accountNo=api_resp_data.get('acctNo',''))  
+                            else:
+                                api_url = api_url.format(order_number=context.get('order_number','')) 
+
+                    # --- STEP 4: Send Request ---
+                    print(f"         🚀 Making API call ({index + 1}/{len(items_to_process)})... URL: {api_url}")
+                    
+                    if method.upper() == 'GET':
+                        response = requests.get(api_url, headers=headers, timeout=30, verify=False)
+                    else:
+                        response = requests.post(api_url, headers=headers, json=payload, timeout=30, verify=False)
+
+                    # --- STEP 5: Handle Response ---
+                    if response.status_code == 200:
+                        if 'xml' in api_config['api_headers']:
+                            api_data = response.text
+                        else:
+                            api_data = response.json()
+                            print("API DATA ==>", api_data)
+                        
+                        # Store result in context
+                        context['api_result_'+rule['rule_id']] = {
+                            'rule_name': rule['rule_name'],
+                            'response_data': api_data,
+                            'status_code': response.status_code
+                        }
+                        
+                        # Prepare success response
+                        last_result = self._create_response("SUCCESS", f"API call completed successfully", rule['rule_id'])
+                    else:
+                        api_data = response.json()
+                        print(f"API DATA status is {response.status_code} ==>", api_data)
+                        
+                        # Log failure but continue loop if there are other items
+                        self._log_execution_step(
+                            rule, 'API_CALL_PARTIAL_FAIL',
+                            {'api_url': api_url, 'status': response.status_code},
+                            api_data, None, "INFO", "FAILED"
+                        )
+                        last_result = self._create_response("INFO", f"API call returned status {response.status_code}", rule['rule_id'])
+
+                except Exception as inner_e:
+                    print(f"Error processing item {index}: {str(inner_e)}")
+                    continue
+
+            # Return the result of the processing
+            # If we processed valid items, return the last result (usually Success)
+            if last_result:
+                return last_result
+            else:
+                 return self._create_response("INFO", "API call completed but returned no data", rule['rule_id'])
+
+        except Exception as e:
+            self.logger.error(f"API call error: {str(e)}")
+            return None
+        finally:
+            # Restore proxy settings
+            self._restore_proxy_env(original_proxies)
+
+    def build_payload(self, template: dict, context: dict, rule:dict) -> dict:
+        """
+        Replace placeholders in the payload template with values from context.
+
+        Args:
+            template (dict): The payload template with placeholders.
+            context (dict): The context dictionary with values.
+
+        Returns:
+            dict: The payload with placeholders replaced. 
+            """
+
+        def replace_value(val):
+            if isinstance(val, str):
+                # Find all placeholders in the string
+                matches = re.findall(r"\{(\w+)\}", val)
+                for key in matches:
+                    # Try to get value from context or nested context
+                    replacement = context.get(key)
+
+                    if replacement is None and 'api_resp_data' in context:
+                        replacement = context['api_resp_data'].get(key)
+
+                    if replacement is not None:
+
+                        val = val.replace(f"{{{key}}}", str(replacement))
+                return val
+            return val
+
+        # Recursively replace placeholders in the template
+        def recursive_replace(obj):
+            if isinstance(obj, dict):
+                return {k: recursive_replace(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [recursive_replace(item) for item in obj]
+            else:
+                return replace_value(obj)
+
+        return recursive_replace(template)
+
+    def _get_api_configuration(self, rule_id) -> Optional[Dict[str, Any]]:
+        """Get API/DB configuration from database"""
+
+        try:
+            self.cursor.execute("""
+                SELECT
+                conf_id,
+                rule_id,
+                api_url,
+                api_headers,
+                api_request_payload,
+                method,
+                api_name
+            FROM
+                CXP_OPS_MONITORING.cxp_store_support_api_db_configuration_NP
+            WHERE
+                rule_id = :rule_id
+            """, [str(rule_id)])
+
+            result = self.cursor.fetchone()
+
+
+            if result:
+                # Handle CLOB content properly for request body
+                request_body = result[4]
+                if hasattr(request_body, 'read'):
+                    body_content = request_body.read()
+                else:
+                    body_content = str(request_body) if request_body else None
+
+                return {
+                    'conf_id': result[0],
+                    'rule_id': result[1],
+                    'api_url': result[2],
+                    'http_method': result[5],
+                    'api_headers': result[3],
+                    'timeout_seconds': 30,
+                    'request_body': body_content,
+                    'api_name': result[6]
+                }
+            return None
+
+        except Exception as e:
+            self.logger.error(f"Error getting API configuration: {str(e)}")
+            return None
+
+    def _validate_field_conditions(self, field_conditions: Dict[str, str], extracted_data: Dict[str, Any]) -> bool:
+        """
+        Validate if all field conditions match the extracted data
+
+        Args:
+            field_conditions: Dictionary of field conditions to check
+                             Example: {'code': 'DL', 'description': 'Delivered'}
+            extracted_data: The extracted data from API response
+                           Example: {'code': 'DL', 'description': 'Delivered', 'location': {...}}
+
+        Returns:
+            True if all conditions match, False otherwise
+        """
+        try:
+            print(f"               🔍 Validating {len(field_conditions)} field conditions...")
+
+            all_match = True
+            for field_name, expected_value in field_conditions.items():
+                # Check if field exists in extracted data
+                if field_name not in extracted_data:
+                    print(f"               ❌ Field '{field_name}' not found in extracted data")
+                    all_match = False
+                    continue
+
+                actual_value = extracted_data[field_name]
+                matches = str(actual_value.strip().lower()) == str(expected_value.strip().lower())
+
+                if matches:
+                    print(f"               ✅ {field_name}: '{actual_value}' == '{expected_value}' → MATCH")
+                else:
+                    print(f"               ❌ {field_name}: '{actual_value}' != '{expected_value}' → NO MATCH")
+                    all_match = False
+
+            return all_match
+
+        except Exception as e:
+            print(f"               ❌ Error validating field conditions: {str(e)}")
+            return False
+
+    def _evaluate_complex_condition(self, json_path_value: str, operator: str, expected_value: str, context: Dict[str, Any],context_rule_id) -> bool:
+        """Evaluate complex multi-field conditions like 'pendingOrders[].sourceTypeCode=C,sourceTypeVal=3'"""
+        try:
+            print(f"               🎯 Evaluating complex condition: {json_path_value}", "===>", context_rule_id)
+            if "[0]" in json_path_value and "@" in json_path_value:
+            # Handle case where context_rule_id might be None
+                if context_rule_id is None:
+                    print(f"               ⚠️ Warning: context_rule_id is None, searching all api_result_* keys")
+                    # Find the first api_result_* key in context
+                    api_result_key = None
+                    for key in context.keys():
+                        if key.startswith('api_result_'):
+                            api_result_key = key
+                            print(f"               ✅ Found API result key: {api_result_key}")
+                            break
+
+                    if api_result_key:
+                        api_response_data = context.get(api_result_key, {}).get('response_data', {})
+                    else:
+                        print(f"               ❌ No api_result_* key found in context")
+                        api_response_data = {}
+                else:
+                    api_response_data = context.get('api_result_'+str(context_rule_id), {}).get('response_data', {})
+
+
+                field_conditions = {}
+                extracted_date = None
+                for condition_str in json_path_value.split('@'):
+                    # field_name, field_value = condition_str.split('=')
+                    if "=" in condition_str and ',' in condition_str:
+                        for fields in condition_str.split(','):
+                            if "=" in fields:
+                                fields_name, field_value = fields.split('=')
+                                field_conditions[fields_name.strip()] = field_value.strip()
+                    else:
+                        print("field_name (JSON path) ===>", condition_str)
+                        extracted_date = self.extract_json_value_by_string_path(api_response_data, condition_str)
+                        print("extracted_date ===>", extracted_date)
+
+                # Check if extraction failed
+                if extracted_date is None:
+                    print(f"               ❌ Failed to extract data from path: {json_path_value}")
+                    return expected_value.lower() == 'false'
+
+                # Check if field conditions match extracted data
+                if field_conditions:
+                    print(f"               🔍 Checking field conditions: {field_conditions}")
+                    print(f"               📋 Against extracted data: {extracted_date}")
+
+                    # Validate all field conditions
+                    all_match = self._validate_field_conditions(field_conditions, extracted_date)
+
+                    if all_match:
+                        print(f"               ✅ All field conditions matched!")
+                        return expected_value.lower() == 'true'
+                    else:
+                        print(f"               ❌ Field conditions did not match")
+                        return expected_value.lower() == 'false'
+                else:
+                    # No field conditions to check, just return based on whether data was extracted
+                    print(f"               ⚠️ No field conditions specified, data extracted: {extracted_date}")
+                    return expected_value.lower() == 'true'
+            else:
+                array_part = json_path_value.split('[].')[0]  # "pendingOrders"
+
+                conditions_part = json_path_value.split('[].')[1]  # "sourceTypeCode=C,sourceTypeVal=3"
+
+
+                # Parse individual field conditions
+                field_conditions = {}
+                for condition_str in conditions_part.split(','):
+                    field_name, field_value = condition_str.split('=')
+                    field_conditions[field_name.strip()] = field_value.strip()
+
+                print(f"               📋 Array: {array_part}")
+                print(f"               📋 Field conditions: {field_conditions}")
+
+                # Look through all API results in context
+                for key, value in context.items():
+                    print("Rule ID1111 ==>", context_rule_id)
+                    print("Filed Path111 ==>", json_path_value)
+                    if key.startswith('api_result_'+context_rule_id) and isinstance(value, dict):
+
+                        print("Rule ID ==>", context_rule_id)
+                        print("Filed Path ==>", json_path_value)
+                        # Check if this API result has the array
+                        response_data = value.get('response_data', {})
+                        if array_part in response_data:
+                            array_data = response_data[array_part]
+                            print(array_data)
+                            print(f"               📋 Found array '{array_part}' with {len(array_data) if isinstance(array_data, list) else 'non-list'} items")
+
+                            if isinstance(array_data, list):
+                                # Check each item in the array
+                                for i, item in enumerate(array_data):
+                                    if isinstance(item, dict):
+                                        print(f"               🔍 Checking item {i}: {item}")
+                                        all_match = True
+                                        for field_name, expected_field_value in field_conditions.items():
+
+                                            actual_field_value = item.get(field_name)
+                                            matches = str(actual_field_value) == expected_field_value
+                                            print(f"                  📋 {field_name}: '{actual_field_value}' == '{expected_field_value}' → {matches}")
+
+                                            if not matches:
+                                                all_match = False
+                                                break
+
+                                        if all_match:
+                                            print(f"               ✅ Found matching item: {item}")
+                                            # Store the matching item in context for potential use by subsequent actions
+                                            context['matching_pending_order'] = item
+                                            return expected_value.lower() == 'true'
+
+                print(f"               ❌ No matching items found")
+                return expected_value.lower() == 'false'
+        except Exception as e:
+            print(f"               ❌ Complex condition evaluation error: {str(e)}")
+            return False
+    def _execute_response_template_step(self, context:dict,template_id:str) -> Dict[str, Any]:
+        """Execute response template step using database template only"""
+        try:
+            # Get response template from database
+            template = self._get_response_template(template_id)
+            if not template:
+                print(f"         ❌ No response template found for action_id: {template_id}")
+                return self._create_response("ERROR", f"No response template found for action_id: {template_id}",template_id)
+
+            print(f"         📋 Template: {template['template_name']}")
+            print(f"         🔄 Processing template placeholders...")
+
+            # Replace placeholders with actual values from context
+            message = template['template_content']
+
+            # Perform placeholder replacement
+            replacements = {
+                '{userName}': context.get('user_name', 'Customer'),
+                '{orderNumber}': context.get('order_number', 'Unknown'),
+                '{locationCode}': context.get('location_code', 'Unknown'),
+                '{DB_GET_TRACKING_result}': context.get('trackingNumber', 'Not Available')
+            }
+
+            print(f"         🔧 Replacing placeholders:")
+            for placeholder, value in replacements.items():
+                if placeholder in message:
+                    print(f"            {placeholder} → {value}")
+                message = message.replace(placeholder, str(value))
+
+            print(f"         ✅ Response template processed successfully")
+            return self._create_response("SUCCESS", message,template_id)
+
+        except Exception as e:
+            print(f"         ❌ Response template error: {str(e)}")
+            return self._create_response("ERROR", f"Response template error: {str(e)}",template_id)
+    def _get_response_template(self, template_id) -> Optional[Dict[str, Any]]:
+        """Get response template from database"""
+        conn = None
+        try:
+            conn = oracledb.connect(**self.db_config)
+            cursor = conn.cursor()
+
+            cursor.execute("""
+                SELECT template_id, template_name, MESSAGE_CONTENT, 
+                       message_type, is_active
+                FROM CXP_STORE_SUPPORT_RESP_TEMPLATE_NP
+                WHERE template_id = :template_id AND is_active = 1
+            """, [str(template_id)])
+
+            result = cursor.fetchone()
+            if result:
+                # Handle CLOB content properly
+                template_content = result[2]
+                if hasattr(template_content, 'read'):
+                    content = template_content.read()
+                else:
+                    content = str(template_content)
+
+                return {
+                    'template_id': result[0],
+                    'template_name': result[1],
+                    'template_content': content,
+                    'message_type': result[3],
+                    'is_active': result[4]
+                }
+            return None
+
+        except Exception as e:
+            self.logger.error(f"Error getting response template: {str(e)}")
+            return None
+        finally:
+            if conn:
+                conn.close()
+
+    def _create_response(self, status: str, message: str,response: str = '', rule_id: str='') -> Dict[str, Any]:
+        """Create standardized response"""
+        print("response ==>",response)
+        return {
+                'status': status,
+                'message': message,
+                'response': message,  # For compatibility with SlackListener
+                'rule_id': rule_id,
+                'timestamp': datetime.now().isoformat()
+            }
+        # if self.flow_type is not None and self.flow_type == 'SLACK_ORDER_PROCESSING':
+        #     return {
+        #     'status': status,
+        #     'message': message,
+        #     'rule_id': rule_id,
+        #     'timestamp': datetime.now().isoformat()
+        # }
+        # else:
+        #     return {
+        #         'status': status,
+        #         'message': message,
+        #         'response': response,  # For compatibility with SlackListener
+        #         'rule_id': rule_id,
+        #         'timestamp': datetime.now().isoformat()
+        #     }
