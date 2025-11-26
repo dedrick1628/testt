@@ -1,65 +1,155 @@
-def _execute_api_call_step (self, intent_type, rule: Dict[str, Any], context: Dict[str, Any]) -> Dict[str, Any]:
-        api_config = self._get_api_configuration(rule['rule_id'])
-        if not api_config:
-            print(f"         ❌ No API configuration found for rule_id: {rule['rule_id']}")
-            self._log_execution_step(rule, 'API_CONFIG_LOOKUP', {'rule_id': rule['rule_id']}, None, "No config found", "ERROR", "FAILED")
-            return self._create_response("ERROR", f"No API configuration found", rule['rule_id'])
-
-        print("Inside execute api call step method", api_config)
-        print(f"         🌐 URL: {api_config['api_url']}")
-        print(f"         📡 Method: {api_config['http_method']}")
-
-        # Log API call start
-        self._log_execution_step(rule, 'API_CALL_START', {'api_url': api_config['api_url']}, None, None, "INFO", "STARTED")
-
-        print(f"         🚀 Making API call...")
-        result = self._call_configured_api(api_config, context, rule)
-
-        # 🔴 CRITICAL FIX: Handle ERROR status explicitly and RETURN immediately
-        if result and result.get('status') == 'ERROR':
-             print(f"         ❌ API call logic returned ERROR: {result.get('message')}")
-             self._log_execution_step(
-                rule, 'API_CALL_LOGIC_ERROR',
-                {'api_url': api_config['api_url']},
-                result,
-                result.get('message'),
-                "ERROR", "FAILED"
-            )
-             return result  # <--- MUST RETURN HERE TO STOP FLOW
-
-        # Handle SUCCESS
-        elif result and result.get('status') == 'SUCCESS':
-            print(f"         ✅ API call completed successfully", rule)
-            return result
-
-        # Handle FAILURE/EMPTY
-        else:
-            self._log_execution_step(rule, 'API_CALL_FAILED', {'api_url': api_config['api_url']}, None, "No data", "ERROR", "FAILED")
-            print(f"         ⚠️  API call completed but returned no data or failed")
-            return self._create_response("INFO", "API call completed but returned no data", rule['rule_id'])
-
-
 def _execute_rule(self, intent_type, rule_type: str, context: Dict[str, Any], rule: Dict[str, Any], prev_rule_id:str,rule_context:str) -> Dict[str, Any]:
+        """Execute specific rule type with error propagation fix"""
         
-        # ... (keep existing setup code) ...
-        condition_config = { ... } # existing code
-
+        condition_config = {
+                    'json_path_value': rule['JSON_PATH_VALUE'],
+                    'operator': rule['operator'],
+                    'expected_value': rule['expected_value'],
+                    'condition_id': rule['rule_id']
+                }
         try:
+            # --- API CALL LOGIC ---
             if rule_type == 'API_CALL':
-               result = self._execute_api_call_step(intent_type,rule,context)
+               result = self._execute_api_call_step(intent_type, rule, context)
                
-               # 🔴 FIX: If it is SUCCESS, try to continue. 
+               # 🔴 FIX: Check status. If SUCCESS, proceed with flow.
                if result['status'] == 'SUCCESS':
                   if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
-                     next_rule = self._find_rule_by_intent_and_rule_id(intent_type,rule['rule_next_step'])
+                     next_rule = self._find_rule_by_intent_and_rule_id(intent_type, rule['rule_next_step'])
+                     print("Next scenario rule", next_rule)
                      if next_rule:
-                        # Recursive call
-                        return self._execute_rule(intent_type,next_rule['rule_type'], context,next_rule,next_rule['rule_next_step'],next_rule['rule_context'])
+                        # Recursively execute the next rule
+                        return self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_next_step'], next_rule['rule_context'])
+                  
+                  # If no next step, just return success
                   return result
                
-               # 🔴 FIX: If it is ERROR, return it immediately so the main process stops!
+               # 🔴 FIX: If status is ERROR/INFO (Failure), RETURN IMMEDIATELY. 
+               # Do not let the code fall through or return None.
                else:
+                  print(f"         🛑 Stopping flow due to API step status: {result['status']}")
                   return result
 
+            # --- API RESPONSE LOGIC ---
             elif rule_type == 'API_RESPONSE':
-                # ... (keep existing API_RESPONSE logic) ...
+                result = self._evaluate_condition(condition_config, context, prev_rule_id, rule['rule_context'], rule)
+                
+                if result:
+                    print(f"         ✅ Condition met for rule: {rule['rule_name']}")
+                    next_rule = None
+                    if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+                        next_rule = self._find_rule_by_intent_and_rule_id(intent_type, rule['rule_next_step'])
+                        print("Next scenario rule", next_rule)
+                        if next_rule:
+                            return self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_id'], next_rule['rule_context'])
+                        else:
+                            print(f"❌ No rule configured for : {rule['rule_next_step']}")
+                            
+                elif not result:
+                    print(f"         ❌ Condition not met for rule: {rule['rule_name']}")
+                    next_step = self._find_failure_case_rule(intent_type, rule)
+                    next_rule = self._find_rule_by_intent_and_rule_id(intent_type, next_step)
+
+                    if next_rule:
+                        result = self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_id'], next_rule['rule_context'])
+                        
+                        # If failure case returned a template response, store and return it immediately
+                        if result and result.get('status') == 'SUCCESS' and 'policy' in result.get('message', '').lower():
+                            print(f"         🚨 FAILURE CASE RETURNED TEMPLATE - PROPAGATING UP!")
+                            self.template_response = result
+                            return result
+                        return result # Return the result of the failure path
+                    else:
+                        print(f"❌ No rule configured for : {next_step}")
+
+            # --- DB QUERY LOGIC ---
+            elif rule_type == 'DB_QUERY':
+                result = self._execute_database_query_step(rule, context, rule['rule_id'])
+                self._log_execution_step(
+                        rule, rule['rule_name'],
+                        rule['JSON_PATH_VALUE'],
+                        result,
+                        None, "INFO", result['status']
+                    )
+                print("DB_QUERY result ===>", result)
+                
+                if str(result) == 'True':
+                    print(f"         ✅ Condition met for rule query: {rule['rule_name']}")
+                    if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+                        next_rule = self._find_rule_by_intent_and_rule_id(intent_type, rule['rule_next_step'])
+                        if next_rule:
+                            return self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_id'], next_rule['rule_context'])
+                            
+                elif str(result) == 'False':
+                    print(f"         ✅ Condition Not met for rule negative scenario query: {rule['rule_name']}")
+                    next_step = self._find_failure_case_rule(intent_type, rule)
+                    next_rule = self._find_rule_by_intent_and_rule_id(intent_type, next_step)
+
+                    if next_rule:
+                        return self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_id'], next_rule['rule_context'])
+
+            # --- QUERY RESULTS LOGIC ---
+            elif rule_type == 'QUERY_RESULTS':
+                result = self._evaluate_condition(condition_config, context, prev_rule_id, rule['rule_context'], rule)
+                self._log_execution_step(
+                        rule, rule['rule_name'],
+                        rule['JSON_PATH_VALUE'],
+                        result,
+                        None, "INFO", result['status']
+                    )
+                if result == True:
+                    print(f"         ✅ Condition met for rule: {rule['rule_name']}")
+                    if rule['rule_action'] == 'CONTINUE' and rule['rule_next_step']:
+                            next_rule = self._find_rule_by_intent_and_rule_id(intent_type, rule['rule_next_step'])
+                            if next_rule:
+                                return self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_id'], next_rule['rule_context'])
+                                
+                elif result == False:
+                    print(f"         ✅ Condition met for rule negative scenario: {rule['rule_name']}")
+                    next_step = self._find_failure_case_rule(intent_type, rule)
+                    next_rule = self._find_rule_by_intent_and_rule_id(intent_type, next_step)
+
+                    if next_rule:
+                        return self._execute_rule(intent_type, next_rule['rule_type'], context, next_rule, next_rule['rule_id'], next_rule['rule_context'])
+
+            # --- TEMPLATE RESPONSE LOGIC ---
+            elif rule_type == 'TEMPLATE_RESPONSE':
+                # Log template response start
+                self._log_execution_step(
+                    rule, 'TEMPLATE_RESPONSE_START',
+                    {'rule_context': rule.get('rule_context', ''), 'context': context},
+                    None, None, "INFO", "STARTED"
+                )
+
+                result = self._execute_response_template_step(context, rule['rule_context'])
+                if result['status'] == 'SUCCESS':
+                    print(f"         ✅ Template response generated for rule: {result['message']}")
+                    print(f"         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {result}")
+
+                    # Log successful template response
+                    self._log_execution_step(
+                        rule, 'TEMPLATE_RESPONSE_SUCCESS',
+                        {'rule_context': rule.get('rule_context', '')},
+                        {'message': result['message']},
+                        None, "INFO", "SUCCESS"
+                    )
+
+                    # Store template response for main method to capture
+                    self.template_response = result
+                    return result
+                else:
+                    print(f"         ❌ Template response failed: {result}")
+                    self._log_execution_step(
+                        rule, 'TEMPLATE_RESPONSE_FAILED',
+                        {'rule_context': rule.get('rule_context', '')},
+                        None,
+                        result.get('message', 'Template response failed'),
+                        "ERROR", "FAILED"
+                    )
+                    return result
+
+        except Exception as e:
+            return self._create_response("ERROR", f"Step execution error: {str(e)}", rule['rule_id'])
+        
+        # Default return if no path taken
+        return None
