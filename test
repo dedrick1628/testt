@@ -18,11 +18,10 @@
 
              Logs:
 
-      INFO   Started server process [69620]
+      INFO   Started server process [9908]
       INFO   Waiting for application startup.
       INFO   Application startup complete.
       INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-      INFO   127.0.0.1:58830 - "GET /gettransactions HTTP/1.1" 404
 Database connection established successfully.
 context is
 
@@ -32,7 +31,7 @@ context is
 📍 Location Code: 1822101
 📋 Order Type: ACTIVATION
 👤 User:
-🆔 Session ID: SS_20251126_110641_8c766d6d
+🆔 Session ID: SS_20251126_111054_6c26ccc6
 ------------------------------------------------------------
 🔍 Step 1: Calling problem finder... 1051684   1822101
 🔍 Step 1: Finding matching rule for order type11
@@ -44,7 +43,7 @@ Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200
 
          🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
          📡 Method: POST
-📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251126_110641_8c766d6d)
+📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251126_111054_6c26ccc6)
          🚀 Making API call...
 Current rules ===> RULE_200
          🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
@@ -116,7 +115,7 @@ Inside execute api call step method {'conf_id': 'CONF_110', 'rule_id': 'RULE_201
 
          🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-activation-details
          📡 Method: POST
-📝 LOGGED: API_CALL_START for get-correction-activation-details (Session: SS_20251126_110641_8c766d6d)
+📝 LOGGED: API_CALL_START for get-correction-activation-details (Session: SS_20251126_111054_6c26ccc6)
          🚀 Making API call...
 Current rules ===> RULE_201
 🧪 INJECTING MOCK DATA FOR API: get-correction-activation-details
@@ -180,20 +179,13 @@ Inside execute api call step method {'conf_id': 'CONF_111', 'rule_id': 'RULE_227
 
          🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
          📡 Method: POST
-📝 LOGGED: API_CALL_START for submit-activation-api-call (Session: SS_20251126_110641_8c766d6d)
+📝 LOGGED: API_CALL_START for submit-activation-api-call (Session: SS_20251126_111054_6c26ccc6)
          🚀 Making API call...
 Current rules ===> RULE_227
 🧪 INJECTING MOCK DATA FOR API: Submit Order API
          🔄 Processing 2 User MTNs against MOCK data...
-         ✅ Found match for MTN: 4026573252
-         ✅ Found match for MTN: 4029905316
-         🚀 Making API call (1/2)... URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
-API DATA status is 404 ==> {'timestamp': 1764176808786, 'status': 404, 'error': 'Not Found', 'path': '/order360-correction-services/submit-activation111'}
-📝 LOGGED: API_CALL_PARTIAL_FAIL for submit-activation-api-call (Session: SS_20251126_110641_8c766d6d)
-response ==> RULE_227
-         🚀 Making API call (2/2)... URL: https://order360-jl8v.verizon.com/order360-correction-services/submit-activation111
-API DATA status is 404 ==> {'timestamp': 1764176809340, 'status': 404, 'error': 'Not Found', 'path': '/order360-correction-services/submit-activation111'}
-📝 LOGGED: API_CALL_PARTIAL_FAIL for submit-activation-api-call (Session: SS_20251126_110641_8c766d6d)
+         ⚠️ No detail found for MTN: 4026573252111 - Skipping
+         ⚠️ No detail found for MTN: 402990531611 - Skipping
 response ==> RULE_227
          ✅ API call completed successfully ==>111111 {'rule_id': 'RULE_227', 'rule_name': 'submit-activation-api-call', 'rule_step_number': 27, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_228', 'rule_type': 'API_CALL', 'rule_context': None, 'intent_type': 'ACTIVATION'}
 response ==> RULE_227
@@ -209,19 +201,19 @@ field_pathfield_path ===> errorMessage
          ❌ Condition not met for rule: submit-activation-api-status
 Finding failure case for22
 Finding failure case for  errorMessage ACTIVATION EQUALS
-📝 LOGGED: TEMPLATE_RESPONSE_START for activation-status-check (Session: SS_20251126_110641_8c766d6d)
+📝 LOGGED: TEMPLATE_RESPONSE_START for activation-status-check (Session: SS_20251126_111054_6c26ccc6)
          📋 Template: Activation success message
          🔄 Processing template placeholders...
          🔧 Replacing placeholders:
          ✅ Response template processed successfully
 response ==> ACTIVATION_SUCCESS_MESSAGE
          ✅ Template response generated for rule: Device successfully Activated
-         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Device successfully Activated', 'response': 'Device successfully Activated', 'rule_id': '', 'timestamp': '2025-11-26T11:06:50.554546'}
-📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for activation-status-check (Session: SS_20251126_110641_8c766d6d)
+         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Device successfully Activated', 'response': 'Device successfully Activated', 'rule_id': '', 'timestamp': '2025-11-26T11:11:02.549639'}
+📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for activation-status-check (Session: SS_20251126_111054_6c26ccc6)
 🎯 RULE EXECUTION RESULT:
-   Result: {'status': 'SUCCESS', 'message': 'API call completed successfully', 'response': 'API call completed successfully', 'rule_id': '', 'timestamp': '2025-11-26T11:06:47.044557'}
+   Result: {'status': 'SUCCESS', 'message': 'API call completed successfully', 'response': 'API call completed successfully', 'rule_id': '', 'timestamp': '2025-11-26T11:11:00.535829'}
    Status: SUCCESS
    Message: API call completed successfully
 🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
-📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251126_110641_8c766d6d)
-      INFO   127.0.0.1:54803 - "POST /api/v1/activation HTTP/1.1" 200
+📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251126_111054_6c26ccc6)
+      INFO   127.0.0.1:49685 - "POST /api/v1/activation HTTP/1.1" 200
