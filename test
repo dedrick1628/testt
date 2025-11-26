@@ -1,109 +1,288 @@
-# ... existing code ...
-headers = json.loads(api_config.get('api_headers'))
-print("Current rules ===>", rule['rule_id'])
+def _call_configured_api(self, api_config: Dict[str, Any], context: Dict[str, Any], rule: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Call API using database configuration with Multi-MTN support and Mock Data for Testing"""
+        try:
+            cancel_order_flag = False
+            original_proxies = self._clear_proxy_env()
+            
+            api_name = api_config.get('api_name', '')
+            method = api_config.get('http_method')
+            
+            # Get headers from database
+            headers = json.loads(api_config.get('api_headers'))
+            print("Current rules ===>", rule['rule_id'])
 
-# ==================================================================================
-# 🛠️ TESTING ONLY: MOCK DATA INJECTION
-# This block injects the specific JSON you provided so you can test the Loop Logic
-# without depending on the real Get Order API response.
-# ==================================================================================
-if 'Reflow' in api_name or 'Submit_Order' in api_name:
-    print("🧪 INJECTING MOCK DATA FOR TESTING...")
-    mock_data = {
-        "orderNo": None,
-        "locationCode": None,
-        "mtn": None,
-        "orderType": None,
-        "orderDetails": None,
-        "activationDetailsList": [
-            {
-                "mtn": "4029608762",
-                "currentPlan": "LLP",
-                "deplType": "L",
-                "postInLine": "false",
-                "multiLineSeqNo": "1",
-                "lineActionType": "BYOD",
-                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-                "aceOrdStatus": "CO",
-                "aceOrdSaleType": "S",
-                "aceOrdCrdAppNum": "601867687",
-                "activationRequest": "2025-11-16 13:31:59.0000006",
-                "powerOnActivationRequired": "false",
-                "activationTime": None,
-                "dvsError": None,
-                "dvsErrorTimeStamp": None,
-                "dvsSuccessMsg": "375709336",
-                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-                "setUpLater": "false"
-            },
-            {
-                "mtn": "4029905316",
-                "currentPlan": "LLP",
-                "deplType": "NA",
-                "postInLine": "false",
-                "multiLineSeqNo": "4",
-                "lineActionType": "FEA",
-                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-                "aceOrdStatus": "CO",
-                "aceOrdSaleType": "S",
-                "aceOrdCrdAppNum": "601867687",
-                "activationRequest": "2025-11-16 13:31:59.0000007",
-                "powerOnActivationRequired": "false",
-                "activationTime": None,
-                "dvsError": None,
-                "dvsErrorTimeStamp": None,
-                "dvsSuccessMsg": "375709336",
-                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-                "setUpLater": "false"
-            },
-            {
-                "mtn": "4026573252",
-                "currentPlan": "LLP",
-                "deplType": "NA",
-                "postInLine": "false",
-                "multiLineSeqNo": "3",
-                "lineActionType": "FEA",
-                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-                "aceOrdStatus": "CO",
-                "aceOrdSaleType": "S",
-                "aceOrdCrdAppNum": "601867687",
-                "activationRequest": "2025-11-16 13:31:59.0000009",
-                "powerOnActivationRequired": "false",
-                "activationTime": None,
-                "dvsError": None,
-                "dvsErrorTimeStamp": None,
-                "dvsSuccessMsg": "375709336",
-                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-                "setUpLater": "false"
-            },
-            {
-                "mtn": "4023069459",
-                "currentPlan": "LLP",
-                "deplType": "NA",
-                "postInLine": "false",
-                "multiLineSeqNo": "2",
-                "lineActionType": "FEA",
-                "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
-                "aceOrdStatus": "CO",
-                "aceOrdSaleType": "S",
-                "aceOrdCrdAppNum": "601867687",
-                "activationRequest": "2025-11-16 13:31:59.0000009",
-                "powerOnActivationRequired": "false",
-                "activationTime": None,
-                "dvsError": None,
-                "dvsErrorTimeStamp": None,
-                "dvsSuccessMsg": "375709336",
-                "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
-                "setUpLater": "false"
-            }
-        ]
-    }
-    # Inject directly into context so find_key_recursively will find THIS instead of real API data
-    context['activationDetailsList'] = mock_data['activationDetailsList']
-# ==================================================================================
+            # ==================================================================================
+            # 🛠️ TESTING ONLY: MOCK DATA INJECTION
+            # This block injects the specific JSON you provided so you can test the Loop Logic
+            # without depending on the real Get Order API response.
+            # ==================================================================================
+            if 'Reflow' in api_name or 'Submit_Order' in api_name:
+                print("🧪 INJECTING MOCK DATA FOR TESTING...")
+                mock_data_list = [
+                    {
+                        "mtn": "4029608762",
+                        "currentPlan": "LLP",
+                        "deplType": "L",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "1",
+                        "lineActionType": "BYOD",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000006",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    },
+                    {
+                        "mtn": "4029905316",
+                        "currentPlan": "LLP",
+                        "deplType": "NA",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "4",
+                        "lineActionType": "FEA",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000007",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    },
+                    {
+                        "mtn": "4026573252",
+                        "currentPlan": "LLP",
+                        "deplType": "NA",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "3",
+                        "lineActionType": "FEA",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000009",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    },
+                    {
+                        "mtn": "4023069459",
+                        "currentPlan": "LLP",
+                        "deplType": "NA",
+                        "postInLine": "false",
+                        "multiLineSeqNo": "2",
+                        "lineActionType": "FEA",
+                        "activationStatus": "SUCCESS DVS 375709336 acct 590205097-00001 (11/16/2025-13:23:51)",
+                        "aceOrdStatus": "CO",
+                        "aceOrdSaleType": "S",
+                        "aceOrdCrdAppNum": "601867687",
+                        "activationRequest": "2025-11-16 13:31:59.0000009",
+                        "powerOnActivationRequired": "false",
+                        "activationTime": None,
+                        "dvsError": None,
+                        "dvsErrorTimeStamp": None,
+                        "dvsSuccessMsg": "375709336",
+                        "dvsSuccessTimestamp": "2025-11-16T18:23:51.491526Z",
+                        "setUpLater": "false"
+                    }
+                ]
+                # Inject directly into context so find_key_recursively will find THIS instead of real API data
+                context['activationDetailsList'] = mock_data_list
+            # ==================================================================================
 
+            # --- STEP 1: Determine items to process (Looping Logic) ---
+            items_to_process = []
+            
+            # Check if this is an API that requires iterating over MTNs (Reflow or Submit)
+            is_multi_mtn_api = 'Reflow' in api_name or 'Submit_Order' in api_name
+            
+            if is_multi_mtn_api:
+                # Get the full list from backend response (or the Mock Data we just injected)
+                activationDetailsList = self.find_key_recursively(context, 'activationDetailsList')
+                
+                # Get the User's input MTNs from context
+                user_mtn_list = context.get('mtn_list', [])
 
-# --- STEP 1: Determine items to process (Looping Logic) ---
-items_to_process = []
+                if activationDetailsList and isinstance(activationDetailsList, list):
+                    if user_mtn_list and len(user_mtn_list) > 0:
+                        print(f"         🔄 Processing {len(user_mtn_list)} User MTNs against backend data...")
+                        # Loop through user inputs and find matches
+                        for user_mtn in user_mtn_list:
+                            # Find exact match in backend list
+                            match = next((item for item in activationDetailsList if str(item.get('mtn')) == str(user_mtn)), None)
+                            if match:
+                                print(f"         ✅ Found match for MTN: {user_mtn}")
+                                items_to_process.append(match)
+                            else:
+                                print(f"         ⚠️ No backend detail found for MTN: {user_mtn} - Skipping")
+                    else:
+                        # Fallback: No user input provided, default to index 0 (Old Behavior)
+                        print(f"         ⚠️ No input MTN list found. Defaulting to first item in backend list.")
+                        items_to_process.append(activationDetailsList[0])
+                else:
+                    print(f"         ❌ Activation details list missing or invalid in backend response.")
+                    return self._create_response("ERROR", "Activation details not found for processing", rule['rule_id'])
+            else:
+                # For all other APIs (Get Order, Cancel, etc.), run once with no specific item context
+                items_to_process.append(None)
 
-# ... rest of your code ...
+            # --- STEP 2: Execute Loop ---
+            last_result = None
+            
+            for index, item_data in enumerate(items_to_process):
+                try:
+                    # Initialize payload variables
+                    payload = {}
+                    api_url = api_config['api_url']
+                    request_body_template = api_config.get('request_body')
+
+                    # --- STEP 3: Build Payload based on API Type ---
+                    if 'Reflow' in api_name and item_data:
+                        # Reflow: Use the specific matched item data
+                        payload = {
+                            "orderNo": context.get('order_number'),
+                            "mtn": item_data.get('mtn'),
+                            "errorMessage": item_data.get('activationStatus')
+                        }
+                    elif 'Submit_Order' in api_name and item_data:
+                        # Submit: Use the specific matched item data
+                        orderDetails = self.find_key_recursively(context, 'orderDetails')
+                        payload = {
+                            "orderNo": context.get('order_number'),
+                            "mtn": item_data.get('mtn'),
+                            "locationCode": context.get('location_code'),
+                            "mldSeqNo": item_data.get('multiLineSeqNo'),
+                            "masterOrderNo": orderDetails.get('masterOrderNo') if orderDetails else '',
+                            "creditApplicationNum": orderDetails.get('orderCreditAppNumber') if orderDetails else '',
+                            "nsaStackId": orderDetails.get('nsaStackId') if orderDetails else '',
+                            "custOrdType": orderDetails.get('aceOrderType') if orderDetails else ''
+                        }
+                    elif 'get-correction-activation-details' in api_name:
+                         payload = {
+                             "orderNo": context.get('order_number'),
+                             "locationCode": context.get('location_code')
+                         }
+                    elif 'Cancel' in api_name:
+                        # Cancel Logic (Preserved from original)
+                        order_number = None
+                        orderDetails = self.find_key_recursively(context, 'orderDetailsSingleDict')
+                        pendingOrders = self.find_key_recursively(context, 'processedPendingOrderDetails')
+                        
+                        # Handle list vs dict variations for pendingOrders
+                        current_pending_order = pendingOrders[0] if isinstance(pendingOrders, list) else pendingOrders
+
+                        if current_pending_order and str(current_pending_order.get('sourceTypeVal')) == "3":
+                           order_number = str(current_pending_order.get('orderNumber', ''))
+                        elif orderDetails and isinstance(orderDetails, dict) and orderDetails.get('channel') == 'EROES':
+                           order_number = str(orderDetails.get('orderCreditAppNumber', ''))
+                        elif isinstance(orderDetails, list) and orderDetails[0].get('channel') == 'EROES':
+                           order_number = str(orderDetails[0].get('orderCreditAppNumber', ''))
+                        else:
+                           order_number = str(context.get('order_number', ''))
+
+                        # Basic replacements for Cancel
+                        if request_body_template:
+                            payload_str = request_body_template
+                            replacements = {
+                                '{orderNo}': str(order_number),
+                                '{locationCode}': str(context.get('location_code', '')),
+                            }
+                            pass
+                            
+                        # If we didn't build a manual payload above, use the template builder
+                        if not payload:
+                            payload_str = self.build_payload(request_body_template, context, rule)
+                            payload = json.loads(payload_str)
+                            
+                    elif 'ups' in api_name:
+                         payload = {"shippingTrackingNum": context.get('trackingNumber')}
+                    elif 'fedex' in api_name:
+                         payload = {"trackingNumber": context.get('trackingNumber')}
+                    else:
+                        # GENERIC API (Get Order, etc.)
+                        if request_body_template:
+                            payload_str = self.build_payload(request_body_template, context, rule)
+                            payload = json.loads(payload_str)
+                            
+                            if "sourceTypeVal" in payload and payload['sourceTypeVal'] in "3":
+                                api_url = "https://order360-jl8v.verizon.com/order360-correction-services/pending-order-reflow"
+                        else:
+                             # No body, check for URL formatting
+                            print("No request body template found, using empty payload", context, rule)
+                            api_resp_data = None
+                            if rule['rule_context'] is not None and context.get('api_result_'+rule['rule_context']):
+                                api_resp_data = context.get('api_result_'+rule['rule_context'], {}).get('response_data', {})
+                                
+                            if api_resp_data is not None: 
+                                api_url = api_url.format(customer_id=api_resp_data.get('custIdNo',''), accountNo=api_resp_data.get('acctNo',''))  
+                            else:
+                                api_url = api_url.format(order_number=context.get('order_number','')) 
+
+                    # --- STEP 4: Send Request ---
+                    print(f"         🚀 Making API call ({index + 1}/{len(items_to_process)})... URL: {api_url}")
+                    
+                    if method.upper() == 'GET':
+                        response = requests.get(api_url, headers=headers, timeout=30, verify=False)
+                    else:
+                        response = requests.post(api_url, headers=headers, json=payload, timeout=30, verify=False)
+
+                    # --- STEP 5: Handle Response ---
+                    if response.status_code == 200:
+                        if 'xml' in api_config['api_headers']:
+                            api_data = response.text
+                        else:
+                            api_data = response.json()
+                            print("API DATA ==>", api_data)
+                        
+                        # Store result in context
+                        context['api_result_'+rule['rule_id']] = {
+                            'rule_name': rule['rule_name'],
+                            'response_data': api_data,
+                            'status_code': response.status_code
+                        }
+                        
+                        # Prepare success response
+                        last_result = self._create_response("SUCCESS", f"API call completed successfully", rule['rule_id'])
+                    else:
+                        api_data = response.json()
+                        print(f"API DATA status is {response.status_code} ==>", api_data)
+                        
+                        # Log failure but continue loop if there are other items
+                        self._log_execution_step(
+                            rule, 'API_CALL_PARTIAL_FAIL',
+                            {'api_url': api_url, 'status': response.status_code},
+                            api_data, None, "INFO", "FAILED"
+                        )
+                        last_result = self._create_response("INFO", f"API call returned status {response.status_code}", rule['rule_id'])
+
+                except Exception as inner_e:
+                    print(f"Error processing item {index}: {str(inner_e)}")
+                    continue
+
+            # Return the result of the processing
+            # If we processed valid items, return the last result (usually Success)
+            if last_result:
+                return last_result
+            else:
+                 return self._create_response("INFO", "API call completed but returned no data", rule['rule_id'])
+
+        except Exception as e:
+            self.logger.error(f"API call error: {str(e)}")
+            return None
+        finally:
+            # Restore proxy settings
+            self._restore_proxy_env(original_proxies)
