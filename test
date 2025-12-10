@@ -1,142 +1,175 @@
-def _log_execution_step(self, rule_dict: Dict[str, Any], action: str, 
-                       input_data: Any = None, output_data: Any = None,
-                       error_message: str = None, message_type: str = "INFO",
-                       action_status: str = "SUCCESS") -> None:
-        """Log execution step to database"""
-        try:
-            # Prepare data
-            rule_id = rule_dict.get('rule_id', '')
-            rule_name = rule_dict.get('rule_name', '')
-            step_id = rule_dict.get('rule_step_number', '')
-            
-            # Get existing fields
-            intent_type = self.current_context.get('intent_type', rule_dict.get('intent_type', ''))
-            mtn_data = self.current_context.get('mtn_list')
-            mtn_log_value = str(mtn_data) if mtn_data else ''
+🚀 STARTING ORDER PROCESSING
+============================================================
+📦 Order Number: 1051684
+📍 Location Code: 1822101
+📋 Order Type: ACTIVATION
+👤 User:
+🆔 Session ID: SS_20251210_082932_401f10e9
+------------------------------------------------------------
+🔍 Step 1: Calling problem finder... 1051684   1822101
+🔍 Step 1: Finding matching rule for order type11
+rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+         🚀 Running test mock data function...
+rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+🔥 EXECUTING RULE: API_CALL with context: None
+Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+         📡 Method: POST
 
-            # --- INITIALIZE VARIABLES ---
-            channel_id = ''
-            activation_status = ''
-            source_type_code = ''
-            source_type_val = ''
+🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
+🔍 --- DATA EXTRACTION FINISHED ---
 
-            # --- 🔍 EXTRACTION DEBUGGING START ---
-            print(f"\n🔍 --- STARTING DATA EXTRACTION (Rule: {rule_name}) ---")
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251210_082932_401f10e9)
+         🚀 Making API call...
+Current rules ===> RULE_200
+for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+else
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
+response ==> RULE_200
+         ✅ API call completed successfully {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails
+                  🔍 Searching for field: orderDetails
+                  🔍 Checking API result11: api_result_RULE_200
+                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
+                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
+            🔍 Condition Details:
+               Field Path: orderDetails
+               Operator: EQUALS
+               Actual Value: '1'
+               Expected Value: '1'
+         ✅ Condition met for rule: get-correction-order-details-success
+Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_207', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.billRegion=VB
+            🔍 Condition Details:
+               Field Path: orderDetails{}.billRegion=VB
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: b2b-customer-check
+Finding failure case for22
+Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
+field_pathfield_path ===> orderDetails{}.portIn=''
+            🔍 Condition Details:
+               Field Path: orderDetails{}.portIn=''
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'False'
+         ✅ Condition met for rule: portin-check
+Next scenario rule {'rule_id': 'RULE_211', 'rule_name': 'order-status-check', 'rule_step_number': 11, 'JSON_PATH_VALUE': 'orderDetails{}.aceOrderStatus=Completed(CO)', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_214', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.aceOrderStatus=Completed(CO)
+            🔍 Condition Details:
+               Field Path: orderDetails{}.aceOrderStatus=Completed(CO)
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: order-status-check
+Next scenario rule {'rule_id': 'RULE_214', 'rule_name': 'check payment status', 'rule_step_number': 14, 'JSON_PATH_VALUE': 'orderDetails{}.paymentStatus=Success', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_217', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.paymentStatus=Success
+            🔍 Condition Details:
+               Field Path: orderDetails{}.paymentStatus=Success
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: check payment status
+Next scenario rule {'rule_id': 'RULE_217', 'rule_name': 'fraud check success', 'rule_step_number': 17, 'JSON_PATH_VALUE': 'orderDetails{}.fraudStatus=Success', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_239', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.fraudStatus=Success
+            🔍 Condition Details:
+               Field Path: orderDetails{}.fraudStatus=Success
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: fraud check success
+Next scenario rule {'rule_id': 'RULE_239', 'rule_name': 'byod-check', 'rule_step_number': 39, 'JSON_PATH_VALUE': 'orderDetails{}.shipmentType=NA', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_223', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.shipmentType=NA
+            🔍 Condition Details:
+               Field Path: orderDetails{}.shipmentType=NA
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: byod-check
+Finding failure case for22
+Finding failure case for  orderDetails{}.shipmentType=NA ACTIVATION EQUALS
+field_pathfield_path ===> orderDetails{}.shipmentStatus=Completed
+            🔍 Condition Details:
+               Field Path: orderDetails{}.shipmentStatus=Completed
+               Operator: EQUALS
+               Actual Value: 'True'
+               Expected Value: 'True'
+         ✅ Condition met for rule: shipment check success
+Next scenario rule {'rule_id': 'RULE_226', 'rule_name': 'activation-status-check', 'rule_step_number': 26, 'JSON_PATH_VALUE': 'activationDetailsList[].activationStatus=null', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_227', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_201', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> activationDetailsList[].activationStatus=null
+                  🔍 Searching for field: activationDetailsList[].activationStatus=null
+                  ❌ Data not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: activationDetailsList[].activationStatus=null
+               Operator: EQUALS
+               Actual Value: '0'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: activation-status-check
+Finding failure case for22
+Finding failure case for  activationDetailsList[].activationStatus=null ACTIVATION EQUALS
+Inside execute api call step method {'conf_id': 'CONF_112', 'rule_id': 'RULE_231', 'api_url': 'https://order360.verizon.com/order360-correction-services/correction-by-error-message1', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo":"{order_number}","mtn":"{mtn}","errorMessage":"{error_message}"}', 'api_name': 'ACTIVATION_REFLOW'}
+         🌐 URL: https://order360.verizon.com/order360-correction-services/correction-by-error-message1
+         📡 Method: POST
 
-            # Iterate through all API results in memory
-            for key, value in self.current_context.items():
-                # Only look at API results keys
-                if key.startswith('api_result_') and isinstance(value, dict):
-                    print(f"   📂 Analyzing Context Key: {key}")
-                    data = value.get('response_data', {})
-                    
-                    if not data: 
-                        print("      ⚠️ response_data is empty, skipping.")
-                        continue
+🔍 --- STARTING DATA EXTRACTION (Rule: call-reflow-api) ---
+🔍 --- DATA EXTRACTION FINISHED ---
 
-                    # 1. Look for 'orderDetails'
-                    if 'orderDetails' in data and isinstance(data['orderDetails'], dict):
-                        details = data['orderDetails']
-                        print(f"      ✅ Found 'orderDetails' dictionary.")
-                        
-                        # Debug raw values found in this specific API result
-                        raw_channel = details.get('channel', 'MISSING')
-                        raw_status = details.get('activationStatus', 'MISSING')
-                        print(f"         -> Raw 'channel' found: '{raw_channel}'")
-                        print(f"         -> Raw 'activationStatus' found: '{raw_status}'")
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: API_CALL_START for call-reflow-api (Session: SS_20251210_082932_401f10e9)
+         🚀 Making API call...
+Current rules ===> RULE_231
+for loop https://order360.verizon.com/order360-correction-services/correction-by-error-message1
+else
+         🚀 Making API call (1/1)... URL: https://order360.verizon.com/order360-correction-services/correction-by-error-message1
+Error processing item 0: Expecting value: line 1 column 1 (char 0)
+response ==> RULE_231
 
-                        # Capture only if not already set (Keep the first valid one we find)
-                        if not channel_id and raw_channel != 'MISSING': 
-                            channel_id = raw_channel
-                            print(f"         🎯 CAPTURED CHANNEL_ID: {channel_id}")
-                        
-                        if not activation_status and raw_status != 'MISSING': 
-                            activation_status = raw_status
-                            print(f"         🎯 CAPTURED ACTIVATION_STATUS: {activation_status}")
+🔍 --- STARTING DATA EXTRACTION (Rule: call-reflow-api) ---
+🔍 --- DATA EXTRACTION FINISHED ---
 
-                    # 2. Look for 'pendingOrders'
-                    if 'pendingOrders' in data and isinstance(data['pendingOrders'], list):
-                        print(f"      ✅ Found 'pendingOrders' list (Length: {len(data['pendingOrders'])})")
-                        
-                        if len(data['pendingOrders']) > 0:
-                            first_order = data['pendingOrders'][0]
-                            
-                            # Debug raw values
-                            raw_st_code = first_order.get('sourceTypeCode', 'MISSING')
-                            raw_st_val = first_order.get('sourceTypeVal', 'MISSING')
-                            print(f"         -> Raw 'sourceTypeCode' found: '{raw_st_code}'")
-                            print(f"         -> Raw 'sourceTypeVal' found: '{raw_st_val}'")
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: API_CALL_FAILED for call-reflow-api (Session: SS_20251210_082932_401f10e9)
+         ⚠️  API call completed but returned no data or failed
+response ==> RULE_231
+         🛑 Stopping flow due to API step status: INFO
+🎯 RULE EXECUTION RESULT:
+   Result: {'status': 'INFO', 'message': 'API call completed but returned no data', 'response': 'API call completed but returned no data', 'rule_id': '', 'timestamp': '2025-12-10T08:29:42.012432'}
+   Status: INFO
+   Message: API call completed but returned no data
 
-                            if not source_type_code and raw_st_code != 'MISSING':
-                                source_type_code = raw_st_code
-                                print(f"         🎯 CAPTURED SOURCE_TYPE_CODE: {source_type_code}")
-                                
-                            if not source_type_val and raw_st_val != 'MISSING':
-                                source_type_val = raw_st_val
-                                print(f"         🎯 CAPTURED SOURCE_TYPE_VAL: {source_type_val}")
-            
-            print("🔍 --- DATA EXTRACTION FINISHED ---")
+🎯 PROCESSING COMPLETE
+Status: INFO
+============================================================
 
-            # --- VERIFICATION DEBUG ---
-            print(f"\n🧪 FINAL VALUES TO INSERT:")
-            print(f"   CHANNEL_ID:        '{channel_id}'")
-            print(f"   ACTIVATION_STATUS: '{activation_status}'")
-            print(f"   SOURCE_TYPE_CODE:  '{source_type_code}'")
-            print(f"   SOURCE_TYPE_VAL:   '{source_type_val}'")
-            print("-" * 30)
+🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
+🔍 --- DATA EXTRACTION FINISHED ---
 
-            # Generate LOG_ID
-            log_id = int(datetime.now().strftime('%Y%m%d%H%M%S%f')[:-3]) + random.randint(1, 999)
-            
-            # JSON conversion
-            input_json = json.dumps(input_data, default=str) if input_data else None
-            output_json = json.dumps(output_data, default=str) if output_data else None
-
-            # SQL INSERT
-            insert_sql = """
-                INSERT INTO CXP_OPS_MONITORING.CXP_STORE_SUPPORT_EXECUTION_LOG_NP (
-                    LOG_ID, RULE_ID, SESSION_ID, RULE_NAME, ORDER_NUMBER, 
-                    LOCATION_CODE, STEP_ID, STEP_NAME, ACTION, INPUT_DATA, 
-                    OUTPUT_DATA, ERROR_MESSAGE, MESSAGE_TYPE, ACTION_STATUS, 
-                    INTENT_TYPE, MTN, 
-                    CHANNEL_ID, ACTIVATION_STATUS, SOURCE_TYPE_CODE, SOURCE_TYPE_VAL,
-                    CREATED_DATE
-                ) VALUES (
-                    :log_id, :rule_id, :session_id, :rule_name, :order_number,
-                    :location_code, :step_id, :step_name, :action, :input_data,
-                    :output_data, :error_message, :message_type, :action_status, 
-                    :intent_type, :mtn, 
-                    :channel_id, :activation_status, :source_type_code, :source_type_val,
-                    SYSTIMESTAMP
-                )
-            """
-
-            self.cursor.execute(insert_sql, {
-                'log_id': log_id,
-                'rule_id': rule_id,
-                'session_id': self.session_id,
-                'rule_name': rule_name,
-                'order_number': self.current_context.get('order_number', ''),
-                'location_code': self.current_context.get('location_code', ''),
-                'step_id': str(step_id),
-                'step_name': rule_name,
-                'action': action,
-                'input_data': input_json,
-                'output_data': output_json,
-                'error_message': error_message,
-                'message_type': message_type,
-                'action_status': action_status,
-                'intent_type': intent_type,
-                'mtn': mtn_log_value,
-                'channel_id': str(channel_id),
-                'activation_status': str(activation_status),
-                'source_type_code': str(source_type_code),
-                'source_type_val': str(source_type_val)
-            })
-
-            self.connection.commit()
-            print(f"📝 LOGGED: {action} for {rule_name} (Session: {self.session_id})")
-
-        except Exception as e:
-            print(f"❌ Logging error: {str(e)}")
-            pass
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: PROCESS_COMPLETE for Get order info (Session: SS_20251210_082932_401f10e9)
+response ==> Dear User, Order processing failed. Please check your order details and try again. If the issue persists, contact customer support.
+      INFO   127.0.0.1:65394 - "POST /api/v1/activation HTTP/1.1" 200
+      INFO   127.0.0.1:51910 - "GET /gettransactions HTTP/1.1" 404
