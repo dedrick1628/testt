@@ -1,4 +1,5 @@
-SELECT LOG_ID, RULE_NAME, ORDER_NUMBER, MTN, INTENT_TYPE, CREATED_DATE 
-FROM CXP_OPS_MONITORING.CXP_STORE_SUPPORT_EXECUTION_LOG_NP 
-ORDER BY CREATED_DATE DESC 
-FETCH FIRST 10 ROWS ONLY;
+add  channel id on log table for pending order and activation
+
+add activationStatus when it comes to activation
+
+add sourceTypeCode, sourceTypeVal value for pending order
