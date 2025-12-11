@@ -1,4 +1,3 @@
-      INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
 Database connection established successfully.
 context is
 
@@ -6,16 +5,21 @@ context is
 ============================================================
 📦 Order Number: 649101
 📍 Location Code: T326501
-📋 Order Type: pendingOrders
+📋 Order Type: PENDING ORDER
 👤 User:
-🆔 Session ID: SS_20251210_103934_61af7e6f
+🆔 Session ID: SS_20251211_080108_31e52e9c
 ------------------------------------------------------------
 🔍 Step 1: Calling problem finder... 649101   T326501
 🔍 Step 1: Finding matching rule for order type11
-rulerulerulerule ===> None
-❌ No specific rule found for order type 'pendingOrders'
+rulerulerulerule ===> {'rule_id': 'RULE_101', 'rule_name': 'CALL_PENDING_ORDER_API', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_102', 'rule_type': 'API_CALL', 'rule_context': None}
+         🚀 Running test mock data function...
+rule_typerule_type ==> {'rule_id': 'RULE_101', 'rule_name': 'CALL_PENDING_ORDER_API', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_102', 'rule_type': 'API_CALL', 'rule_context': None}
+🔥 EXECUTING RULE: API_CALL with context: None
+Inside execute api call step method {'conf_id': 'CONF_101', 'rule_id': 'RULE_101', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-pending-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}', 'api_name': 'Get Pending Order Details'}
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-pending-order-details
+         📡 Method: POST
 
-🔍 --- STARTING DATA EXTRACTION (Rule: Rule Search) ---
+🔍 --- STARTING DATA EXTRACTION (Rule: CALL_PENDING_ORDER_API) ---
 🔍 --- DATA EXTRACTION FINISHED ---
 
 🧪 FINAL VALUES TO INSERT:
@@ -24,27 +28,33 @@ rulerulerulerule ===> None
    SOURCE_TYPE_CODE:  ''
    SOURCE_TYPE_VAL:   ''
 ------------------------------
-📝 LOGGED: RULE_SEARCH for Rule Search (Session: SS_20251210_103934_61af7e6f)
-response ==>
-      INFO   127.0.0.1:54432 - "POST /api/v1/activation HTTP/1.1" 200
-      INFO   127.0.0.1:54200 - "GET /gettransactions HTTP/1.1" 404
-Database connection established successfully.
-context is
+📝 LOGGED: API_CALL_START for CALL_PENDING_ORDER_API (Session: SS_20251211_080108_31e52e9c)
+         🚀 Making API call...
+Current rules ===> RULE_101
+for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-pending-order-details
+else
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-pending-order-details
+API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': None, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
+response ==> RULE_101
+         ✅ API call completed successfully {'rule_id': 'RULE_101', 'rule_name': 'CALL_PENDING_ORDER_API', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_102', 'rule_type': 'API_CALL', 'rule_context': None}
+Next scenario rule {'rule_id': 'RULE_102', 'rule_name': 'CHECK_PENDING_ORDER_RESPONSE', 'rule_step_number': 2, 'JSON_PATH_VALUE': 'pendingOrders[].length', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_103', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_101', 'intent_type': 'PENDING_ORDERS'}
+field_pathfield_path ===> pendingOrders[].length
+                  🔍 Searching for field: pendingOrders[].length
+                  📋 Checking array length for: pendingOrders
+pendingOrders111 None
+rulerulerule {'rule_id': 'RULE_102', 'rule_name': 'CHECK_PENDING_ORDER_RESPONSE', 'rule_step_number': 2, 'JSON_PATH_VALUE': 'pendingOrders[].length', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_103', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_101', 'intent_type': 'PENDING_ORDERS'}
+                  ❌ Array 'pendingOrders' not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: pendingOrders[].length
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: CHECK_PENDING_ORDER_RESPONSE
+Finding failure case for22
+Finding failure case for  pendingOrders[].length PENDING_ORDERS EQUALS
 
-🚀 STARTING ORDER PROCESSING
-============================================================
-📦 Order Number: 649101
-📍 Location Code: T326501
-📋 Order Type: pendingOrders
-👤 User:
-🆔 Session ID: SS_20251210_104010_0a98dec6
-------------------------------------------------------------
-🔍 Step 1: Calling problem finder... 649101   T326501
-🔍 Step 1: Finding matching rule for order type11
-rulerulerulerule ===> None
-❌ No specific rule found for order type 'pendingOrders'
-
-🔍 --- STARTING DATA EXTRACTION (Rule: Rule Search) ---
+🔍 --- STARTING DATA EXTRACTION (Rule: CALL_POLICY_TEMPLATE) ---
+   📂 Analyzing Context Key: api_result_RULE_101
 🔍 --- DATA EXTRACTION FINISHED ---
 
 🧪 FINAL VALUES TO INSERT:
@@ -53,4 +63,43 @@ rulerulerulerule ===> None
    SOURCE_TYPE_CODE:  ''
    SOURCE_TYPE_VAL:   ''
 ------------------------------
-📝 LOGGED: RULE_SEARCH for Rule Search (Session: SS_20251210_104010_0a98dec6)
+📝 LOGGED: TEMPLATE_RESPONSE_START for CALL_POLICY_TEMPLATE (Session: SS_20251211_080108_31e52e9c)
+         📋 Template: No Pending orders
+         🔄 Processing template placeholders...
+         🔧 Replacing placeholders:
+         ✅ Response template processed successfully
+response ==> RESP_NO_PENDING_ORDERS
+         ✅ Template response generated for rule: Dear User,
+    We could not find any pending orders for your request. Request you to verify the order number and location code and raise a new request if needed.
+         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Dear User, \n    We could not find any pending orders for your request. Request you to verify the order number and location code and raise a new request if needed. ', 'response': 'Dear User, \n    We could not find any pending orders for your request. Request you to verify the order number and location code and raise a new request if needed. ', 'rule_id': '', 'timestamp': '2025-12-11T08:01:16.224741'}
+
+🔍 --- STARTING DATA EXTRACTION (Rule: CALL_POLICY_TEMPLATE) ---
+   📂 Analyzing Context Key: api_result_RULE_101
+🔍 --- DATA EXTRACTION FINISHED ---
+
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for CALL_POLICY_TEMPLATE (Session: SS_20251211_080108_31e52e9c)
+🎯 RULE EXECUTION RESULT:
+   Result: {'status': 'SUCCESS', 'message': 'Dear User, \n    We could not find any pending orders for your request. Request you to verify the order number and location code and raise a new request if needed. ', 'response': 'Dear User, \n    We could not find any pending orders for your request. Request you to verify the order number and location code and raise a new request if needed. ', 'rule_id': '', 'timestamp': '2025-12-11T08:01:16.224741'}
+   Status: SUCCESS
+   Message: Dear User,
+    We could not find any pending orders for your request. Request you to verify the order number and location code and raise a new request if needed.
+🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
+
+🔍 --- STARTING DATA EXTRACTION (Rule: CALL_PENDING_ORDER_API) ---
+   📂 Analyzing Context Key: api_result_RULE_101
+🔍 --- DATA EXTRACTION FINISHED ---
+
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for CALL_PENDING_ORDER_API (Session: SS_20251211_080108_31e52e9c)
+      INFO   127.0.0.1:52532 - "POST /api/v1/activation HTTP/1.1" 200
