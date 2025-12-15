@@ -85,3 +85,9 @@ VALUES
                                 api_data['orderDetails']['portIn'] = 'True' 
                         
                         context['api_result_'+rule['rule_id']] = { ... }
+
+
+SELECT RULE_NAME, ACTION, ACTION_STATUS, OUTPUT_DATA 
+FROM CXP_OPS_MONITORING.CXP_STORE_SUPPORT_EXECUTION_LOG_NP
+WHERE SESSION_ID = 'YOUR_NEW_SESSION_ID'
+ORDER BY CREATED_DATE ASC;
