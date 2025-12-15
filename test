@@ -70,3 +70,18 @@ VALUES
     'TEMP_PORT_IN_MSG', 
     1
 );
+
+
+# --- STEP 5: Handle Response ---
+                    if response.status_code == 200:
+                        if 'xml' in api_config['api_headers']:
+                            api_data = response.text
+                        else:
+                            api_data = response.json()
+                            
+                            # 🧪 TEMPORARY TEST: Force Port In = True
+                            if 'orderDetails' in api_data and api_data['orderDetails']:
+                                print("🧪 FORCING PORT-IN = TRUE FOR TESTING")
+                                api_data['orderDetails']['portIn'] = 'True' 
+                        
+                        context['api_result_'+rule['rule_id']] = { ... }
