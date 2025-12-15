@@ -26,3 +26,18 @@ SET RULE_NEXT_STEP = 'RULE_300'
 WHERE RULE_NAME = 'b2b-customer-check' AND RULE_INTENT_TYPE = 'ACTIVATION';
 
 
+Error starting at line : 39 in command -
+INSERT INTO CXP_OPS_MONITORING.TEST_CXP_STORE_SUPPORT_RULE_AYS_NP 
+(RULE_ID, RULE_NAME, RULE_INTENT_TYPE, RULE_TYPE, RULE_STEP_NUMBER, JSON_PATH_VALUE, OPERATOR, EXPECTED_VALUE, RULE_ACTION, RULE_CONTEXT, IS_ACTIVE, CREATED_DATE)
+VALUES 
+('RULE_300', 'check-is-port-in', 'ACTIVATION', 'TEMPLATE_RESPONSE', 30, 'orderDetails{}.portIn', 'EQUALS', 'True', 'STOP', 'TEMP_PORT_IN_MSG', 1, SYSDATE)
+Error at Command Line : 40 Column : 150
+Error report -
+SQL Error: ORA-00904: "CREATED_DATE": invalid identifier
+
+https://docs.oracle.com/error-help/db/ora-00904/00904. 00000 -  "%s: invalid identifier"
+*Cause:    The identifier or column name entered was invalid.
+*Action:   Ensure the following
+
+More Details :
+https://docs.oracle.com/error-help/db/ora-00904/
