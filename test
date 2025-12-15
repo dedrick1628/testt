@@ -41,3 +41,32 @@ https://docs.oracle.com/error-help/db/ora-00904/00904. 00000 -  "%s: invalid ide
 
 More Details :
 https://docs.oracle.com/error-help/db/ora-00904/
+
+INSERT INTO CXP_OPS_MONITORING.TEST_CXP_STORE_SUPPORT_RULE_AYS_NP 
+(
+    RULE_ID, 
+    RULE_NAME, 
+    RULE_INTENT_TYPE, 
+    RULE_TYPE, 
+    RULE_STEP_NUMBER, 
+    JSON_PATH_VALUE, 
+    OPERATOR, 
+    EXPECTED_VALUE, 
+    RULE_ACTION, 
+    RULE_CONTEXT, 
+    IS_ACTIVE
+)
+VALUES 
+(
+    'RULE_300', 
+    'check-is-port-in', 
+    'ACTIVATION', 
+    'TEMPLATE_RESPONSE', 
+    30, 
+    'orderDetails{}.portIn', 
+    'EQUALS', 
+    'True', 
+    'STOP', 
+    'TEMP_PORT_IN_MSG', 
+    1
+);
