@@ -10,3 +10,20 @@ WHERE
     RULE_NAME = 'portin-check';
 
 COMMIT;
+
+
+# ... existing EQUALS block ...
+            if operator == 'EQUALS':
+                # ... existing logic ...
+            
+            # 🟢 ADD THIS NEW BLOCK 🟢
+            elif operator == 'NOT_EQUALS':
+                # Safety: If value is missing or False, treat it as "Not a Port In" (Don't trigger rule)
+                if actual_value is None or str(actual_value).lower() in ['false', 'none', '']:
+                    return False
+                
+                # Logic: If value exists (e.g. 'Pending') and is NOT 'A', trigger the rule
+                if str(actual_value).strip() != str(expected_value).strip():
+                    return True
+                
+                return False
