@@ -1,5 +1,46 @@
 UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
 SET 
+    -- 1. Change Type to API_RESPONSE so the engine CHECKS the condition
+    RULE_TYPE = 'API_RESPONSE',
+    
+    -- 2. If condition matches (Not 'A'), perform this action:
+    RULE_ACTION = 'TEMPLATE_RESPONSE', 
+    
+    -- 3. Ensure we point to the correct message
+    RULE_CONTEXT = 'TEMP_PORT_IN_MSG',
+    
+    -- 4. Logic Settings
+    JSON_PATH_VALUE = 'orderDetails{}.portIn',
+    OPERATOR = 'NOT_EQUALS',
+    EXPECTED_VALUE = 'A'
+WHERE 
+    RULE_NAME = 'portin-check';
+
+COMMIT;
+
+
+elif operator == 'NOT_EQUALS' or operator == 'NOT EQUALS':
+                # --- NEW LOGIC START ---
+                print(f"               DEBUG Check: Actual='{actual_value}' vs Expected='{expected_value}'")
+                
+                # 1. Safety Check: If actual value is False, None, or Empty, 
+                # it is a NORMAL order. Do NOT trigger the rule.
+                str_val = str(actual_value).lower().strip()
+                if actual_value is None or str_val in ['false', 'none', '', 'null']:
+                    print("               DEBUG Result: Value is Empty/False -> Rule Ignored (Success)")
+                    return False
+                
+                # 2. Logic Check: If we have a value (e.g. 'Pending'), 
+                # trigger ONLY if it is different from expected ('A').
+                is_different = str_val != str(expected_value).lower().strip()
+                print(f"               DEBUG Result: Is Different? {is_different}")
+                return is_different
+                # --- NEW LOGIC END ---
+
+
+
+UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
+SET 
     -- 1. Point to the specific field
     JSON_PATH_VALUE = 'orderDetails{}.portIn',
     
