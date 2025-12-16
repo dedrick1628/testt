@@ -1,221 +1,3 @@
-UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
-SET 
-    -- 1. Change Type to API_RESPONSE so the engine CHECKS the condition
-    RULE_TYPE = 'API_RESPONSE',
-    
-    -- 2. If condition matches (Not 'A'), perform this action:
-    RULE_ACTION = 'TEMPLATE_RESPONSE', 
-    
-    -- 3. Ensure we point to the correct message
-    RULE_CONTEXT = 'TEMP_PORT_IN_MSG',
-    
-    -- 4. Logic Settings
-    JSON_PATH_VALUE = 'orderDetails{}.portIn',
-    OPERATOR = 'NOT_EQUALS',
-    EXPECTED_VALUE = 'A'
-WHERE 
-    RULE_NAME = 'portin-check';
-
-COMMIT;
-
-
-elif operator == 'NOT_EQUALS' or operator == 'NOT EQUALS':
-                # --- NEW LOGIC START ---
-                print(f"               DEBUG Check: Actual='{actual_value}' vs Expected='{expected_value}'")
-                
-                # 1. Safety Check: If actual value is False, None, or Empty, 
-                # it is a NORMAL order. Do NOT trigger the rule.
-                str_val = str(actual_value).lower().strip()
-                if actual_value is None or str_val in ['false', 'none', '', 'null']:
-                    print("               DEBUG Result: Value is Empty/False -> Rule Ignored (Success)")
-                    return False
-                
-                # 2. Logic Check: If we have a value (e.g. 'Pending'), 
-                # trigger ONLY if it is different from expected ('A').
-                is_different = str_val != str(expected_value).lower().strip()
-                print(f"               DEBUG Result: Is Different? {is_different}")
-                return is_different
-                # --- NEW LOGIC END ---
-
-
-
-UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
-SET 
-    -- 1. Point to the specific field
-    JSON_PATH_VALUE = 'orderDetails{}.portIn',
-    
-    -- 2. Use the NOT EQUALS operator
-    OPERATOR = 'NOT EQUALS',
-    
-    -- 3. We want to stop if it is NOT 'A'
-    EXPECTED_VALUE = 'A',
-    
-    -- 4. Ensure it stops and sends the template
-    RULE_ACTION = 'STOP',
-    RULE_TYPE = 'TEMPLATE_RESPONSE',
-    RULE_CONTEXT = 'TEMP_PORT_IN_MSG'
-WHERE 
-    RULE_NAME = 'portin-check';
-
-COMMIT;
-
-
-env) PS C:\Users\salude7\Documents\store-automation-slack_server_nonprod> fastapi run .\server.py
-
-   FastAPI   Starting production server 🚀
-
-             Searching for package file structure from directories with __init__.py files
-             Importing from C:\Users\salude7\Documents\store-automation-slack_server_nonprod
-
-    module   🐍 server.py
-
-      code   Importing the FastAPI app object from the module with the following code:
-
-             from server import server
-
-       app   Using import string: server:server
-
-    server   Server started at http://0.0.0.0:8000
-    server   Documentation at http://0.0.0.0:8000/docs
-
-             Logs:
-
-      INFO   Started server process [105608]
-      INFO   Waiting for application startup.
-      INFO   Application startup complete.
-      INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-Database connection established successfully.
-context is
-
-🚀 STARTING ORDER PROCESSING
-============================================================
-📦 Order Number: 1051684
-📍 Location Code: 1822101
-📋 Order Type: ACTIVATION
-👤 User:
-🆔 Session ID: SS_20251216_090214_fa7b64c3
-------------------------------------------------------------
-🔍 Step 1: Calling problem finder... 1051684   1822101
-🔍 Step 1: Finding matching rule for order type11
-rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-         🚀 Running test mock data function...
-rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-🔥 EXECUTING RULE: API_CALL with context: None
-Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
-         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-         📡 Method: POST
-
-🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        ''
-   ACTIVATION_STATUS: ''
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251216_090214_fa7b64c3)
-         🚀 Making API call...
-Current rules ===> RULE_200
-for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-else
-         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
-FORCING PORT-IN = TRUE FOR TESTING
-response ==> RULE_200
-         ✅ API call completed successfully {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails
-                  🔍 Searching for field: orderDetails
-                  🔍 Checking API result11: api_result_RULE_200
-                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'Pending', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
-                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'Pending', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
-            🔍 Condition Details:
-               Field Path: orderDetails
-               Operator: EQUALS
-               Actual Value: '1'
-               Expected Value: '1'
-         ✅ Condition met for rule: get-correction-order-details-success
-Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_300', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails{}.billRegion=VB
-            🔍 Condition Details:
-               Field Path: orderDetails{}.billRegion=VB
-               Operator: EQUALS
-               Actual Value: 'False'
-               Expected Value: 'True'
-         ❌ Condition not met for rule: b2b-customer-check
-Finding failure case for22
-Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
-
-🔍 --- STARTING DATA EXTRACTION (Rule: portin-check) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: TEMPLATE_RESPONSE_START for portin-check (Session: SS_20251216_090214_fa7b64c3)
-         📋 Template: Port In Review Message
-         🔄 Processing template placeholders...
-         🔧 Replacing placeholders:
-         ✅ Response template processed successfully
-response ==> TEMP_PORT_IN_MSG
-         ✅ Template response generated for rule: Dear User, Port in order found, We will review the port in status and process the activation.
-         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'response': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'rule_id': '', 'timestamp': '2025-12-16T09:02:24.200052'}
-
-🔍 --- STARTING DATA EXTRACTION (Rule: portin-check) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for portin-check (Session: SS_20251216_090214_fa7b64c3)
-🎯 RULE EXECUTION RESULT:
-   Result: {'status': 'SUCCESS', 'message': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'response': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'rule_id': '', 'timestamp': '2025-12-16T09:02:24.200052'}
-   Status: SUCCESS
-   Message: Dear User, Port in order found, We will review the port in status and process the activation.
-🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
-
-🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251216_090214_fa7b64c3)
-      INFO   127.0.0.1:61412 - "POST /api/v1/activation HTTP/1.1" 200
-      INFO   127.0.0.1:54438 - "GET /gettransactions HTTP/1.1" 404
-      INFO   Shutting down
-      INFO   Waiting for application shutdown.
-      INFO   Application shutdown complete.
-      INFO   Finished server process [105608]
-
 (venv) PS C:\Users\salude7\Documents\store-automation-slack_server_nonprod> fastapi run .\server.py
 
    FastAPI   Starting production server 🚀
@@ -236,10 +18,11 @@ response ==> TEMP_PORT_IN_MSG
 
              Logs:
 
-      INFO   Started server process [108248]
+      INFO   Started server process [110764]
       INFO   Waiting for application startup.
       INFO   Application startup complete.
       INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+      INFO   127.0.0.1:52310 - "GET /gettransactions HTTP/1.1" 404
 Database connection established successfully.
 context is
 
@@ -249,7 +32,7 @@ context is
 📍 Location Code: 1822101
 📋 Order Type: ACTIVATION
 👤 User:
-🆔 Session ID: SS_20251216_090302_81dec7d4
+🆔 Session ID: SS_20251216_091246_ecf0145e
 ------------------------------------------------------------
 🔍 Step 1: Calling problem finder... 1051684   1822101
 🔍 Step 1: Finding matching rule for order type11
@@ -270,213 +53,7 @@ Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200
    SOURCE_TYPE_CODE:  ''
    SOURCE_TYPE_VAL:   ''
 ------------------------------
-📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251216_090302_81dec7d4)
-         🚀 Making API call...
-Current rules ===> RULE_200
-for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-else
-         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
-FORCING PORT-IN = TRUE FOR TESTING
-response ==> RULE_200
-         ✅ API call completed successfully {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails
-                  🔍 Searching for field: orderDetails
-                  🔍 Checking API result11: api_result_RULE_200
-                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'A', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
-                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'A', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
-            🔍 Condition Details:
-               Field Path: orderDetails
-               Operator: EQUALS
-               Actual Value: '1'
-               Expected Value: '1'
-         ✅ Condition met for rule: get-correction-order-details-success
-Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_300', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
-field_pathfield_path ===> orderDetails{}.billRegion=VB
-            🔍 Condition Details:
-               Field Path: orderDetails{}.billRegion=VB
-               Operator: EQUALS
-               Actual Value: 'False'
-               Expected Value: 'True'
-         ❌ Condition not met for rule: b2b-customer-check
-Finding failure case for22
-Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
-
-🔍 --- STARTING DATA EXTRACTION (Rule: portin-check) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: TEMPLATE_RESPONSE_START for portin-check (Session: SS_20251216_090302_81dec7d4)
-         📋 Template: Port In Review Message
-         🔄 Processing template placeholders...
-         🔧 Replacing placeholders:
-         ✅ Response template processed successfully
-response ==> TEMP_PORT_IN_MSG
-         ✅ Template response generated for rule: Dear User, Port in order found, We will review the port in status and process the activation.
-         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'response': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'rule_id': '', 'timestamp': '2025-12-16T09:03:10.826310'}
-
-🔍 --- STARTING DATA EXTRACTION (Rule: portin-check) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for portin-check (Session: SS_20251216_090302_81dec7d4)
-🎯 RULE EXECUTION RESULT:
-   Result: {'status': 'SUCCESS', 'message': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'response': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'rule_id': '', 'timestamp': '2025-12-16T09:03:10.826310'}
-   Status: SUCCESS
-   Message: Dear User, Port in order found, We will review the port in status and process the activation.
-🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
-
-🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251216_090302_81dec7d4)
-      INFO   127.0.0.1:61870 - "POST /api/v1/activation HTTP/1.1" 200
-      INFO   127.0.0.1:51830 - "GET /gettransactions HTTP/1.1" 404
-      INFO   Shutting down
-      INFO   Finished server process [108248]
-     ERROR   Traceback (most recent call last):
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 195, in
-             run
-                 return runner.run(main)
-                        ~~~~~~~~~~^^^^^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 118, in
-             run
-                 return self._loop.run_until_complete(task)
-                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py", line 712,
-             in run_until_complete
-                 self.run_forever()
-                 ~~~~~~~~~~~~~~~~^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py", line 683,
-             in run_forever
-                 self._run_once()
-                 ~~~~~~~~~~~~~~^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py", line
-             2050, in _run_once
-                 handle._run()
-                 ~~~~~~~~~~~^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\events.py", line 89, in
-             _run
-                 self._context.run(self._callback, *self._args)
-                 ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-               File "C:\Users\salude7\Documents\SOG\SOG_DEV\sog_BE\venv\Lib\site-packages\uvicorn\server.py", line 70, in serve
-                 with self.capture_signals():
-                      ~~~~~~~~~~~~~~~~~~~~^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 148, in
-             __exit__
-                 next(self.gen)
-                 ~~~~^^^^^^^^^^
-               File "C:\Users\salude7\Documents\SOG\SOG_DEV\sog_BE\venv\Lib\site-packages\uvicorn\server.py", line 331, in capture_signals
-                 signal.raise_signal(captured_signal)
-                 ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\runners.py", line 157, in
-             _on_sigint
-                 raise KeyboardInterrupt()
-             KeyboardInterrupt
-
-             During handling of the above exception, another exception occurred:
-
-             Traceback (most recent call last):
-               File "C:\Users\salude7\Documents\SOG\SOG_DEV\sog_BE\venv\Lib\site-packages\starlette\routing.py", line 701, in lifespan
-                 await receive()
-               File "C:\Users\salude7\Documents\SOG\SOG_DEV\sog_BE\venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
-                 return await self.receive_queue.get()
-                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-               File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz5n2kfra8p0\Lib\asyncio\queues.py", line 186, in
-             get
-                 await getter
-             asyncio.exceptions.CancelledError
-
-(venv) PS C:\Users\salude7\Documents\store-automation-slack_server_nonprod> fastapi run .\server.py
-
-   FastAPI   Starting production server 🚀
-
-             Searching for package file structure from directories with __init__.py files
-             Importing from C:\Users\salude7\Documents\store-automation-slack_server_nonprod
-
-    module   🐍 server.py
-
-      code   Importing the FastAPI app object from the module with the following code:
-
-             from server import server
-
-       app   Using import string: server:server
-
-    server   Server started at http://0.0.0.0:8000
-    server   Documentation at http://0.0.0.0:8000/docs
-
-             Logs:
-
-      INFO   Started server process [111756]
-      INFO   Waiting for application startup.
-      INFO   Application startup complete.
-      INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-Database connection established successfully.
-context is
-
-🚀 STARTING ORDER PROCESSING
-============================================================
-📦 Order Number: 1051684
-📍 Location Code: 1822101
-📋 Order Type: ACTIVATION
-👤 User:
-🆔 Session ID: SS_20251216_090413_58efa1d6
-------------------------------------------------------------
-🔍 Step 1: Calling problem finder... 1051684   1822101
-🔍 Step 1: Finding matching rule for order type11
-rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-         🚀 Running test mock data function...
-rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
-🔥 EXECUTING RULE: API_CALL with context: None
-Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
-         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
-         📡 Method: POST
-
-🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        ''
-   ACTIVATION_STATUS: ''
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251216_090413_58efa1d6)
+📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251216_091246_ecf0145e)
          🚀 Making API call...
 Current rules ===> RULE_200
 for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
@@ -508,52 +85,25 @@ field_pathfield_path ===> orderDetails{}.billRegion=VB
          ❌ Condition not met for rule: b2b-customer-check
 Finding failure case for22
 Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
-
-🔍 --- STARTING DATA EXTRACTION (Rule: portin-check) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: TEMPLATE_RESPONSE_START for portin-check (Session: SS_20251216_090413_58efa1d6)
-         📋 Template: Port In Review Message
-         🔄 Processing template placeholders...
-         🔧 Replacing placeholders:
-         ✅ Response template processed successfully
-response ==> TEMP_PORT_IN_MSG
-         ✅ Template response generated for rule: Dear User, Port in order found, We will review the port in status and process the activation.
-         🎯 RETURNING TEMPLATE RESPONSE DIRECTLY: {'status': 'SUCCESS', 'message': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'response': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'rule_id': '', 'timestamp': '2025-12-16T09:04:20.237351'}
-
-🔍 --- STARTING DATA EXTRACTION (Rule: portin-check) ---
-   📂 Analyzing Context Key: api_result_RULE_200
-      ✅ Found 'orderDetails' dictionary.
-         -> Raw 'channel' found: 'NETACE'
-         -> Raw 'activationStatus' found: 'Failure'
-         🎯 CAPTURED CHANNEL_ID: NETACE
-         🎯 CAPTURED ACTIVATION_STATUS: Failure
-🔍 --- DATA EXTRACTION FINISHED ---
-
-🧪 FINAL VALUES TO INSERT:
-   CHANNEL_ID:        'NETACE'
-   ACTIVATION_STATUS: 'Failure'
-   SOURCE_TYPE_CODE:  ''
-   SOURCE_TYPE_VAL:   ''
-------------------------------
-📝 LOGGED: TEMPLATE_RESPONSE_SUCCESS for portin-check (Session: SS_20251216_090413_58efa1d6)
+field_pathfield_path ===> orderDetails{}.portIn
+                  🔍 Searching for field: orderDetails{}.portIn
+                  ❌ Data not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: orderDetails{}.portIn
+               Operator: NOT_EQUALS
+               Actual Value: '0'
+               Expected Value: 'A'
+               DEBUG Check: Actual='0' vs Expected='A'
+               DEBUG Result: Is Different? True
+         ✅ Condition met for rule: portin-check
 🎯 RULE EXECUTION RESULT:
-   Result: {'status': 'SUCCESS', 'message': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'response': 'Dear User, Port in order found, We will review the port in status and process the activation.', 'rule_id': '', 'timestamp': '2025-12-16T09:04:20.237351'}
-   Status: SUCCESS
-   Message: Dear User, Port in order found, We will review the port in status and process the activation.
-🎯 TEMPLATE RESPONSE CAPTURED - RETURNING IT!
+   Result: None
+   Status: NO_RESULT
+   Message: NO_MESSAGE
+
+🎯 PROCESSING COMPLETE
+Status: NO_RESULT
+============================================================
 
 🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
    📂 Analyzing Context Key: api_result_RULE_200
@@ -570,5 +120,273 @@ response ==> TEMP_PORT_IN_MSG
    SOURCE_TYPE_CODE:  ''
    SOURCE_TYPE_VAL:   ''
 ------------------------------
-📝 LOGGED: PROCESS_COMPLETE_TEMPLATE for Get order info (Session: SS_20251216_090413_58efa1d6)
-      INFO   127.0.0.1:60143 - "POST /api/v1/activation HTTP/1.1" 200
+📝 LOGGED: PROCESS_COMPLETE for Get order info (Session: SS_20251216_091246_ecf0145e)
+response ==> Dear User, Order processing failed. Please check your order details and try again. If the issue persists, contact customer support.
+      INFO   127.0.0.1:52312 - "POST /api/v1/activation HTTP/1.1" 200
+      INFO   127.0.0.1:49671 - "GET /gettransactions HTTP/1.1" 404
+      INFO   127.0.0.1:58510 - "GET /gettransactions HTTP/1.1" 404
+      INFO   Shutting down
+      INFO   Waiting for application shutdown.
+      INFO   Application shutdown complete.
+      INFO   Finished server process [110764]
+
+(venv) PS C:\Users\salude7\Documents\store-automation-slack_server_nonprod> fastapi run .\server.py
+
+   FastAPI   Starting production server 🚀
+
+             Searching for package file structure from directories with __init__.py files
+             Importing from C:\Users\salude7\Documents\store-automation-slack_server_nonprod
+
+    module   🐍 server.py
+
+      code   Importing the FastAPI app object from the module with the following code:
+
+             from server import server
+
+       app   Using import string: server:server
+
+    server   Server started at http://0.0.0.0:8000
+    server   Documentation at http://0.0.0.0:8000/docs
+
+             Logs:
+
+      INFO   Started server process [101976]
+      INFO   Waiting for application startup.
+      INFO   Application startup complete.
+      INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Database connection established successfully.
+context is
+
+🚀 STARTING ORDER PROCESSING
+============================================================
+📦 Order Number: 1051684
+📍 Location Code: 1822101
+📋 Order Type: ACTIVATION
+👤 User:
+🆔 Session ID: SS_20251216_091506_aebc343c
+------------------------------------------------------------
+🔍 Step 1: Calling problem finder... 1051684   1822101
+🔍 Step 1: Finding matching rule for order type11
+rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+         🚀 Running test mock data function...
+rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+🔥 EXECUTING RULE: API_CALL with context: None
+Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+         📡 Method: POST
+
+🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
+🔍 --- DATA EXTRACTION FINISHED ---
+
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251216_091506_aebc343c)
+         🚀 Making API call...
+Current rules ===> RULE_200
+for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+else
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
+FORCING PORT-IN = TRUE FOR TESTING
+response ==> RULE_200
+         ✅ API call completed successfully {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails
+                  🔍 Searching for field: orderDetails
+                  🔍 Checking API result11: api_result_RULE_200
+                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'A', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
+                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'A', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
+            🔍 Condition Details:
+               Field Path: orderDetails
+               Operator: EQUALS
+               Actual Value: '1'
+               Expected Value: '1'
+         ✅ Condition met for rule: get-correction-order-details-success
+Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_300', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.billRegion=VB
+            🔍 Condition Details:
+               Field Path: orderDetails{}.billRegion=VB
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: b2b-customer-check
+Finding failure case for22
+Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
+field_pathfield_path ===> orderDetails{}.portIn
+                  🔍 Searching for field: orderDetails{}.portIn
+                  ❌ Data not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: orderDetails{}.portIn
+               Operator: NOT_EQUALS
+               Actual Value: '0'
+               Expected Value: 'A'
+               DEBUG Check: Actual='0' vs Expected='A'
+               DEBUG Result: Is Different? True
+         ✅ Condition met for rule: portin-check
+🎯 RULE EXECUTION RESULT:
+   Result: None
+   Status: NO_RESULT
+   Message: NO_MESSAGE
+
+🎯 PROCESSING COMPLETE
+Status: NO_RESULT
+============================================================
+
+🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
+   📂 Analyzing Context Key: api_result_RULE_200
+      ✅ Found 'orderDetails' dictionary.
+         -> Raw 'channel' found: 'NETACE'
+         -> Raw 'activationStatus' found: 'Failure'
+         🎯 CAPTURED CHANNEL_ID: NETACE
+         🎯 CAPTURED ACTIVATION_STATUS: Failure
+🔍 --- DATA EXTRACTION FINISHED ---
+
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        'NETACE'
+   ACTIVATION_STATUS: 'Failure'
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: PROCESS_COMPLETE for Get order info (Session: SS_20251216_091506_aebc343c)
+response ==> Dear User, Order processing failed. Please check your order details and try again. If the issue persists, contact customer support.
+      INFO   127.0.0.1:63905 - "POST /api/v1/activation HTTP/1.1" 200
+      INFO   Shutting down
+      INFO   Waiting for application shutdown.
+      INFO   Application shutdown complete.
+      INFO   Finished server process [101976]
+
+(venv) PS C:\Users\salude7\Documents\store-automation-slack_server_nonprod> fastapi run .\server.py
+
+   FastAPI   Starting production server 🚀
+
+             Searching for package file structure from directories with __init__.py files
+             Importing from C:\Users\salude7\Documents\store-automation-slack_server_nonprod
+
+    module   🐍 server.py
+
+      code   Importing the FastAPI app object from the module with the following code:
+
+             from server import server
+
+       app   Using import string: server:server
+
+    server   Server started at http://0.0.0.0:8000
+    server   Documentation at http://0.0.0.0:8000/docs
+
+             Logs:
+
+      INFO   Started server process [104024]
+      INFO   Waiting for application startup.
+      INFO   Application startup complete.
+      INFO   Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+Database connection established successfully.
+context is
+
+🚀 STARTING ORDER PROCESSING
+============================================================
+📦 Order Number: 1051684
+📍 Location Code: 1822101
+📋 Order Type: ACTIVATION
+👤 User:
+🆔 Session ID: SS_20251216_091542_789455d9
+------------------------------------------------------------
+🔍 Step 1: Calling problem finder... 1051684   1822101
+🔍 Step 1: Finding matching rule for order type11
+rulerulerulerule ===> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+         🚀 Running test mock data function...
+rule_typerule_type ==> {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+🔥 EXECUTING RULE: API_CALL with context: None
+Inside execute api call step method {'conf_id': 'CONF_109', 'rule_id': 'RULE_200', 'api_url': 'https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details', 'http_method': 'POST', 'api_headers': '{"Content-Type": "application/json"}', 'timeout_seconds': 30, 'request_body': '{"orderNo": "{order_number}", "locationCode": "{location_code}"}\t', 'api_name': 'Get Order API'}
+         🌐 URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+         📡 Method: POST
+
+🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
+🔍 --- DATA EXTRACTION FINISHED ---
+
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        ''
+   ACTIVATION_STATUS: ''
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: API_CALL_START for Get order info (Session: SS_20251216_091542_789455d9)
+         🚀 Making API call...
+Current rules ===> RULE_200
+for loop https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+else
+         🚀 Making API call (1/1)... URL: https://order360-jl8v.verizon.com/order360-correction-services/get-correction-order-details
+API DATA ==> {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': None, 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}
+FORCING PORT-IN = TRUE FOR TESTING
+response ==> RULE_200
+         ✅ API call completed successfully {'rule_id': 'RULE_200', 'rule_name': 'Get order info', 'rule_step_number': 1, 'JSON_PATH_VALUE': 'response.status_code', 'operator': 'EQUALS', 'expected_value': '200', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_236', 'rule_type': 'API_CALL', 'rule_context': None}
+Next scenario rule {'rule_id': 'RULE_236', 'rule_name': 'get-correction-order-details-success', 'rule_step_number': 36, 'JSON_PATH_VALUE': 'orderDetails', 'operator': 'EQUALS', 'expected_value': '1', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_206', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails
+                  🔍 Searching for field: orderDetails
+                  🔍 Checking API result11: api_result_RULE_200
+                  🔍 Value: {'rule_name': 'Get order info', 'response_data': {'orderNo': None, 'locationCode': None, 'mtn': None, 'orderType': None, 'orderDetails': {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'Pending', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}, 'activationDetailsList': None, 'switchDetailsList': None, 'pendingOrders': None, 'status': None, 'statusMessage': None, 'errorMessage': None, 'simotaDetailsList': None, 'esimTransactionsList': None}, 'status_code': 200}
+                  🔍 Value111: {'customerId': '0770961810', 'orderLocationCode': '1822101', 'orderCreditAppNumber': '563202344', 'masterOrderNo': '10000210738984', 'mtn': '5209717631', 'nsaStackId': 'OM', 'activationStatus': 'Failure', 'cartId': '49dd8006-9840-489d-80d2-1035c7f394f1', 'comboOrder': '569202349', 'paymentStatus': 'Success', 'caseId': 'SOP-1086922738-W01', 'aceOrderType': 'Purchase Service(PS)', 'aceOrderStatus': 'Completed(CO)', 'accountNo': '1', 'preOrder': '0', 'loanNumber': '1469307558', 'visionOrder': None, 'aceOrderNumber': '1051684', 'aceOrderCompletionTime': '23-11-2025 16:35:29', 'aceOrderCustomerType': 'Upgrade Customer(U)', 'broadBandType': None, 'billRegion': 'VW', 'shipmentStatus': 'Completed', 'byod': 'False', 'aceOrderSaleType': 'Purchase(P)', 'channel': 'NETACE', 'orderSaveTime': '23-11-2025 16:32:52', 'shipmentType': 'LOCAL', 'ecpdProfileId': None, 'tradeInDeviceId': None, 'trunkMtn': None, 'tradeInDescription': None, 'portIn': 'Pending', 'clnrStatus': None, 'shipmentMethod': None, 'fraudStatus': 'Success', 'creditStatus': None, 'pendingOrder': False, 'visionOrderStatus': None, 'cassandraOrderStatus': None, 'cidbStatus': None, 'visionStatus': 'C, TC', 'cassandraStatus': None}
+            🔍 Condition Details:
+               Field Path: orderDetails
+               Operator: EQUALS
+               Actual Value: '1'
+               Expected Value: '1'
+         ✅ Condition met for rule: get-correction-order-details-success
+Next scenario rule {'rule_id': 'RULE_206', 'rule_name': 'b2b-customer-check', 'rule_step_number': 6, 'JSON_PATH_VALUE': 'orderDetails{}.billRegion=VB', 'operator': 'EQUALS', 'expected_value': 'True', 'rule_action': 'CONTINUE', 'rule_next_step': 'RULE_300', 'rule_type': 'API_RESPONSE', 'rule_context': 'RULE_200', 'intent_type': 'ACTIVATION'}
+field_pathfield_path ===> orderDetails{}.billRegion=VB
+            🔍 Condition Details:
+               Field Path: orderDetails{}.billRegion=VB
+               Operator: EQUALS
+               Actual Value: 'False'
+               Expected Value: 'True'
+         ❌ Condition not met for rule: b2b-customer-check
+Finding failure case for22
+Finding failure case for  orderDetails{}.billRegion=VB ACTIVATION EQUALS
+field_pathfield_path ===> orderDetails{}.portIn
+                  🔍 Searching for field: orderDetails{}.portIn
+                  ❌ Data not found in any API response, treating as length 0
+            🔍 Condition Details:
+               Field Path: orderDetails{}.portIn
+               Operator: NOT_EQUALS
+               Actual Value: '0'
+               Expected Value: 'A'
+               DEBUG Check: Actual='0' vs Expected='A'
+               DEBUG Result: Is Different? True
+         ✅ Condition met for rule: portin-check
+🎯 RULE EXECUTION RESULT:
+   Result: None
+   Status: NO_RESULT
+   Message: NO_MESSAGE
+
+🎯 PROCESSING COMPLETE
+Status: NO_RESULT
+============================================================
+
+🔍 --- STARTING DATA EXTRACTION (Rule: Get order info) ---
+   📂 Analyzing Context Key: api_result_RULE_200
+      ✅ Found 'orderDetails' dictionary.
+         -> Raw 'channel' found: 'NETACE'
+         -> Raw 'activationStatus' found: 'Failure'
+         🎯 CAPTURED CHANNEL_ID: NETACE
+         🎯 CAPTURED ACTIVATION_STATUS: Failure
+🔍 --- DATA EXTRACTION FINISHED ---
+
+🧪 FINAL VALUES TO INSERT:
+   CHANNEL_ID:        'NETACE'
+   ACTIVATION_STATUS: 'Failure'
+   SOURCE_TYPE_CODE:  ''
+   SOURCE_TYPE_VAL:   ''
+------------------------------
+📝 LOGGED: PROCESS_COMPLETE for Get order info (Session: SS_20251216_091542_789455d9)
+response ==> Dear User, Order processing failed. Please check your order details and try again. If the issue persists, contact customer support.
+      INFO   127.0.0.1:63941 - "POST /api/v1/activation HTTP/1.1" 200
+      INFO   127.0.0.1:51593 - "GET /gettransactions HTTP/1.1" 404
+      INFO   Shutting down
+      INFO   Waiting for application shutdown.
+      INFO   Application shutdown complete.
+      INFO   Finished server process [104024]
+
+(venv) PS C:\Users\salude7\Documents\store-automation-slack_server_nonprod>
