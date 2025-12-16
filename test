@@ -17,16 +17,3 @@ WHERE
     RULE_NAME = 'portin-check';
 
 COMMIT;
-
-elif operator == 'NOT EQUALS':
-                # --- NEW LOGIC START ---
-                # 1. Safety Check: If the value is missing, None, or False, 
-                # strictly ignore it. We treat these as "Not a Port In order".
-                val_str = str(actual_value).lower().strip()
-                if actual_value is None or val_str in ['false', 'none', '', 'null']:
-                    return False
-                
-                # 2. Logic Check: If we have a real status (e.g. 'Pending', 'S'), 
-                # return TRUE only if it does not match the expected value ('A').
-                return str(actual_value).lower().strip() != str(expected_value).lower().strip()
-                # --- NEW LOGIC END ---
