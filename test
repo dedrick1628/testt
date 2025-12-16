@@ -1,9 +1,16 @@
 UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
 SET 
-    JSON_PATH_VALUE = 'orderDetails{}.portIn', -- Ensure we check the correct field
-    OPERATOR = 'NOT_EQUALS',                   -- Use the new operator
-    EXPECTED_VALUE = 'A',                      -- The "Good" status
-    RULE_ACTION = 'STOP',                      -- Stop if it is NOT 'A'
+    -- 1. Point to the specific field
+    JSON_PATH_VALUE = 'orderDetails{}.portIn',
+    
+    -- 2. Use the NOT EQUALS operator
+    OPERATOR = 'NOT EQUALS',
+    
+    -- 3. We want to stop if it is NOT 'A'
+    EXPECTED_VALUE = 'A',
+    
+    -- 4. Ensure it stops and sends the template
+    RULE_ACTION = 'STOP',
     RULE_TYPE = 'TEMPLATE_RESPONSE',
     RULE_CONTEXT = 'TEMP_PORT_IN_MSG'
 WHERE 
