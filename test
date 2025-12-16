@@ -1,8 +1,12 @@
--- 1. Insert the missing template
-INSERT INTO CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RESP_TEMPLATE_NP 
-(TEMPLATE_ID, TEMPLATE_NAME, MESSAGE_CONTENT, MESSAGE_TYPE, IS_ACTIVE, CREATED_DATE)
-VALUES 
-('TEMP_PORT_IN_MSG', 'Port In Validation Message', 'Dear User, Port in order found, We will review the port in status and process the activation.', 'INFO', 1, SYSDATE);
+UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
+SET 
+    JSON_PATH_VALUE = 'orderDetails{}.portIn', -- Ensure we check the correct field
+    OPERATOR = 'NOT_EQUALS',                   -- Use the new operator
+    EXPECTED_VALUE = 'A',                      -- The "Good" status
+    RULE_ACTION = 'STOP',                      -- Stop if it is NOT 'A'
+    RULE_TYPE = 'TEMPLATE_RESPONSE',
+    RULE_CONTEXT = 'TEMP_PORT_IN_MSG'
+WHERE 
+    RULE_NAME = 'portin-check';
 
--- 2. CRITICAL: Save the change
 COMMIT;
