@@ -1,1 +1,39 @@
-msg_content = template_data.get('MESSAGE_CONTENT') or template_data.get('message_content')
+UPDATE CXP_OPS_MONITORING.TEST_CXP_STORE_SUPPORT_RULE_AYS_NP
+SET 
+    RULE_CONTEXT = 'TEMP_PORT_IN_MSG',
+    RULE_ACTION = 'TEMPLATE_RESPONSE',
+    JSON_PATH_VALUE = 'portIn'
+WHERE 
+    RULE_NAME = 'portin-check';
+
+COMMIT;
+
+elif actual_val != 'a':
+                                print("   👉 Decision: Pending/Error Order (Stop)")
+                                
+                                # 1. Debug the Context ID
+                                context_id = rule.get('rule_context')
+                                print(f"   🔍 Looking for Template ID: {context_id}")
+                                
+                                if not context_id:
+                                    # Fallback if DB is missing the ID
+                                    print("   ⚠️ RULE_CONTEXT is None in DB! Using default message.")
+                                    safe_msg = "Dear User, Port in status is Pending. Please contact support."
+                                else:
+                                    # 2. Fetch Template Safely
+                                    template_data = self._get_response_template(context_id)
+                                    
+                                    if template_data:
+                                        # Handle Uppercase/Lowercase keys
+                                        safe_msg = template_data.get('MESSAGE_CONTENT') or template_data.get('message_content')
+                                    else:
+                                        print(f"   ⚠️ Template '{context_id}' not found in DB! Using default.")
+                                        safe_msg = "Dear User, Port in status is Pending."
+
+                                # 3. Return the Result
+                                return {
+                                    "status": "SUCCESS",
+                                    "message": safe_msg,
+                                    "response": safe_msg,
+                                    "rule_id": rule['rule_id']
+                                }
