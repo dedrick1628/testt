@@ -11,19 +11,15 @@ WHERE
 
 COMMIT;
 
-
-# ... existing EQUALS block ...
-            if operator == 'EQUALS':
-                # ... existing logic ...
-            
-            # 🟢 ADD THIS NEW BLOCK 🟢
-            elif operator == 'NOT_EQUALS':
-                # Safety: If value is missing or False, treat it as "Not a Port In" (Don't trigger rule)
-                if actual_value is None or str(actual_value).lower() in ['false', 'none', '']:
+elif operator == 'NOT EQUALS':
+                # --- NEW LOGIC START ---
+                # 1. Safety Check: If the value is missing, None, or False, 
+                # strictly ignore it. We treat these as "Not a Port In order".
+                val_str = str(actual_value).lower().strip()
+                if actual_value is None or val_str in ['false', 'none', '', 'null']:
                     return False
                 
-                # Logic: If value exists (e.g. 'Pending') and is NOT 'A', trigger the rule
-                if str(actual_value).strip() != str(expected_value).strip():
-                    return True
-                
-                return False
+                # 2. Logic Check: If we have a real status (e.g. 'Pending', 'S'), 
+                # return TRUE only if it does not match the expected value ('A').
+                return str(actual_value).lower().strip() != str(expected_value).lower().strip()
+                # --- NEW LOGIC END ---
