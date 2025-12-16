@@ -1,24 +1,6 @@
-UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
-SET 
-    -- Remove the {} brackets to fix extraction
-    JSON_PATH_VALUE = 'orderDetails.portIn',
-    
-    -- Ensure Next Step points to the Activation Flow (for the "Good" case)
-    RULE_NEXT_STEP = 'RULE_211', 
-    
-    -- Ensure Action is Template (for the "Bad" case)
-    RULE_ACTION = 'TEMPLATE_RESPONSE'
-WHERE 
-    RULE_NAME = 'portin-check';
-
-COMMIT;
-
-# ... existing line ...
-                result = self._evaluate_condition(rule, self.current_context, prev_rule_id, context_rule, rule)
-                
-                # 🟢 START NEW LOGIC BLOCK 🟢
+# 🟢 NEW LOGIC BLOCK (Revised) 🟢
                 if result: 
-                    # Case 1: Condition Met (It is Pending/Error) -> STOP & SEND MESSAGE
+                    # Case 1: Condition Met (Pending/Error) -> STOP & SEND MESSAGE
                     if rule.get('rule_action') == 'TEMPLATE_RESPONSE':
                         print("               🎯 Action is TEMPLATE_RESPONSE -> Sending Message & Stopping")
                         template_data = self._get_response_template(rule['rule_context'])
@@ -30,33 +12,8 @@ COMMIT;
                         }
                         
                 elif not result and rule['rule_name'] == 'portin-check':
-                    # Case 2: Condition NOT Met (It is 'A' or Normal) -> CONTINUE FLOW
-                    print(f"               ✅ Port-In Check Passed (Status is '{actual_value}'). Continuing to Activation.")
-                    
-                    # Manually jump to the next step (RULE_211)
-                    if rule.get('rule_next_step'):
-                        rule_next_step = rule['rule_next_step']
-                        print(f"               ⏭️ Jumping to Next Step: {rule_next_step}")
-                        
-                        # Fetch the next rule definition
-                        rule = self._find_rule_by_intent_and_rule_id(intent_type, rule_next_step)
-                        if rule:
-                             # Update context to point to new rule and Loop back
-                            rule_id = rule['rule_id']
-                            rule_type = rule['rule_type']
-                            # Continue the main loop to execute this new rule immediately
-                            continue 
+                    # Case 2: Condition NOT Met (Active/Normal) -> LOG IT
+                    print(f"               ✅ Port-In Check Passed. Engine will follow RULE_NEXT_STEP to Activation.")
+                    # We don't need to force the jump here if your DB has RULE_NEXT_STEP set!
+                    # The engine's standard logic below this block will handle the transition.
                 # 🟢 END NEW LOGIC BLOCK 🟢
-
-                # ... existing code (if result: ...) ...
-
-
-
-elif operator == 'NOT_EQUALS' or operator == 'NOT EQUALS':
-                # Safety: If value is 0, False, None, or Empty -> Treat as Normal (False)
-                str_val = str(actual_value).lower().strip()
-                if actual_value is None or str_val in ['false', 'none', '', 'null', '0']:
-                    return False
-                
-                # Logic: Trigger True only if value exists AND is different from 'A'
-                return str_val != str(expected_value).lower().strip()
