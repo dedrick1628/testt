@@ -1,16 +1,49 @@
-UPDATE CXP_OPS_MONITORING.TEST_CXP_STORE_SUPPORT_RULE_AYS_NP
-SET 
-    -- Simplify path to just the field name
-    JSON_PATH_VALUE = 'portIn',
-    
-    -- Ensure the Logic is still correct
-    OPERATOR = 'NOT_EQUALS',
-    EXPECTED_VALUE = 'A',
-    
-    -- Ensure Flow is correct (as discussed before)
-    RULE_NEXT_STEP = 'RULE_211',
-    RULE_ACTION = 'TEMPLATE_RESPONSE'
-WHERE 
-    RULE_NAME = 'portin-check';
+# ... inside rule_type == 'API_RESPONSE' ...
+                result = self._evaluate_condition(rule, self.current_context, prev_rule_id, context_rule, rule)
 
-COMMIT;
+                # 🔴 START DEBUGGING & FIX BLOCK 🔴
+                if rule.get('rule_name') == 'portin-check':
+                    print("\n🛑 --- DEBUGGING PORT-IN DATA STRUCTURE ---")
+                    
+                    # 1. Check if Context exists
+                    if 'api_result_RULE_200' in self.current_context:
+                        print("   ✅ Found 'api_result_RULE_200' in context")
+                        api_data = self.current_context['api_result_RULE_200'].get('response_data', {})
+                        
+                        # 2. Check orderDetails
+                        if 'orderDetails' in api_data:
+                            od = api_data['orderDetails']
+                            print(f"   ✅ Found 'orderDetails'. Type: {type(od)}")
+                            print(f"   📂 RAW KEYS inside orderDetails: {list(od.keys())}")
+                            
+                            # 3. Check specific value
+                            val = od.get('portIn', 'NOT_FOUND')
+                            print(f"   🔍 Value of 'portIn': {val}")
+                            
+                            # 4. Perform Manual Override Logic
+                            actual_val = str(val).lower().strip()
+                            if actual_val in ['not_found', '0', 'false', 'none', '', 'null']:
+                                print("   👉 Decision: Normal/Active Order (Continue)")
+                                result = True # FORCE CONTINUE
+                            elif actual_val != 'a':
+                                print("   👉 Decision: Pending/Error Order (Stop)")
+                                # Execute STOP Logic
+                                template_data = self._get_response_template(rule['rule_context'])
+                                return {
+                                    "status": "SUCCESS",
+                                    "message": template_data['message_content'],
+                                    "response": template_data['message_content'],
+                                    "rule_id": rule['rule_id']
+                                }
+                            else:
+                                print("   👉 Decision: Status is 'A' (Continue)")
+                                result = True # FORCE CONTINUE
+                        else:
+                            print("   ❌ 'orderDetails' key NOT found in API data")
+                    else:
+                        print("   ❌ 'api_result_RULE_200' NOT found in context keys:", list(self.current_context.keys()))
+                    
+                    print("🛑 --- END DEBUGGING ---\n")
+                # 🔴 END DEBUGGING & FIX BLOCK 🔴
+
+                # ... existing code (if result:) ...
