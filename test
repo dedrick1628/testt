@@ -1,39 +1,39 @@
-UPDATE CXP_OPS_MONITORING.TEST_CXP_STORE_SUPPORT_RULE_AYS_NP
-SET 
-    RULE_CONTEXT = 'TEMP_PORT_IN_MSG',
-    RULE_ACTION = 'TEMPLATE_RESPONSE',
-    JSON_PATH_VALUE = 'portIn'
-WHERE 
-    RULE_NAME = 'portin-check';
+# 🟢 SAFE MODE BLOCK (Hardcoded Message) 🟢
+                if rule.get('rule_name') == 'portin-check':
+                    print("\n🛑 --- DEBUGGING PORT-IN (SAFE MODE) ---")
+                    
+                    # 1. Manual Extraction
+                    port_in_status = '0'
+                    try:
+                        if 'api_result_RULE_200' in self.current_context:
+                            data = self.current_context['api_result_RULE_200'].get('response_data', {})
+                            if 'orderDetails' in data:
+                                port_in_status = str(data['orderDetails'].get('portIn', '0'))
+                    except:
+                        port_in_status = '0'
 
-COMMIT;
-
-elif actual_val != 'a':
-                                print("   👉 Decision: Pending/Error Order (Stop)")
-                                
-                                # 1. Debug the Context ID
-                                context_id = rule.get('rule_context')
-                                print(f"   🔍 Looking for Template ID: {context_id}")
-                                
-                                if not context_id:
-                                    # Fallback if DB is missing the ID
-                                    print("   ⚠️ RULE_CONTEXT is None in DB! Using default message.")
-                                    safe_msg = "Dear User, Port in status is Pending. Please contact support."
-                                else:
-                                    # 2. Fetch Template Safely
-                                    template_data = self._get_response_template(context_id)
-                                    
-                                    if template_data:
-                                        # Handle Uppercase/Lowercase keys
-                                        safe_msg = template_data.get('MESSAGE_CONTENT') or template_data.get('message_content')
-                                    else:
-                                        print(f"   ⚠️ Template '{context_id}' not found in DB! Using default.")
-                                        safe_msg = "Dear User, Port in status is Pending."
-
-                                # 3. Return the Result
-                                return {
-                                    "status": "SUCCESS",
-                                    "message": safe_msg,
-                                    "response": safe_msg,
-                                    "rule_id": rule['rule_id']
-                                }
+                    print(f"   🔍 Extracted Status: {port_in_status}")
+                    
+                    # 2. Logic Decision
+                    clean_status = str(port_in_status).lower().strip()
+                    
+                    # Case A: Normal/Active -> CONTINUE
+                    if clean_status in ['0', 'false', 'none', '', 'null', 'a']:
+                        print("   ✅ Status is Normal/Active. Forcing Continue.")
+                        result = True 
+                    
+                    # Case B: Pending/Error -> STOP & SEND MESSAGE
+                    else:
+                        print("   🎯 Status is Pending. Sending Message (Hardcoded).")
+                        
+                        # HARDCODED MESSAGE to avoid 'NoneType' error in DB function
+                        safe_msg = "Dear User, Port in order found, We will review the port in status and process the activation."
+                        
+                        return {
+                            "status": "SUCCESS",
+                            "message": safe_msg,
+                            "response": safe_msg,
+                            "rule_id": rule['rule_id']
+                        }
+                    print("🛑 --- END DEBUGGING ---\n")
+                # 🟢 END SAFE MODE BLOCK 🟢
