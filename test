@@ -1,8 +1,8 @@
-# 🟢 SAFE MODE BLOCK (Hardcoded Message) 🟢
+# 🟢 FINAL PRODUCTION BLOCK 🟢
                 if rule.get('rule_name') == 'portin-check':
-                    print("\n🛑 --- DEBUGGING PORT-IN (SAFE MODE) ---")
                     
-                    # 1. Manual Extraction
+                    # 1. Robust Manual Extraction
+                    # We grab the value directly, ignoring the '0' issue from the auto-extractor
                     port_in_status = '0'
                     try:
                         if 'api_result_RULE_200' in self.current_context:
@@ -12,28 +12,41 @@
                     except:
                         port_in_status = '0'
 
-                    print(f"   🔍 Extracted Status: {port_in_status}")
+                    print(f"   🔍 Final Port-In Status: {port_in_status}")
                     
                     # 2. Logic Decision
+                    # Normalize: '0', 'False', 'None' -> Treat as Active/Normal
                     clean_status = str(port_in_status).lower().strip()
                     
-                    # Case A: Normal/Active -> CONTINUE
+                    # CASE 1: Normal/Active Order -> CONTINUE FLOW
                     if clean_status in ['0', 'false', 'none', '', 'null', 'a']:
                         print("   ✅ Status is Normal/Active. Forcing Continue.")
-                        result = True 
+                        result = True # Force engine to move to Next Step (Activation)
                     
-                    # Case B: Pending/Error -> STOP & SEND MESSAGE
+                    # CASE 2: Pending/Error Order -> STOP & SEND MESSAGE
                     else:
-                        print("   🎯 Status is Pending. Sending Message (Hardcoded).")
+                        print("   🎯 Status is Pending. Executing Stop.")
                         
-                        # HARDCODED MESSAGE to avoid 'NoneType' error in DB function
-                        safe_msg = "Dear User, Port in order found, We will review the port in status and process the activation."
+                        # Define Default Message (The one we know works)
+                        final_msg = "Dear User, Port in order found, We will review the port in status and process the activation."
+                        
+                        # Try to fetch from DB, but fall back to Default if it fails
+                        try:
+                            context_id = rule.get('rule_context')
+                            if context_id:
+                                template_data = self._get_response_template(context_id)
+                                if template_data:
+                                    # Handle both UPPERCASE (DB) and lowercase keys
+                                    db_msg = template_data.get('MESSAGE_CONTENT') or template_data.get('message_content')
+                                    if db_msg:
+                                        final_msg = db_msg
+                        except Exception as e:
+                            print(f"   ⚠️ DB Template Fetch Failed: {e}. Using Hardcoded Backup.")
                         
                         return {
                             "status": "SUCCESS",
-                            "message": safe_msg,
-                            "response": safe_msg,
+                            "message": final_msg,
+                            "response": final_msg,
                             "rule_id": rule['rule_id']
                         }
-                    print("🛑 --- END DEBUGGING ---\n")
-                # 🟢 END SAFE MODE BLOCK 🟢
+                # 🟢 END FINAL BLOCK 🟢
