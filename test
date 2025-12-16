@@ -1,26 +1,16 @@
-# ... inside rule_type == 'API_RESPONSE' ...
-                result = self._evaluate_condition(rule, self.current_context, prev_rule_id, context_rule, rule)
+UPDATE CXP_OPS_MONITORING.CXP_STORE_SUPPORT_RULE_AYS_NP
+SET 
+    -- Simplify path to just the field name
+    JSON_PATH_VALUE = 'portIn',
+    
+    -- Ensure the Logic is still correct
+    OPERATOR = 'NOT_EQUALS',
+    EXPECTED_VALUE = 'A',
+    
+    -- Ensure Flow is correct (as discussed before)
+    RULE_NEXT_STEP = 'RULE_211',
+    RULE_ACTION = 'TEMPLATE_RESPONSE'
+WHERE 
+    RULE_NAME = 'portin-check';
 
-                # 🟢 START FIX 🟢
-                # Case 1: Result is TRUE (It IS a Pending Port-In) -> STOP
-                if result and rule.get('rule_name') == 'portin-check':
-                     print("               🎯 Port-In Issue Detected. Sending Message & Stopping.")
-                     template_data = self._get_response_template(rule['rule_context'])
-                     return {
-                        "status": "SUCCESS",
-                        "message": template_data['message_content'],
-                        "response": template_data['message_content'],
-                        "rule_id": rule['rule_id']
-                     }
-
-                # Case 2: Result is FALSE (It is Normal/Active) -> CONTINUE
-                elif not result and rule.get('rule_name') == 'portin-check':
-                     print(f"               ✅ Port-In Check Passed (Normal/Active). Forcing Engine to Continue.")
-                     
-                     # 🔑 THE TRICK: We flip result to True!
-                     # This prevents the "Condition not met" error and forces the engine 
-                     # to jump to the RULE_NEXT_STEP (RULE_211) defined in your DB.
-                     result = True 
-                # 🟢 END FIX 🟢
-                
-                # ... existing code (if result:) ...
+COMMIT;
